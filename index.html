@@ -1,0 +1,1211 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>好事在數聚村莊｜數位快閃 Digital Impact Sprint</title>
+<meta name="description" content="「好事在數聚村莊」是一場連結 NGO、跨域人才、資料與 AI 的數位快閃共創行動。邀請合作單位、企業夥伴與 Mentor，一起從真實問題出發，把分散的點連起來。">
+
+<!-- Open Graph -->
+<meta property="og:type" content="website">
+<meta property="og:title" content="好事在數聚村莊｜數位快閃 Digital Impact Sprint">
+<meta property="og:description" content="一場連結人、資料與 AI 的數位快閃共創行動，邀請 NGO、跨域夥伴、企業支持者與 Mentor 一起把好事做出來。">
+<!-- 📌 如何替換 Open Graph 圖片：把下面 og:image 換成正式圖片的網址（建議 1200x630px），
+     並同步更新 <meta property="og:image:alt"> 的描述文字即可。 -->
+<meta property="og:image" content="https://placehold.co/1200x630/1F3B2E/F8F3E8?text=好事在數聚村莊">
+<meta property="og:image:alt" content="好事在數聚村莊 數位快閃活動視覺">
+<meta property="og:locale" content="zh_TW">
+<meta name="twitter:card" content="summary_large_image">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@500;600;700;900&family=Noto+Sans+TC:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<style>
+/* ============================================================
+   數聚村莊 × 數位快閃｜設計代幣 Design Tokens
+   色彩：墨綠 / 奶油白 / 奶茶色 / 暖橘（依品牌故事之溫暖、可信任、共創感設計）
+   ============================================================ */
+:root{
+  --ink-green: #1F3B2E;      /* 主色：墨綠，用於導覽列、深色區塊 */
+  --forest: #2F5443;         /* 輔色：森林綠，漸層與邊框 */
+  --moss: #7C9179;           /* 淡綠，次要點綴 */
+  --cream: #FAF5EA;          /* 背景：奶油白 */
+  --cream-deep: #F2EADA;     /* 次背景，區塊分隔用 */
+  --tea: #E3CFAC;            /* 奶茶色，卡片背景 */
+  --tea-deep: #C7A374;       /* 奶茶深色，邊框、圖形 */
+  --ember: #E08A3C;          /* 暖橘，行動重點色 */
+  --ember-deep: #C56F26;     /* 暖橘深色，hover 狀態 */
+  --ink: #2B2A22;            /* 主要文字 */
+  --ink-soft: #5B5A4C;       /* 次要文字 */
+  --line: rgba(31,59,46,0.14);
+
+  --font-display: "Noto Serif TC", "Times New Roman", serif;
+  --font-body: "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", sans-serif;
+  --font-mono: "IBM Plex Mono", "Courier New", monospace;
+
+  --container: 1120px;
+  --radius: 20px;
+  --radius-sm: 12px;
+}
+
+*,*::before,*::after{ box-sizing:border-box; }
+html{ scroll-behavior:smooth; }
+body{
+  margin:0;
+  font-family:var(--font-body);
+  color:var(--ink);
+  background:var(--cream);
+  line-height:1.75;
+  -webkit-font-smoothing:antialiased;
+}
+img,svg{ max-width:100%; display:block; }
+a{ color:inherit; }
+ul{ margin:0; padding:0; list-style:none; }
+h1,h2,h3,h4{ font-family:var(--font-display); margin:0; line-height:1.35; font-weight:700; }
+p{ margin:0; }
+button{ font-family:inherit; }
+
+.container{ max-width:var(--container); margin:0 auto; padding:0 24px; }
+.section{ padding: 88px 0; position:relative; }
+.section-tight{ padding: 64px 0; }
+@media (max-width:640px){
+  .section{ padding: 64px 0; }
+  .section-tight{ padding: 48px 0; }
+}
+
+.eyebrow{
+  font-family:var(--font-mono);
+  font-size:13px;
+  letter-spacing:.14em;
+  text-transform:uppercase;
+  color:var(--ember-deep);
+  display:inline-flex;
+  align-items:center;
+  gap:10px;
+  margin-bottom:16px;
+}
+.eyebrow::before{
+  content:"";
+  width:8px; height:8px; border-radius:50%;
+  background:var(--ember);
+  flex-shrink:0;
+}
+
+.section-head{ max-width:720px; margin-bottom:48px; }
+.section-head h2{ font-size:clamp(26px,4vw,38px); color:var(--ink-green); }
+.section-head p{ margin-top:16px; font-size:17px; color:var(--ink-soft); }
+.section-head.center{ margin-left:auto; margin-right:auto; text-align:center; }
+
+.lede{ font-size:19px; color:var(--ink-soft); max-width:640px; }
+
+/* 按鈕 */
+.btn{
+  display:inline-flex; align-items:center; gap:8px;
+  padding:14px 28px;
+  border-radius:999px;
+  font-weight:600;
+  font-size:15px;
+  text-decoration:none;
+  border:1.5px solid transparent;
+  cursor:pointer;
+  transition:transform .18s ease, background .18s ease, color .18s ease, border-color .18s ease, box-shadow .18s ease;
+}
+.btn:active{ transform:translateY(1px); }
+.btn-primary{ background:var(--ember); color:#fff; }
+.btn-primary:hover{ background:var(--ember-deep); }
+.btn-primary:focus-visible{ outline:3px solid var(--ink-green); outline-offset:3px; }
+.btn-ghost{ background:transparent; color:var(--cream); border-color:rgba(250,245,234,0.45); }
+.btn-ghost:hover{ background:rgba(250,245,234,0.12); border-color:rgba(250,245,234,0.8); }
+.btn-outline{ background:transparent; color:var(--ink-green); border-color:var(--ink-green); }
+.btn-outline:hover{ background:var(--ink-green); color:var(--cream); }
+.btn:focus-visible{ outline:3px solid var(--ember-deep); outline-offset:3px; }
+
+/* ============ 導覽列 ============ */
+.nav{
+  position:fixed; top:0; left:0; right:0; z-index:100;
+  background:rgba(250,245,234,0.92);
+  backdrop-filter:blur(8px);
+  border-bottom:1px solid var(--line);
+  transition:background .2s ease;
+}
+.nav-inner{
+  display:flex; align-items:center; justify-content:space-between;
+  padding:14px 24px;
+  max-width:var(--container); margin:0 auto;
+}
+.brand{ display:flex; flex-direction:column; text-decoration:none; color:var(--ink-green); }
+.brand-zh{ font-family:var(--font-display); font-weight:700; font-size:17px; }
+.brand-en{ font-family:var(--font-mono); font-size:10px; letter-spacing:.1em; color:var(--ink-soft); }
+
+.nav-links{ display:none; gap:28px; align-items:center; }
+.nav-links a{
+  text-decoration:none; font-size:14px; font-weight:500; color:var(--ink);
+  position:relative; padding:4px 0;
+}
+.nav-links a::after{
+  content:""; position:absolute; left:0; right:100%; bottom:-2px; height:2px;
+  background:var(--ember); transition:right .2s ease;
+}
+.nav-links a:hover::after{ right:0; }
+.nav-cta{ display:none; }
+
+.nav-toggle{
+  display:inline-flex; flex-direction:column; gap:5px;
+  background:none; border:none; padding:8px; cursor:pointer;
+}
+.nav-toggle span{ width:22px; height:2px; background:var(--ink-green); border-radius:2px; transition:transform .2s ease, opacity .2s ease; }
+.nav-toggle[aria-expanded="true"] span:nth-child(1){ transform:translateY(7px) rotate(45deg); }
+.nav-toggle[aria-expanded="true"] span:nth-child(2){ opacity:0; }
+.nav-toggle[aria-expanded="true"] span:nth-child(3){ transform:translateY(-7px) rotate(-45deg); }
+
+.mobile-menu{
+  display:none;
+  flex-direction:column;
+  background:var(--cream);
+  border-bottom:1px solid var(--line);
+  padding:8px 24px 20px;
+}
+.mobile-menu.open{ display:flex; }
+.mobile-menu a{
+  padding:12px 0; text-decoration:none; color:var(--ink-green);
+  font-weight:600; border-bottom:1px solid var(--line);
+}
+.mobile-menu .btn{ margin-top:16px; justify-content:center; }
+
+@media (min-width:900px){
+  .nav-links{ display:flex; }
+  .nav-cta{ display:inline-flex; }
+  .nav-toggle{ display:none; }
+  .mobile-menu{ display:none !important; }
+}
+
+/* ============ HERO ============ */
+.hero{
+  background: radial-gradient(120% 140% at 15% -10%, #2C4E3D 0%, var(--ink-green) 46%, #17281F 100%);
+  color:var(--cream);
+  padding: 150px 0 100px;
+  position:relative;
+  overflow:hidden;
+}
+.hero-grid{
+  display:grid; gap:56px;
+  grid-template-columns:1fr;
+  align-items:center;
+}
+@media (min-width:900px){
+  .hero-grid{ grid-template-columns:1.1fr .9fr; }
+}
+.hero-eyebrow{
+  font-family:var(--font-mono); font-size:13px; letter-spacing:.16em; text-transform:uppercase;
+  color:var(--tea); margin-bottom:22px; display:block;
+}
+.hero h1{
+  font-size:clamp(36px,6vw,60px);
+  color:#fff;
+  letter-spacing:.01em;
+}
+.hero .sub{
+  margin-top:20px; font-size:clamp(17px,2.2vw,20px); color:rgba(250,245,234,0.86); max-width:520px;
+}
+.hero .sub-en{
+  margin-top:10px; font-family:var(--font-mono); font-size:13px; color:var(--tea); letter-spacing:.04em;
+}
+.hero-ctas{ display:flex; flex-wrap:wrap; gap:14px; margin-top:36px; }
+.hero-visual{ position:relative; }
+.hero-visual svg{ width:100%; height:auto; }
+.hero-note{
+  margin-top:28px; font-size:13px; color:rgba(250,245,234,0.6);
+  border-left:2px solid var(--ember);
+  padding-left:12px;
+}
+
+/* connect-dot 節點動畫 */
+.dot-line{ stroke-dasharray: 6 400; stroke-dashoffset:0; animation:dotflow 5.5s linear infinite; }
+.node-pulse{ transform-origin:center; animation:pulse 3.2s ease-in-out infinite; }
+@keyframes dotflow{ to{ stroke-dashoffset:-400; } }
+@keyframes pulse{ 0%,100%{ opacity:.55; transform:scale(1);} 50%{ opacity:1; transform:scale(1.25);} }
+
+@media (prefers-reduced-motion: reduce){
+  html{ scroll-behavior:auto; }
+  .dot-line, .node-pulse, .reveal{ animation:none !important; transition:none !important; }
+}
+
+/* ============ 定位一句話 ============ */
+.statement{
+  background:var(--cream-deep);
+  text-align:center;
+}
+.statement p{
+  font-family:var(--font-display);
+  font-size:clamp(22px,3.4vw,32px);
+  color:var(--ink-green);
+  max-width:820px; margin:0 auto;
+  line-height:1.6;
+}
+.statement span{ color:var(--ember-deep); }
+
+/* ============ 品牌故事 ============ */
+.story{ background:var(--cream); }
+.story-body{ max-width:760px; margin:0 auto; }
+.story-body p{ margin-bottom:22px; font-size:17px; color:var(--ink); }
+.story-highlight{
+  font-family:var(--font-display);
+  font-size:22px;
+  color:var(--ink-green);
+  padding:26px 28px;
+  border-left:3px solid var(--ember);
+  background:var(--cream-deep);
+  border-radius:0 var(--radius-sm) var(--radius-sm) 0;
+  margin:36px 0;
+}
+.story-close{
+  text-align:center; margin-top:48px;
+  font-family:var(--font-display);
+  font-size:clamp(20px,2.6vw,26px);
+  color:var(--ink-green);
+  line-height:1.7;
+}
+
+/* ============ 什麼是數位快閃 ============ */
+.definition{ background:var(--ink-green); color:var(--cream); }
+.definition .section-head h2{ color:#fff; }
+.definition .section-head p{ color:rgba(250,245,234,0.78); }
+.def-grid{
+  display:grid; gap:20px; grid-template-columns:1fr;
+  margin-top:8px;
+}
+@media (min-width:760px){ .def-grid{ grid-template-columns:repeat(3,1fr);} }
+.def-card{
+  background:rgba(250,245,234,0.06);
+  border:1px solid rgba(250,245,234,0.16);
+  border-radius:var(--radius);
+  padding:28px;
+}
+.def-card .num{ font-family:var(--font-mono); color:var(--tea); font-size:13px; }
+.def-card h3{ color:#fff; font-size:19px; margin-top:10px; }
+.def-card p{ color:rgba(250,245,234,0.78); margin-top:10px; font-size:15px; }
+
+/* ============ 對比表 ============ */
+.compare{ background:var(--cream); }
+.compare-table{ display:grid; grid-template-columns:1fr; gap:1px; background:var(--line); border:1px solid var(--line); border-radius:var(--radius); overflow:hidden; }
+.compare-row{ display:grid; grid-template-columns:1fr 1fr 1fr; background:var(--cream); }
+.compare-row.head{ background:var(--ink-green); color:#fff; font-weight:700; }
+.compare-row > div{ padding:16px 18px; font-size:14.5px; }
+.compare-row > div:first-child{ font-weight:600; color:var(--ink-green); background:var(--cream-deep); }
+.compare-row.head > div:first-child{ background:var(--ink-green); color:var(--tea); }
+.compare-row:not(.head) > div:nth-child(2){ color:var(--ink-soft); }
+.compare-row:not(.head) > div:nth-child(3){ color:var(--ink); font-weight:500; }
+@media (max-width:640px){
+  .compare-row{ grid-template-columns:1fr; }
+  .compare-row > div:first-child{ font-weight:700; }
+  .compare-row.head{ display:none; }
+  .compare-row:not(.head){ padding:14px 4px; border-bottom:1px solid var(--line); }
+  .compare-row > div::before{ content: attr(data-label); display:block; font-family:var(--font-mono); font-size:11px; color:var(--ember-deep); margin-bottom:4px; }
+  .compare-row > div:first-child::before{ content:""; display:none; }
+}
+
+/* ============ 主題區 ============ */
+.theme{ background:var(--tea); }
+.theme-inner{ text-align:center; max-width:760px; margin:0 auto; }
+.theme-inner .eyebrow{ justify-content:center; }
+.theme-inner h2{ font-size:clamp(30px,5vw,48px); color:var(--ink-green); }
+.theme-inner .en{ font-family:var(--font-mono); color:var(--ink-green); opacity:.65; margin-top:12px; font-size:14px;}
+.theme-inner p.desc{ margin-top:22px; font-size:17px; color:var(--ink); }
+
+/* ============ NGO 挑戰卡 ============ */
+.challenge-grid{
+  display:grid; gap:16px; grid-template-columns:repeat(2,1fr); margin-top:8px;
+}
+@media (min-width:760px){ .challenge-grid{ grid-template-columns:repeat(4,1fr);} }
+.challenge-card{
+  background:#fff;
+  border:1px solid var(--line);
+  border-radius:var(--radius-sm);
+  padding:20px 18px;
+  font-size:14.5px;
+  color:var(--ink);
+  display:flex; flex-direction:column; gap:10px;
+}
+.challenge-card .dot{ width:9px; height:9px; border-radius:50%; background:var(--ember); }
+
+/* ============ 旅程 timeline ============ */
+.journey{ background:var(--cream-deep); }
+.timeline{ position:relative; margin-top:24px; }
+.timeline::before{
+  content:""; position:absolute; left:23px; top:8px; bottom:8px; width:2px;
+  background:repeating-linear-gradient(to bottom, var(--tea-deep) 0 6px, transparent 6px 12px);
+}
+@media (min-width:760px){ .timeline::before{ left:50%; margin-left:-1px; } }
+.tl-item{ position:relative; padding-left:64px; margin-bottom:44px; }
+.tl-item:last-child{ margin-bottom:0; }
+.tl-node{
+  position:absolute; left:0; top:0;
+  width:48px; height:48px; border-radius:50%;
+  background:var(--ink-green); color:var(--tea);
+  display:flex; align-items:center; justify-content:center;
+  font-family:var(--font-mono); font-size:15px; font-weight:600;
+  border:4px solid var(--cream-deep);
+  box-shadow:0 0 0 1px var(--tea-deep);
+  z-index:2;
+}
+.tl-item.final .tl-node{ background:var(--ember); color:#fff; box-shadow:0 0 0 1px var(--ember-deep); }
+@media (min-width:760px){
+  .tl-item{ width:calc(50% - 34px); padding-left:0; padding-right:24px; text-align:right; }
+  .tl-item .tl-node{ left:auto; right:-58px; }
+  .tl-item:nth-child(even){ margin-left:calc(50% + 34px); padding-right:0; padding-left:24px; text-align:left; }
+  .tl-item:nth-child(even) .tl-node{ right:auto; left:-58px; }
+}
+.tl-card{
+  background:#fff; border:1px solid var(--line); border-radius:var(--radius);
+  padding:26px 24px;
+}
+.tl-card .tl-en{ font-family:var(--font-mono); font-size:12px; color:var(--ember-deep); letter-spacing:.08em; }
+.tl-card h3{ margin-top:6px; font-size:21px; color:var(--ink-green); }
+.tl-card .tl-goal{ margin-top:12px; color:var(--ink-soft); font-size:14.5px; }
+.tl-card details{ margin-top:14px; }
+.tl-card summary{ cursor:pointer; font-size:13.5px; font-weight:600; color:var(--ink-green); }
+.tl-card .tl-out{ margin-top:10px; font-size:13.5px; color:var(--ink-soft); }
+.tl-card .tl-out span{ display:inline-block; background:var(--cream-deep); border-radius:999px; padding:4px 10px; margin:3px 4px 0 0; font-size:12.5px; }
+
+/* ============ 共創能力卡 ============ */
+.roles{ background:var(--cream); }
+.role-grid{ display:grid; gap:18px; grid-template-columns:1fr; margin-top:8px; }
+@media (min-width:640px){ .role-grid{ grid-template-columns:repeat(2,1fr);} }
+@media (min-width:1000px){ .role-grid{ grid-template-columns:repeat(5,1fr);} }
+.role-card{
+  background:var(--ink-green);
+  color:var(--cream);
+  border-radius:var(--radius);
+  padding:26px 22px;
+  display:flex; flex-direction:column; gap:12px;
+  min-height:100%;
+}
+.role-card:nth-child(2){ background:var(--forest); }
+.role-card:nth-child(3){ background:#3D5E3E; }
+.role-card:nth-child(4){ background:var(--forest); }
+.role-card:nth-child(5){ background:var(--ink-green); }
+.role-card .role-en{ font-family:var(--font-mono); font-size:11.5px; color:var(--tea); letter-spacing:.05em; }
+.role-card h3{ font-size:19px; color:#fff; }
+.role-card .role-skills{ font-size:13px; color:rgba(250,245,234,0.75); }
+.role-card .role-task{ font-size:13.5px; color:rgba(250,245,234,0.92); margin-top:auto; padding-top:12px; border-top:1px solid rgba(250,245,234,0.2); }
+.role-note{
+  margin-top:28px; background:var(--tea); border-radius:var(--radius-sm);
+  padding:20px 24px; font-size:14.5px; color:var(--ink);
+}
+
+/* ============ 合作單位參與方式 ============ */
+.involve{ background:var(--cream-deep); }
+.involve-cols{ display:grid; gap:18px; grid-template-columns:1fr; margin-top:8px; }
+@media (min-width:800px){ .involve-cols{ grid-template-columns:repeat(3,1fr);} }
+.involve-col{ background:#fff; border-radius:var(--radius); padding:26px 24px; border-top:4px solid var(--ember); }
+.involve-col h3{ color:var(--ink-green); font-size:18px; }
+.involve-col ul{ margin-top:16px; display:flex; flex-direction:column; gap:10px; }
+.involve-col li{ font-size:14.5px; color:var(--ink-soft); padding-left:18px; position:relative; }
+.involve-col li::before{ content:"·"; position:absolute; left:0; color:var(--ember-deep); font-weight:700; }
+.involve-note{ margin-top:24px; font-size:14.5px; color:var(--ink-soft); background:#fff; border-radius:var(--radius-sm); padding:18px 22px; border-left:3px solid var(--moss); }
+
+/* ============ 角色（村莊 / mentor） ============ */
+.orgrole{ background:var(--cream); }
+.orgrole-grid{ display:grid; gap:14px; grid-template-columns:repeat(2,1fr); margin-top:12px; }
+@media (min-width:760px){ .orgrole-grid{ grid-template-columns:repeat(5,1fr);} }
+.orgrole-grid li{ background:var(--cream-deep); border-radius:var(--radius-sm); padding:14px 14px; font-size:13.5px; color:var(--ink); text-align:center; }
+.orgrole-value{ margin-top:28px; text-align:center; font-family:var(--font-display); font-size:20px; color:var(--ink-green); }
+
+.mentor{ background:var(--tea); }
+.mentor-grid{ display:grid; gap:16px; grid-template-columns:1fr; margin-top:8px; }
+@media (min-width:700px){ .mentor-grid{ grid-template-columns:repeat(2,1fr);} }
+@media (min-width:1040px){ .mentor-grid{ grid-template-columns:repeat(5,1fr);} }
+.mentor-card{ background:#fff; border-radius:var(--radius-sm); padding:20px 18px; }
+.mentor-card .m-tag{ font-family:var(--font-mono); font-size:11px; color:var(--ember-deep); }
+.mentor-card h4{ margin-top:8px; font-size:16px; color:var(--ink-green); }
+.mentor-card p{ margin-top:8px; font-size:13.5px; color:var(--ink-soft); }
+.mentor-note{ margin-top:26px; text-align:center; font-size:14.5px; color:var(--ink); max-width:640px; margin-left:auto; margin-right:auto; }
+
+/* ============ 預計成果 ============ */
+.outcome{ background:var(--ink-green); color:var(--cream); }
+.outcome .section-head h2{ color:#fff;}
+.outcome .section-head p{ color:rgba(250,245,234,0.78);}
+.outcome-grid{ display:grid; gap:14px; grid-template-columns:repeat(2,1fr); margin-top:8px; }
+@media (min-width:760px){ .outcome-grid{ grid-template-columns:repeat(3,1fr);} }
+.outcome-grid li{
+  background:rgba(250,245,234,0.07); border:1px solid rgba(250,245,234,0.16);
+  border-radius:var(--radius-sm); padding:16px 16px; font-size:14px; color:rgba(250,245,234,0.92);
+}
+.outcome-final{ margin-top:28px; background:rgba(224,138,60,0.14); border:1px solid rgba(224,138,60,0.4); border-radius:var(--radius); padding:22px 24px; }
+.outcome-final h4{ color:var(--tea); font-size:14px; font-family:var(--font-mono); margin-bottom:10px; }
+.outcome-final ul{ display:flex; flex-wrap:wrap; gap:8px; }
+.outcome-final li{ background:rgba(250,245,234,0.1); padding:8px 14px; border-radius:999px; font-size:13.5px; }
+
+/* ============ 時程 ============ */
+.schedule{ background:var(--cream); }
+.phase-list{ margin-top:8px; display:flex; flex-direction:column; gap:0; }
+.phase{ display:grid; grid-template-columns:90px 1fr; gap:18px; padding:22px 0; border-top:1px solid var(--line); }
+.phase:last-child{ border-bottom:1px solid var(--line); }
+.phase .p-when{ font-family:var(--font-mono); font-size:13px; color:var(--ember-deep); padding-top:4px; }
+.phase h3{ font-size:17px; color:var(--ink-green); }
+.phase .p-desc{ margin-top:8px; font-size:14.5px; color:var(--ink-soft); }
+@media (max-width:560px){ .phase{ grid-template-columns:1fr; gap:6px;} }
+
+/* ============ 對象價值 ============ */
+.value{ background:var(--cream-deep); }
+.value-grid{ display:grid; gap:16px; grid-template-columns:1fr; margin-top:8px; }
+@media (min-width:760px){ .value-grid{ grid-template-columns:repeat(2,1fr);} }
+.value-card{ background:#fff; border-radius:var(--radius); padding:26px 24px; }
+.value-card .v-eyebrow{ font-family:var(--font-mono); font-size:12px; color:var(--ember-deep); letter-spacing:.06em; }
+.value-card h3{ margin-top:8px; font-size:19px; color:var(--ink-green); }
+.value-card ul{ margin-top:14px; display:flex; flex-direction:column; gap:8px; }
+.value-card li{ font-size:14.5px; color:var(--ink-soft); padding-left:16px; position:relative; }
+.value-card li::before{ content:"—"; position:absolute; left:0; color:var(--moss); }
+
+/* ============ CTA ============ */
+.cta{
+  background: linear-gradient(135deg, var(--ink-green), #14251C);
+  color:#fff; text-align:center;
+}
+.cta h2{ font-size:clamp(26px,4.4vw,40px); }
+.cta p{ margin-top:16px; color:rgba(250,245,234,0.8); max-width:560px; margin-left:auto; margin-right:auto; }
+.cta-btns{ margin-top:32px; display:flex; flex-wrap:wrap; gap:14px; justify-content:center; }
+.cta-contact{ margin-top:28px; font-size:13.5px; color:rgba(250,245,234,0.6); font-family:var(--font-mono); }
+
+/* ============ FAQ ============ */
+.faq{ background:var(--cream); }
+.faq-list{ margin-top:8px; display:flex; flex-direction:column; gap:12px; max-width:820px; }
+.faq-item{ background:#fff; border:1px solid var(--line); border-radius:var(--radius-sm); overflow:hidden; }
+.faq-item summary{
+  cursor:pointer; list-style:none; padding:18px 20px; font-weight:600; color:var(--ink-green);
+  display:flex; justify-content:space-between; align-items:center; gap:16px; font-size:15.5px;
+}
+.faq-item summary::-webkit-details-marker{ display:none; }
+.faq-item summary::after{ content:"+"; font-family:var(--font-mono); font-size:20px; color:var(--ember-deep); flex-shrink:0; transition:transform .2s ease; }
+.faq-item[open] summary::after{ transform:rotate(45deg); }
+.faq-item summary:focus-visible{ outline:3px solid var(--ember-deep); outline-offset:-3px; }
+.faq-body{ padding:0 20px 20px; font-size:14.5px; color:var(--ink-soft); }
+
+/* ============ Footer ============ */
+footer{ background:#14251C; color:rgba(250,245,234,0.72); padding:56px 0 32px; }
+.footer-grid{ display:grid; gap:32px; grid-template-columns:1fr; }
+@media (min-width:760px){ .footer-grid{ grid-template-columns:1.3fr 1fr 1fr; } }
+.footer-brand .brand-zh{ color:#fff; font-size:19px; }
+.footer-brand p{ margin-top:12px; font-size:13.5px; max-width:280px; }
+.footer-col h4{ font-family:var(--font-mono); font-size:12px; letter-spacing:.08em; color:var(--tea); margin-bottom:14px; text-transform:uppercase;}
+.footer-col a{ display:block; text-decoration:none; font-size:14px; padding:6px 0; color:rgba(250,245,234,0.72); }
+.footer-col a:hover{ color:#fff; }
+.footer-bottom{ margin-top:40px; padding-top:24px; border-top:1px solid rgba(250,245,234,0.14); font-size:12.5px; display:flex; flex-wrap:wrap; justify-content:space-between; gap:8px; color:rgba(250,245,234,0.5); }
+
+/* ============ Reveal on scroll ============ */
+.reveal{ opacity:0; transform:translateY(16px); transition:opacity .6s ease, transform .6s ease; }
+.reveal.in{ opacity:1; transform:none; }
+
+.skip-link{
+  position:absolute; left:-999px; top:auto;
+  background:var(--ink-green); color:#fff; padding:12px 18px; border-radius:8px; z-index:200;
+}
+.skip-link:focus{ left:16px; top:16px; }
+</style>
+</head>
+<body>
+
+<a class="skip-link" href="#main">跳到主要內容</a>
+
+<!-- ============ 導覽列 ============ -->
+<header class="nav">
+  <div class="nav-inner">
+    <a class="brand" href="#top">
+      <span class="brand-zh">數聚村莊</span>
+      <span class="brand-en">CONNECT THE DOTS</span>
+    </a>
+    <nav class="nav-links" aria-label="主要導覽">
+      <a href="#story">品牌故事</a>
+      <a href="#journey">活動旅程</a>
+      <a href="#roles">共創能力</a>
+      <a href="#involve">合作方式</a>
+      <a href="#schedule">時程</a>
+      <a href="#faq">FAQ</a>
+    </nav>
+    <a class="btn btn-primary nav-cta" href="#cta">洽談合作</a>
+    <button class="nav-toggle" aria-label="開啟選單" aria-expanded="false" aria-controls="mobileMenu">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+  <div class="mobile-menu" id="mobileMenu">
+    <a href="#story">品牌故事</a>
+    <a href="#journey">活動旅程</a>
+    <a href="#roles">共創能力</a>
+    <a href="#involve">合作方式</a>
+    <a href="#schedule">時程</a>
+    <a href="#faq">FAQ</a>
+    <a class="btn btn-primary" href="#cta">洽談合作</a>
+  </div>
+</header>
+
+<main id="main">
+
+<!-- ============ HERO ============ -->
+<section class="hero" id="top">
+  <div class="container hero-grid">
+    <div>
+      <span class="hero-eyebrow">數位快閃 Digital Impact Sprint · 第一屆</span>
+      <h1>好事在數聚村莊</h1>
+      <p class="sub">一場連結人、資料與 AI 的數位快閃共創行動。我們邀請 NGO、跨域夥伴、Mentor 與企業支持者，一起從真實問題出發，把分散的點連起來。</p>
+      <p class="sub-en">Digital Impact Sprint by Connect the Dots</p>
+      <div class="hero-ctas">
+        <a class="btn btn-primary" href="#cta" data-config-link="partnerInquiry">成為合作單位</a>
+        <a class="btn btn-ghost" href="#journey">了解活動旅程</a>
+      </div>
+      <p class="hero-note">本頁面提供給潛在合作單位、NGO、社群夥伴、企業支持者與 Mentor 閱讀，非一般參與者報名頁。</p>
+    </div>
+    <div class="hero-visual" aria-hidden="true">
+      <svg viewBox="0 0 480 420" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path class="dot-line" d="M40 340 C 120 300, 90 200, 180 190 S 300 100, 340 70" stroke="#E3CFAC" stroke-width="1.6" stroke-linecap="round" opacity="0.55"/>
+        <path class="dot-line" d="M60 90 C 130 130, 150 220, 230 240 S 360 260, 430 320" stroke="#E08A3C" stroke-width="1.6" stroke-linecap="round" opacity="0.5" style="animation-delay:-2s"/>
+        <path d="M180 190 C 220 170, 260 150, 300 140" stroke="#E3CFAC" stroke-width="1" stroke-linecap="round" opacity="0.35"/>
+        <path d="M230 240 C 190 260, 150 270, 110 260" stroke="#E08A3C" stroke-width="1" stroke-linecap="round" opacity="0.3"/>
+
+        <circle class="node-pulse" cx="40" cy="340" r="7" fill="#E3CFAC"/>
+        <circle cx="40" cy="340" r="4" fill="#FAF5EA"/>
+        <circle class="node-pulse" cx="180" cy="190" r="9" fill="#E08A3C" style="animation-delay:-.6s"/>
+        <circle cx="180" cy="190" r="5" fill="#FAF5EA"/>
+        <circle class="node-pulse" cx="340" cy="70" r="6" fill="#E3CFAC" style="animation-delay:-1.2s"/>
+        <circle cx="340" cy="70" r="3.5" fill="#FAF5EA"/>
+        <circle class="node-pulse" cx="60" cy="90" r="6" fill="#7C9179" style="animation-delay:-1.8s"/>
+        <circle cx="60" cy="90" r="3.5" fill="#FAF5EA"/>
+        <circle class="node-pulse" cx="230" cy="240" r="8" fill="#E08A3C" style="animation-delay:-2.4s"/>
+        <circle cx="230" cy="240" r="4.5" fill="#FAF5EA"/>
+        <circle class="node-pulse" cx="430" cy="320" r="7" fill="#E3CFAC" style="animation-delay:-3s"/>
+        <circle cx="430" cy="320" r="4" fill="#FAF5EA"/>
+        <circle class="node-pulse" cx="110" cy="260" r="5" fill="#7C9179" style="animation-delay:-3.6s"/>
+      </svg>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 一句話定位 ============ -->
+<section class="statement section-tight">
+  <div class="container">
+    <p class="reveal">好事不會只因為有了 <span>AI</span> 就自然發生——<br>好事發生，是因為有人願意<span>理解問題、分享能力</span>，並一起把點連起來。</p>
+  </div>
+</section>
+
+<!-- ============ 品牌故事 ============ -->
+<section class="section story" id="story">
+  <div class="container">
+    <div class="section-head center reveal">
+      <span class="eyebrow" style="justify-content:center;">品牌故事 Our Story</span>
+      <h2>當每個人都能是 AI Builder</h2>
+    </div>
+    <div class="story-body reveal">
+      <p>AI 的出現，讓每個人都比過去更有能力將想法快速變成成果。PM 可以製作原型，資料工作者可以設計內容，行銷夥伴可以建立自動化流程，設計者也能快速分析資料——原本清楚的專業界線正在改變，越來越多人同時具備理解問題、設計方案與運用 AI 實作的能力。</p>
+      <div class="story-highlight">但工具變得容易之後，真正困難的事情仍然沒有改變：我們是否理解真正的問題？我們是否看見服務對象的需求？我們是否能讓不同背景的人建立共同語言？我們做出的方案，是否真的能被組織使用？</div>
+      <p>因此，這場活動不希望用傳統職稱限制參與者，也不將 AI Builder 設定為少數人的角色。在這場活動裡，<strong>每個人都可以是 AI Builder</strong>。AI 是所有參與者共同使用的工具，而每個人真正帶進團隊的，是不同的觀點、經驗、判斷力、同理心與解決問題的方法。</p>
+      <p>數聚村莊一直相信，真正重要的改變，經常不是來自某一個人擁有所有答案，而是來自一群不同背景的人，願意共同把分散的點連起來。因此，我們發起「數位快閃」，邀請 NGO、跨域參與者、Mentor 與合作夥伴，一起從真實問題出發，將人的理解、資料的線索與 AI 的力量連結起來。</p>
+      <p>第一屆活動主題為「好事在數聚村莊」。我們希望讓每一件好事，不只被看見，也能透過新的數位方法，被更多人支持、實踐與延續。</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 什麼是數位快閃 ============ -->
+<section class="section definition">
+  <div class="container">
+    <div class="section-head reveal">
+      <span class="eyebrow">活動形式 What is it</span>
+      <h2>什麼是數位快閃</h2>
+      <p>「數位快閃」是一種短期、跨領域、以真實問題為核心的共創形式。它不是傳統黑客松，也不是單純的課程或工作坊，而是一段由議題理解、團隊共創、AI 協作、原型實作到成果交付所組成的共創旅程。</p>
+    </div>
+    <div class="def-grid">
+      <div class="def-card reveal">
+        <span class="num">01</span>
+        <h3>理解在先，實作在後</h3>
+        <p>活動希望讓不同背景的參與者，在有限時間內共同理解一個組織的真實挑戰，而不是急著給答案。</p>
+      </div>
+      <div class="def-card reveal">
+        <span class="num">02</span>
+        <h3>跨領域共同協作</h3>
+        <p>運用資料、AI、產品思維、使用者觀察、內容設計與數位工具，是一場需要多元能力互補的共創。</p>
+      </div>
+      <div class="def-card reveal">
+        <span class="num">03</span>
+        <h3>成果可被延續</h3>
+        <p>快速提出可以被測試、延續或實際採用的下一步，而不是一次性的競賽作品。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 為什麼不是傳統黑客松 ============ -->
+<section class="section compare">
+  <div class="container">
+    <div class="section-head reveal">
+      <span class="eyebrow">活動定位 Not a Hackathon</span>
+      <h2>這不是傳統黑客松</h2>
+      <p>這場活動不是程式競賽、不是 AI 工具比賽，也不是一天結束後只留下簡報的提案活動。它以真實組織問題為起點，重視理解與延續，而不只是當日的產出。</p>
+    </div>
+    <div class="compare-table reveal">
+      <div class="compare-row head">
+        <div>比較項目</div><div>傳統黑客松</div><div>數位快閃</div>
+      </div>
+      <div class="compare-row"><div>起點</div><div data-label="傳統黑客松">技術題目</div><div data-label="數位快閃">真實組織問題</div></div>
+      <div class="compare-row"><div>參與角色</div><div data-label="傳統黑客松">以工程開發為主</div><div data-label="數位快閃">跨領域共創</div></div>
+      <div class="compare-row"><div>AI 定位</div><div data-label="傳統黑客松">特定技術能力</div><div data-label="數位快閃">全體共同工具</div></div>
+      <div class="compare-row"><div>活動準備</div><div data-label="傳統黑客松">當日才開始</div><div data-label="數位快閃">活動前完成問題理解</div></div>
+      <div class="compare-row"><div>最終成果</div><div data-label="傳統黑客松">競賽展示</div><div data-label="數位快閃">可供組織測試的下一步</div></div>
+      <div class="compare-row"><div>成功標準</div><div data-label="傳統黑客松">作品完整度</div><div data-label="數位快閃">真實價值與延續可能性</div></div>
+    </div>
+    <p class="lede reveal" style="margin-top:32px;">我們的目標，是協助合作組織找到下一步，而不是承諾一次解決所有問題。</p>
+  </div>
+</section>
+
+<!-- ============ 第一屆主題 ============ -->
+<section class="section theme">
+  <div class="container theme-inner reveal">
+    <span class="eyebrow">第一屆主題 Season One</span>
+    <h2>好事在數聚村莊</h2>
+    <p class="en">Good Things Happen When We Connect the Dots</p>
+    <p class="desc">「好事在數聚村莊」是一場以 NGO 真實議題為核心的數位快閃共創活動。活動邀請合作組織提出目前正在面對、且適合透過數位方法改善的真實挑戰，並由跨域團隊在完整理解問題後，共同提出可被測試的下一步。</p>
+  </div>
+</section>
+
+<!-- ============ 適合處理的 NGO 挑戰 ============ -->
+<section class="section" style="background:var(--cream);">
+  <div class="container">
+    <div class="section-head reveal">
+      <span class="eyebrow">議題範疇 Challenge Types</span>
+      <h2>適合處理的 NGO 挑戰</h2>
+      <p>參與者不會在不了解組織的情況下直接提出方案。以下是幾種適合帶入數位快閃共創的挑戰類型：</p>
+    </div>
+    <ul class="challenge-grid" id="challengeGrid"><!-- 由 JS 依 SITE_CONFIG.challengeTypes 動態產生 --></ul>
+  </div>
+</section>
+
+<!-- ============ 完整活動旅程 ============ -->
+<section class="section journey" id="journey">
+  <div class="container">
+    <div class="section-head reveal">
+      <span class="eyebrow">活動旅程 The Journey</span>
+      <h2>三次線上小聚＋一次實體數位快閃</h2>
+      <p>整體活動由三次線上小聚與一次實體數位快閃組成，是一段連續的旅程，而不是四場互不相關的活動。每組預計完成的成果不必是完整系統，而在於是否協助合作組織更清楚理解問題，並擁有一個可以繼續測試的下一步。</p>
+    </div>
+    <div class="timeline" id="journeyTimeline"><!-- 由 JS 依 SITE_CONFIG.journey 動態產生 --></div>
+  </div>
+</section>
+
+<!-- ============ 參與者共創能力 ============ -->
+<section class="section roles" id="roles">
+  <div class="container">
+    <div class="section-head reveal">
+      <span class="eyebrow">參與角色 Everyone is an AI Builder</span>
+      <h2>五種共創能力，而不是五個職稱</h2>
+      <p>AI 時代的工作邊界已經開始交疊——PM 也可能製作 Prototype，資料工作者也可能設計內容，行銷夥伴也能建立 AI 自動化。因此團隊分工改為依照活動中的任務與貢獻，而不是依照原本的職稱。</p>
+    </div>
+    <div class="role-grid" id="roleGrid"><!-- 由 JS 依 SITE_CONFIG.roles 動態產生 --></div>
+    <p class="role-note reveal">這些不是固定職位，也不是互斥角色。一位參與者可以帶來兩至三種能力，團隊也可以依照不同階段調整分工。活動重視的不是職稱是否完整，而是團隊是否具備理解問題、整理洞察、設計方案、快速實作與傳遞價值的能力。</p>
+  </div>
+</section>
+
+<!-- ============ 合作單位的參與方式 ============ -->
+<section class="section involve" id="involve">
+  <div class="container">
+    <div class="section-head reveal">
+      <span class="eyebrow">合作單位怎麼參與 How Partners Take Part</span>
+      <h2>合作單位的參與方式</h2>
+      <p>這個頁面主要提供合作單位閱讀，因此我們想清楚說明合作單位需要投入什麼，而不只是可以獲得什麼。</p>
+    </div>
+    <div class="involve-cols">
+      <div class="involve-col reveal">
+        <h3>活動前</h3>
+        <ul>
+          <li>提供一項真實且適合共創的組織挑戰</li>
+          <li>協助提供必要的背景資訊、流程、資料或匿名案例</li>
+          <li>指派一位主要窗口</li>
+          <li>參加第一次線上小聚，介紹組織與挑戰</li>
+          <li>參與第二次線上小聚，確認問題定義是否符合真實需求</li>
+          <li>於第三次線上小聚或活動前，回覆團隊的重要問題</li>
+        </ul>
+      </div>
+      <div class="involve-col reveal">
+        <h3>實體活動當日</h3>
+        <ul>
+          <li>參與開場說明</li>
+          <li>在團隊實作過程中提供必要回饋</li>
+          <li>測試或檢視初步成果</li>
+          <li>參與成果分享與下一步討論</li>
+        </ul>
+      </div>
+      <div class="involve-col reveal">
+        <h3>活動後</h3>
+        <ul>
+          <li>接收 MVP、說明文件與三個月行動建議</li>
+          <li>評估是否進一步測試、採用或延續</li>
+          <li>在可行的情況下，提供後續使用回饋</li>
+          <li>同意適合公開的活動案例範圍</li>
+        </ul>
+      </div>
+    </div>
+    <p class="involve-note reveal">合作單位不需要事先準備一份完整的數位專案需求書。數聚村莊將協助合作單位整理問題、確認範圍，並判斷題目是否適合進入數位快閃。</p>
+  </div>
+</section>
+
+<!-- ============ 數聚村莊的角色 ============ -->
+<section class="section orgrole">
+  <div class="container">
+    <div class="section-head reveal">
+      <span class="eyebrow">主辦角色 Our Role</span>
+      <h2>數聚村莊的角色</h2>
+      <p>數聚村莊不是單純的活動場地或報名平台，而是整體共創流程的設計者與連結者。</p>
+    </div>
+    <ul class="orgrole-grid" id="orgroleGrid"><!-- 由 JS 動態產生 --></ul>
+    <p class="orgrole-value reveal">連結人、資料、學習與真實需求，讓每一次參與都能累積成下一次影響。</p>
+  </div>
+</section>
+
+<!-- ============ Mentor 的角色 ============ -->
+<section class="section mentor">
+  <div class="container">
+    <div class="section-head reveal">
+      <span class="eyebrow">Mentor 陪伴 Support at Each Stage</span>
+      <h2>Mentor 的角色</h2>
+      <p>Mentor 不依照傳統職稱分類，而是根據團隊在不同階段需要的支持來設計。</p>
+    </div>
+    <div class="mentor-grid" id="mentorGrid"><!-- 由 JS 依 SITE_CONFIG.mentors 動態產生 --></div>
+    <p class="mentor-note reveal">Mentor 的任務不是直接替團隊完成作品，也不是提供標準答案，而是在重要節點提出問題、協助判斷，並避免團隊偏離真實需求。</p>
+  </div>
+</section>
+
+<!-- ============ 預計成果 ============ -->
+<section class="section outcome">
+  <div class="container">
+    <div class="section-head reveal">
+      <span class="eyebrow">預計成果 What We Aim to Deliver</span>
+      <h2>每一組最終預計交付</h2>
+      <p>最終成果的價值不在於做得多大，而在於是否能協助合作組織更清楚地理解問題，並擁有一個可以繼續測試的下一步。</p>
+    </div>
+    <ul class="outcome-grid" id="outcomeGrid"><!-- 由 JS 動態產生 --></ul>
+    <div class="outcome-final reveal">
+      <h4>每組最終交付內容</h4>
+      <ul>
+        <li>一份清楚的問題定義</li>
+        <li>一項重要洞察</li>
+        <li>一個可展示或可測試的 MVP</li>
+        <li>一份使用或交接說明</li>
+        <li>一份未來三個月的行動建議</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 預計時程 ============ -->
+<section class="section schedule" id="schedule">
+  <div class="container">
+    <div class="section-head reveal">
+      <span class="eyebrow">預計時程 Tentative Timeline</span>
+      <h2>六個階段，逐步展開</h2>
+      <p>目前尚未確認所有確切日期，因此以「階段＋暫定月份」呈現。所有日期集中設定於本頁 JavaScript 的 <code>SITE_CONFIG.phases</code>，方便日後調整。</p>
+    </div>
+    <div class="phase-list" id="phaseList"><!-- 由 JS 依 SITE_CONFIG.phases 動態產生 --></div>
+  </div>
+</section>
+
+<!-- ============ 不同對象的價值 ============ -->
+<section class="section value">
+  <div class="container">
+    <div class="section-head reveal">
+      <span class="eyebrow">合作價值 Value for Everyone</span>
+      <h2>對不同夥伴的價值</h2>
+    </div>
+    <div class="value-grid">
+      <div class="value-card reveal">
+        <span class="v-eyebrow">FOR NGO</span>
+        <h3>對 NGO 或合作組織</h3>
+        <ul>
+          <li>從不同專業視角重新理解組織問題</li>
+          <li>獲得可測試的數位方案或 MVP</li>
+          <li>探索 AI 與資料在組織內的實際應用</li>
+          <li>降低直接投入大型數位專案的風險</li>
+          <li>建立未來與跨域人才合作的可能性</li>
+        </ul>
+      </div>
+      <div class="value-card reveal">
+        <span class="v-eyebrow">FOR PARTICIPANTS</span>
+        <h3>對參與者</h3>
+        <ul>
+          <li>參與真實社會議題，而不是模擬案例</li>
+          <li>練習跨域合作與 AI 協作</li>
+          <li>理解 NGO 的真實情境與限制</li>
+          <li>累積可被說明的專案經驗</li>
+          <li>看見自己的能力如何產生實際影響</li>
+        </ul>
+      </div>
+      <div class="value-card reveal">
+        <span class="v-eyebrow">FOR MENTORS</span>
+        <h3>對 Mentor</h3>
+        <ul>
+          <li>將專業經驗投入真實組織議題</li>
+          <li>觀察 AI 時代新的協作方式</li>
+          <li>陪伴跨域團隊形成可落地成果</li>
+          <li>與 NGO、社群及其他專業者建立連結</li>
+        </ul>
+      </div>
+      <div class="value-card reveal">
+        <span class="v-eyebrow">FOR PARTNERS</span>
+        <h3>對支持夥伴或企業</h3>
+        <ul>
+          <li>支持具體且可被紀錄的社會創新行動</li>
+          <li>連結數位人才、AI 應用與公益議題</li>
+          <li>參與案例共創、知識分享或資源支持</li>
+          <li>累積 AI for Good、人才發展或 ESG 相關實踐</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ CTA ============ -->
+<section class="section cta" id="cta">
+  <div class="container">
+    <h2 class="reveal">一起把好事做出來</h2>
+    <p class="reveal">如果你的組織正面對一項適合共創的真實挑戰，或希望以企業夥伴、Mentor 身分支持這場行動，歡迎和我們聊聊。</p>
+    <div class="cta-btns reveal">
+      <a class="btn btn-primary" href="#" data-config-link="partnerInquiry">洽談合作</a>
+      <a class="btn btn-ghost" href="#" data-config-link="becomePartner">成為合作單位</a>
+      <a class="btn btn-ghost" href="#" data-config-link="submitChallenge">提出組織挑戰</a>
+    </div>
+    <p class="cta-contact" id="ctaContact"><!-- 由 JS 依 SITE_CONFIG.contact 動態產生 --></p>
+  </div>
+</section>
+
+<!-- ============ FAQ ============ -->
+<section class="section faq" id="faq">
+  <div class="container">
+    <div class="section-head reveal">
+      <span class="eyebrow">常見問題 FAQ</span>
+      <h2>合作單位常見問題</h2>
+    </div>
+    <div class="faq-list" id="faqList"><!-- 由 JS 依 SITE_CONFIG.faq 動態產生 --></div>
+  </div>
+</section>
+
+</main>
+
+<!-- ============ Footer ============ -->
+<footer>
+  <div class="container footer-grid">
+    <div class="footer-brand">
+      <span class="brand-zh">數聚村莊 Connect the Dots</span>
+      <p>連結人、資料、學習與真實需求，讓每一次參與都能累積成下一次影響。</p>
+    </div>
+    <div class="footer-col">
+      <h4>快速導覽</h4>
+      <a href="#story">品牌故事</a>
+      <a href="#journey">活動旅程</a>
+      <a href="#involve">合作方式</a>
+      <a href="#faq">FAQ</a>
+    </div>
+    <div class="footer-col">
+      <h4>聯繫我們</h4>
+      <a href="#" data-config-link="partnerInquiry">洽談合作</a>
+      <a href="#" id="footerEmail">與我們聯繫</a>
+    </div>
+  </div>
+  <div class="container footer-bottom">
+    <span>主辦單位：數聚村莊 Connect the Dots ｜ © <span id="year"></span> 數位快閃 Digital Impact Sprint</span>
+    <span>本頁面為合作提案版本，內容以最終合作確認為準</span>
+  </div>
+</footer>
+
+<script>
+/* ================================================================
+   SITE_CONFIG — 全站可編輯設定
+   所有日期、連結、合作 NGO、活動階段、Mentor 都集中在這裡，
+   之後要更新內容時，只需要修改這個物件，不需要動下面的程式邏輯。
+   ================================================================ */
+const SITE_CONFIG = {
+
+  // 📌 如何修改「合作洽詢連結」：把下面三個網址換成正式的表單／信箱連結即可，
+  //    頁面上所有 data-config-link="xxx" 的按鈕都會自動套用對應連結。
+  contactLinks: {
+    partnerInquiry: "mailto:datadot1228@gmail.com", // 📌 修改合作洽詢連結
+    becomePartner: "mailto:datadot1228@gmail.com",
+    submitChallenge: "mailto:datadot1228@gmail.com"
+  },
+
+  // 聯絡資訊，顯示於 CTA 區塊與頁尾
+  contact: {
+    email: "datadot1228@gmail.com", // 📌 修改聯絡信箱
+    note: "洽談合作前，歡迎先來信說明組織現況，我們會協助你判斷題目是否適合進入數位快閃。"
+  },
+
+  // 📌 如何新增合作 NGO／挑戰類型：在下方陣列新增一個字串即可，
+  //    會自動顯示在「適合處理的 NGO 挑戰」區塊。
+  challengeTypes: [
+    "捐款人或支持者輪廓理解",
+    "服務資料的整理與洞察",
+    "公益議題內容傳播",
+    "志工招募與關係經營",
+    "內部行政流程自動化",
+    "資訊查找與知識管理",
+    "活動或服務流程優化",
+    "AI 應用的初步驗證"
+  ],
+
+  // 活動旅程：三次線上小聚 ＋ 一次實體活動
+  journey: [
+    {
+      order: "01",
+      en: "Discover the Cause",
+      title: "第一次線上小聚：認識好事",
+      goal: "認識合作組織的使命、服務對象與工作情境，建立 NGO 與參與者之間的共同語言，而不是直接跳進解法。",
+      content: ["數聚村莊與活動理念介紹","NGO 組織與議題分享","利害關係人與服務對象介紹","現況資料、流程與限制說明","參與者提問","團隊初步交流"],
+      outputs: ["組織背景理解","初步挑戰地圖","待釐清問題清單"]
+    },
+    {
+      order: "02",
+      en: "Frame the Challenge",
+      title: "第二次線上小聚：定義好問題",
+      goal: "將組織描述的廣泛困難，轉化為可處理的問題，確認可取得的資料、資源與限制，避免團隊過早決定工具或解法。",
+      content: ["Problem Framing 引導","使用者或服務對象需求拆解","資料與現況流程盤點","假設與風險整理","Mentor 回饋","團隊確定活動當日的核心挑戰"],
+      outputs: ["Problem Statement","目標使用者或服務對象","成功指標","已知限制與假設","初步解題方向"]
+    },
+    {
+      order: "03",
+      en: "Prepare to Build",
+      title: "第三次線上小聚：準備把好事做出來",
+      goal: "讓團隊熟悉適合使用的 AI 與數位工具，確認 MVP 範圍與分工，避免活動當天從零開始討論。",
+      content: ["AI 共創基本原則","可使用工具與案例介紹","MVP 範圍確認","任務拆解","團隊能力與責任安排","活動當日工作計畫","Mentor Office Hour"],
+      outputs: ["Solution Brief","MVP 範圍","任務清單","工具選擇","當日分工","預計展示方式"]
+    },
+    {
+      order: "04",
+      en: "Digital Impact Sprint Day",
+      title: "實體活動：好事在數聚村莊｜數位快閃",
+      goal: "活動長度暫定五至六小時。不再花大量時間重新理解問題，而是集中進行共創、實作、測試與成果整理。",
+      content: ["開場與共創原則","團隊目標確認","第一階段 Sprint：建立方案骨架","Mentor Checkpoint","第二階段 Sprint：完成 MVP","NGO 測試與回饋","最後修正","成果分享","三個月行動建議","合作交流與活動收尾"],
+      outputs: ["問題定義","重要洞察","可測試 MVP","使用/交接說明","三個月行動建議"],
+      final: true
+    }
+  ],
+
+  // 五種共創能力
+  roles: [
+    { en:"Problem Explorer", title:"問題探索者", skills:"訪談與提問／理解組織需求／發現問題背後的問題／釐清服務對象與使用情境", task:"協助團隊確認真正值得解決的問題。" },
+    { en:"Insight Sensemaker", title:"洞察整理者", skills:"資料分析／資訊整理／使用者研究／從複雜內容中找出關鍵線索", task:"將資料、訪談與觀察轉化為可支持決策的洞察。" },
+    { en:"Solution Connector", title:"方案連結者", skills:"整合不同觀點／發想解決方案／安排優先順序／將問題、需求與工具連起來", task:"協助團隊選擇最值得測試的解題方向。" },
+    { en:"Prototype Maker", title:"原型實踐者", skills:"使用 AI、No-code 或數位工具／快速製作網站、流程、內容或 Prototype", task:"協助團隊將方案快速做出來（並非唯一使用 AI 的角色，所有人都能運用 AI，此角色專注於成果整合與實作）。" },
+    { en:"Impact Storyteller", title:"影響力傳遞者", skills:"整理故事／製作簡報／設計成果展示／說明方案的使用方式與影響價值", task:"讓合作組織、Mentor 與其他夥伴理解成果為什麼重要，以及下一步如何延續。" }
+  ],
+
+  // 數聚村莊負責事項
+  orgRoles: [
+    "活動品牌與整體流程設計","NGO 挑戰訪談與題目整理","參與者招募與初步篩選","跨域團隊組成",
+    "三次線上小聚規劃","AI 共創內容設計","Mentor 邀請與協調","實體活動執行","成果整理與案例傳播","後續合作機會連結"
+  ],
+
+  // 📌 如何新增 Mentor 類型：在下方陣列新增一個物件（含 tag / title / desc）即可。
+  mentors: [
+    { tag:"PROBLEM COACH", title:"問題教練", desc:"協助確認問題是否清楚、真實且可處理。" },
+    { tag:"INSIGHT COACH", title:"洞察教練", desc:"協助判讀資料、研究與推論是否合理。" },
+    { tag:"AI COACH", title:"AI 教練", desc:"協助選擇 AI 使用方式、驗證產出與控制風險。" },
+    { tag:"BUILD COACH", title:"實作教練", desc:"協助縮小 MVP 範圍並完成原型。" },
+    { tag:"IMPACT COACH", title:"影響力教練", desc:"協助思考組織價值、延續方式與成果表達。" }
+  ],
+
+  // 預計成果（分散小卡）
+  outcomes: [
+    "可操作的網站或 Landing Page","資料洞察與支持者 Persona","Dashboard 或分析原型","AI 助理或知識庫概念驗證",
+    "自動化工作流程","社群內容與數位傳播方案","服務流程原型","可測試的產品 Prototype","未來三個月的行動 Roadmap"
+  ],
+
+  // 📌 如何修改「活動階段」／日期：直接調整下方陣列中的 when（暫定月份）與 desc 文字，
+  //    也可以新增或刪除階段物件，畫面會自動依序重新產生。
+  phases: [
+    { when:"2026.08–09", title:"合作單位確認與題目盤點", desc:"邀請合作組織、進行初步需求訪談、確認議題與資料可行性、整理活動挑戰說明。" },
+    { when:"2026.9.12", title:"活動公開與說明會", desc:"公開活動品牌與合作單位，舉辦公開說明會，說明參與方式、投入時間與預期成果，會後開放共創夥伴申請。" },
+    { when:"報名截止 2026.10.3", title:"參與者招募與團隊組成", desc:"開放申請，了解申請者動機、能力與關注議題，進行篩選並依能力組合與議題偏好安排團隊。報名截止日為 2026 年 10 月 3 日。" },
+    { when:"日期待定", title:"三次線上小聚", desc:"依序進行「認識好事」「定義好問題」「準備把好事做出來」，每次暫定 90–120 分鐘，期間保留少量非同步討論與資料閱讀時間。確切日期將另行公告。" },
+    { when:"2026.11.15", title:"實體數位快閃", desc:"活動長度暫定五至六小時，完成團隊共創、MVP、成果分享與下一步建議。" },
+    { when:"活動後 1 個月內", title:"成果延續", desc:"整理交付成果、完成活動案例紀錄、蒐集 NGO 與參與者回饋、評估可延續的合作專案，並對外分享適合公開的成果與學習。" }
+  ],
+
+  // FAQ
+  faq: [
+    { q:"什麼樣的組織適合成為合作單位？", a:"正在面對一項真實、且適合透過數位方法探索改善方向的挑戰的 NGO 或社會組織，都歡迎與我們聊聊。不需要組織規模很大，重要的是議題本身是真實且具體的。" },
+    { q:"合作單位需要準備完整資料嗎？", a:"不需要。合作單位不需要事先準備一份完整的數位專案需求書，數聚村莊會協助整理問題、確認範圍，並判斷題目是否適合進入數位快閃。" },
+    { q:"如果組織還不確定問題，可以合作嗎？", a:"可以。第一、二次線上小聚的目的正是與團隊一起把廣泛的困難轉化為可處理的問題，不需要在合作之初就有明確答案。" },
+    { q:"活動會替 NGO 完成正式系統嗎？", a:"不會。每組最終交付的是可測試、可交接的 MVP、洞察與行動建議，而不是承諾完成一套正式上線的系統。是否延續開發，會在活動後由合作單位評估決定。" },
+    { q:"資料涉及隱私時如何處理？", a:"我們以匿名、去識別或模擬資料為優先，不會在未經授權的情況下公開組織資料，並會在活動前與合作單位確認資料使用範圍；涉及敏感資訊時，可改用流程、案例或合成資料進行共創。" },
+    { q:"實體活動後，成果歸誰使用？", a:"成果交付給合作單位，供其評估是否進一步測試、採用或延續。詳細使用方式會在合作洽談階段一併確認。" },
+    { q:"合作單位需要參與哪些場次？", a:"建議合作單位參與三次線上小聚（尤其是第一、二次）以及實體活動當日，以確保團隊方向不偏離組織真實需求；第三次小聚也可改以文字回覆團隊提問的方式參與。" },
+    { q:"參與者是否都具備技術背景？", a:"不是。參與者來自跨領域背景，活動重視的是理解問題、整理洞察、設計方案、快速實作與傳遞價值等共創能力的組合，而不是單一技術背景。" },
+    { q:"AI Builder 是否是一個獨立角色？", a:"不是。在這場活動裡，每個人都可以是 AI Builder，AI 是所有參與者共同使用的工具，而不是被指派給特定職位的任務。" },
+    { q:"活動成果是否會公開？", a:"我們會在合作單位同意的範圍內，整理適合公開的活動案例與學習分享，任何涉及組織資料或成果的公開內容，都會事先與合作單位確認。" }
+  ]
+};
+
+/* 📌 如何將「合作提案版」改成未來的「參與者招募版」：
+   1. 將 hero 區塊的標題／CTA 文案改為面向參與者的招募文案（例如「成為好事的 AI Builder」）。
+   2. 將 SITE_CONFIG.contactLinks 改為報名表單連結，並把按鈕文字（成為合作單位／提出組織挑戰）
+      換成「立即報名」「查看時程」等參與者導向文字。
+   3. 「合作單位的參與方式」區塊可置換為「參與者的準備與投入」區塊，改以參與者觀點撰寫活動前／中／後的內容。
+   4. FAQ 內容可依參與者常見問題重新撰寫（例如報名資格、費用、需自備工具等）。
+   5. 其餘品牌故事、活動旅程、共創能力、時程等區塊可維持不變，因為這些內容對兩種版本都適用。
+*/
+
+(function(){
+  "use strict";
+
+  // ---------- 年份 ----------
+  document.getElementById("year").textContent = new Date().getFullYear();
+
+  // ---------- 套用合作連結 ----------
+  document.querySelectorAll("[data-config-link]").forEach(function(el){
+    const key = el.getAttribute("data-config-link");
+    if (SITE_CONFIG.contactLinks[key]) el.setAttribute("href", SITE_CONFIG.contactLinks[key]);
+  });
+  const ctaContact = document.getElementById("ctaContact");
+  if (ctaContact) ctaContact.textContent = SITE_CONFIG.contact.email + " ｜ " + SITE_CONFIG.contact.note;
+  const footerEmail = document.getElementById("footerEmail");
+  if (footerEmail) {
+    footerEmail.textContent = SITE_CONFIG.contact.email;
+    footerEmail.setAttribute("href", "mailto:" + SITE_CONFIG.contact.email);
+  }
+
+  // ---------- 導覽列：手機選單 ----------
+  const toggle = document.querySelector(".nav-toggle");
+  const menu = document.getElementById("mobileMenu");
+  if (toggle && menu) {
+    toggle.addEventListener("click", function(){
+      const open = menu.classList.toggle("open");
+      toggle.setAttribute("aria-expanded", open ? "true" : "false");
+    });
+    menu.querySelectorAll("a").forEach(function(a){
+      a.addEventListener("click", function(){
+        menu.classList.remove("open");
+        toggle.setAttribute("aria-expanded", "false");
+      });
+    });
+  }
+
+  // ---------- 適合處理的 NGO 挑戰 ----------
+  const challengeGrid = document.getElementById("challengeGrid");
+  if (challengeGrid) {
+    challengeGrid.innerHTML = SITE_CONFIG.challengeTypes.map(function(c){
+      return '<li class="challenge-card reveal"><span class="dot"></span>' + c + '</li>';
+    }).join("");
+  }
+
+  // ---------- 活動旅程 timeline ----------
+  const tl = document.getElementById("journeyTimeline");
+  if (tl) {
+    tl.innerHTML = SITE_CONFIG.journey.map(function(j){
+      const outs = j.outputs.map(function(o){ return "<span>" + o + "</span>"; }).join("");
+      const content = j.content.map(function(c){ return "<li>" + c + "</li>"; }).join("");
+      return (
+        '<div class="tl-item' + (j.final ? " final" : "") + '">' +
+          '<div class="tl-node">' + j.order + '</div>' +
+          '<div class="tl-card reveal">' +
+            '<span class="tl-en">' + j.en + '</span>' +
+            '<h3>' + j.title + '</h3>' +
+            '<p class="tl-goal">' + j.goal + '</p>' +
+            '<details><summary>活動內容與預計產出</summary>' +
+              '<ul style="margin-top:8px;padding-left:18px;font-size:13.5px;color:var(--ink-soft);">' + content + '</ul>' +
+              '<div class="tl-out">' + outs + '</div>' +
+            '</details>' +
+          '</div>' +
+        '</div>'
+      );
+    }).join("");
+  }
+
+  // ---------- 共創能力卡 ----------
+  const roleGrid = document.getElementById("roleGrid");
+  if (roleGrid) {
+    roleGrid.innerHTML = SITE_CONFIG.roles.map(function(r){
+      return (
+        '<div class="role-card reveal">' +
+          '<span class="role-en">' + r.en + '</span>' +
+          '<h3>' + r.title + '</h3>' +
+          '<p class="role-skills">' + r.skills + '</p>' +
+          '<p class="role-task">' + r.task + '</p>' +
+        '</div>'
+      );
+    }).join("");
+  }
+
+  // ---------- 數聚村莊角色 ----------
+  const orgroleGrid = document.getElementById("orgroleGrid");
+  if (orgroleGrid) {
+    orgroleGrid.innerHTML = SITE_CONFIG.orgRoles.map(function(o){ return "<li>" + o + "</li>"; }).join("");
+  }
+
+  // ---------- Mentor ----------
+  const mentorGrid = document.getElementById("mentorGrid");
+  if (mentorGrid) {
+    mentorGrid.innerHTML = SITE_CONFIG.mentors.map(function(m){
+      return (
+        '<div class="mentor-card reveal">' +
+          '<span class="m-tag">' + m.tag + '</span>' +
+          '<h4>' + m.title + '</h4>' +
+          '<p>' + m.desc + '</p>' +
+        '</div>'
+      );
+    }).join("");
+  }
+
+  // ---------- 預計成果 ----------
+  const outcomeGrid = document.getElementById("outcomeGrid");
+  if (outcomeGrid) {
+    outcomeGrid.innerHTML = SITE_CONFIG.outcomes.map(function(o){ return "<li>" + o + "</li>"; }).join("");
+  }
+
+  // ---------- 預計時程 ----------
+  const phaseList = document.getElementById("phaseList");
+  if (phaseList) {
+    phaseList.innerHTML = SITE_CONFIG.phases.map(function(p){
+      return (
+        '<div class="phase reveal">' +
+          '<div class="p-when">' + p.when + '</div>' +
+          '<div><h3>' + p.title + '</h3><p class="p-desc">' + p.desc + '</p></div>' +
+        '</div>'
+      );
+    }).join("");
+  }
+
+  // ---------- FAQ ----------
+  const faqList = document.getElementById("faqList");
+  if (faqList) {
+    faqList.innerHTML = SITE_CONFIG.faq.map(function(f, i){
+      return (
+        '<details class="faq-item reveal"' + (i === 0 ? " open" : "") + '>' +
+          '<summary>' + f.q + '</summary>' +
+          '<div class="faq-body">' + f.a + '</div>' +
+        '</details>'
+      );
+    }).join("");
+  }
+
+  // ---------- 捲動進場動畫（尊重 prefers-reduced-motion） ----------
+  const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  if (!reduceMotion && "IntersectionObserver" in window) {
+    const io = new IntersectionObserver(function(entries){
+      entries.forEach(function(entry){
+        if (entry.isIntersecting) {
+          entry.target.classList.add("in");
+          io.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.12, rootMargin: "0px 0px -40px 0px" });
+    document.querySelectorAll(".reveal").forEach(function(el){ io.observe(el); });
+  } else {
+    document.querySelectorAll(".reveal").forEach(function(el){ el.classList.add("in"); });
+  }
+
+  // ---------- 導覽列背景（捲動時加深，可省略但保留輕微效果） ----------
+  const navEl = document.querySelector(".nav");
+  window.addEventListener("scroll", function(){
+    if (window.scrollY > 40) navEl.style.boxShadow = "0 6px 20px rgba(31,59,46,0.08)";
+    else navEl.style.boxShadow = "none";
+  }, { passive: true });
+
+})();
+</script>
+</body>
+</html>
