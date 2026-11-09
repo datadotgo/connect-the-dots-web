@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="zh-Hant-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>微客｜當天示範資料說明 — 好事在數聚村莊</title>
+<meta name="description" content="AI Impact Day 微客示範資料說明：檔案內容、分頁、欄位與任務卡。">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#133f4f; --ink-soft:#4f7889; --paper:#fff;
+  --leaf:#34a853; --leaf-deep:#1d7a3d; --teal:#1fa8a0; --blue:#3d8ce0; --sun:#f5b731; --coral:#f2705f;
+  --gap-yellow:#fff3c4;
+  --r-l:30px; --r-m:20px;
+  --sh:0 10px 0 rgba(19,63,79,.06), 0 20px 44px -22px rgba(19,63,79,.45);
+  --sh-s:0 6px 0 rgba(19,63,79,.05), 0 14px 28px -18px rgba(19,63,79,.4);
+  --display:"Fredoka","Noto Sans TC",system-ui,sans-serif;
+  --body:"Noto Sans TC",system-ui,-apple-system,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:var(--body);color:var(--ink);background:var(--page);line-height:1.8;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+a{color:inherit}
+:focus-visible{outline:3px solid var(--ink);outline-offset:3px;border-radius:8px}
+.wrap{width:min(1080px,92vw);margin-inline:auto}
+.block{padding-block:clamp(52px,7.5vw,88px)}
+.eyebrow{font-family:var(--display);font-weight:600;font-size:.8rem;letter-spacing:.18em;color:var(--theme-deep);display:inline-flex;align-items:center;gap:.55em}
+.eyebrow::before{content:"";width:20px;height:2px;background:var(--theme);border-radius:2px}
+h2{font-family:var(--display);font-weight:700;font-size:clamp(1.55rem,4.2vw,2.3rem);line-height:1.38;letter-spacing:-.01em;margin:.35em 0 .45em}
+.lede{font-size:clamp(1rem,2.2vw,1.08rem);color:var(--ink-soft);max-width:64ch}
+.note{margin-top:16px;font-size:.86rem;color:#6b8f9e;line-height:1.7}
+.note::before{content:"›";font-family:var(--display);font-weight:600;color:var(--coral);margin-right:7px}
+
+/* buttons */
+.btn{display:inline-flex;align-items:center;gap:10px;font-family:var(--display);font-weight:600;font-size:1.02rem;text-decoration:none;border:0;cursor:pointer;padding:15px 26px;border-radius:100px;transition:transform .16s ease, box-shadow .16s ease}
+.btn svg{width:20px;height:20px;flex:none}
+.btn-main{background:var(--theme);color:#fff;box-shadow:0 6px 0 var(--theme-deep), 0 18px 32px -16px var(--theme)}
+.btn-main:hover{transform:translateY(-3px);box-shadow:0 9px 0 var(--theme-deep), 0 22px 36px -16px var(--theme)}
+.btn-main:active{transform:translateY(3px);box-shadow:0 3px 0 var(--theme-deep)}
+.btn-ghost{background:#fff;color:var(--ink);box-shadow:0 6px 0 rgba(19,63,79,.09)}
+.btn-ghost:hover{transform:translateY(-3px);box-shadow:0 9px 0 rgba(19,63,79,.09)}
+.btn-row{display:flex;flex-wrap:wrap;gap:12px;margin-top:28px}
+
+/* hero */
+.hero-bg{background:var(--hero-bg);position:relative;overflow:hidden;color:var(--hero-ink,var(--ink))}
+.deco{position:absolute;inset:0;pointer-events:none;z-index:1}
+.topbar{position:relative;z-index:5;display:flex;align-items:center;justify-content:space-between;gap:16px;padding-block:18px}
+.brand{display:inline-flex;align-items:center;gap:9px;font-family:var(--display);font-weight:600;font-size:.95rem;color:var(--ink);background:rgba(255,255,255,.8);padding:7px 16px 7px 9px;border-radius:100px;backdrop-filter:blur(6px);box-shadow:0 4px 14px -9px rgba(19,63,79,.6);text-decoration:none}
+.brand svg{width:24px;height:24px;flex:none}
+.mini-cta{font-family:var(--display);font-weight:600;font-size:.9rem;text-decoration:none;color:var(--ink);background:#fff;padding:9px 18px;border-radius:100px;box-shadow:0 4px 0 rgba(19,63,79,.1);transition:transform .16s ease}
+.mini-cta:hover{transform:translateY(-2px)}
+.hero{position:relative;z-index:4;padding-bottom:clamp(40px,6vw,72px)}
+.hero-grid{display:grid;grid-template-columns:1.05fr .95fr;gap:clamp(22px,4vw,52px);align-items:center}
+.kicker{font-family:var(--display);font-weight:600;font-size:.88rem;letter-spacing:.05em;color:var(--ink);background:#fff;border-radius:100px;padding:6px 16px;display:inline-block;box-shadow:var(--sh-s)}
+.hero h1{font-family:var(--display);font-weight:700;font-size:clamp(1.95rem,5.2vw,3rem);line-height:1.28;letter-spacing:-.02em;margin:.42em 0 .45em}
+.hl{position:relative;white-space:nowrap;z-index:0}
+.hl::after{content:"";position:absolute;left:-2%;right:-2%;bottom:.05em;height:.32em;background:var(--sun);border-radius:100px;z-index:-1;opacity:.85;transform:rotate(-1deg)}
+.hero p.sub{font-size:clamp(1rem,2.3vw,1.1rem);color:var(--hero-sub);max-width:42ch}
+.chips{display:flex;flex-wrap:wrap;gap:9px;margin-top:22px}
+.chip{display:inline-flex;align-items:center;gap:7px;background:#fff;color:var(--ink);border-radius:100px;padding:8px 16px;font-size:.88rem;font-weight:500;box-shadow:var(--sh-s)}
+.chip.hot{background:var(--coral);color:#fff}
+.chip .tag{font-family:var(--display);font-weight:600;background:var(--theme-soft);color:var(--ink);border-radius:100px;padding:0 9px;font-size:.82rem}
+
+/* hero right: 檔案盒 */
+.filebox{background:rgba(255,255,255,.62);border:2px dashed rgba(255,255,255,.95);border-radius:var(--r-l);padding:28px 18px 18px;position:relative;color:var(--ink);backdrop-filter:blur(4px)}
+.filebox-label{position:absolute;top:-13px;left:22px;background:var(--ink);color:#fff;font-family:var(--display);font-weight:600;font-size:.74rem;letter-spacing:.06em;padding:3px 14px;border-radius:100px}
+.file{display:flex;gap:14px;align-items:center;background:#fff;border-radius:18px;padding:14px 16px;box-shadow:var(--sh-s)}
+.file .ico{width:44px;height:52px;flex:none;border-radius:8px 16px 8px 8px;background:#1f7a45;color:#fff;font-family:var(--display);font-weight:700;font-size:.72rem;display:flex;align-items:flex-end;justify-content:center;padding-bottom:7px;position:relative}
+.file .ico::before{content:"";position:absolute;top:0;right:0;width:14px;height:14px;background:rgba(255,255,255,.35);border-radius:0 16px 0 6px}
+.file b{font-family:var(--display);font-weight:600;display:block;font-size:1rem;line-height:1.4;word-break:break-all}
+.file span{font-size:.82rem;color:var(--ink-soft)}
+.tabs-mini{display:grid;gap:6px;margin-top:12px}
+.tm{display:flex;align-items:center;gap:10px;background:#fff;border-radius:13px;padding:8px 14px;font-size:.88rem;box-shadow:0 3px 0 rgba(19,63,79,.04)}
+.tm .n{font-family:var(--display);font-weight:700;width:26px;height:26px;border-radius:9px;display:flex;align-items:center;justify-content:center;flex:none;font-size:.82rem;background:var(--theme-soft);color:var(--ink)}
+.tm.data .n{background:var(--theme);color:#fff}
+.tm .c{margin-left:auto;font-family:var(--display);font-weight:600;color:var(--theme-deep);font-size:.84rem;white-space:nowrap}
+.filebox-foot{padding:10px 6px 0;font-size:.82rem;color:var(--ink-soft)}
+
+/* bands */
+.band-a{background:var(--page)} .band-b{background:var(--page-alt)} .band-c{background:var(--page-deep)}
+
+/* 01 sheet cards */
+.sheets{display:grid;grid-template-columns:repeat(var(--sheet-cols,3),1fr);gap:16px;margin-top:30px}
+.sh{background:#fff;border-radius:24px;box-shadow:var(--sh);overflow:hidden;display:flex;flex-direction:column}
+.sh-top{background:var(--theme);color:#fff;padding:16px 20px 14px;position:relative}
+.sh-top .no{font-family:var(--display);font-weight:600;font-size:.74rem;letter-spacing:.1em;opacity:.9}
+.sh-top h3{font-family:var(--display);font-weight:700;font-size:1.18rem;line-height:1.4}
+.sh-top .big{position:absolute;right:18px;top:14px;text-align:right;font-family:var(--display);font-weight:700;font-size:1.5rem;line-height:1.1}
+.sh-top .big small{display:block;font-size:.7rem;font-weight:500;opacity:.9}
+.sh-body{padding:16px 20px 20px;display:flex;flex-direction:column;gap:10px;flex:1}
+.sh-row{font-size:.9rem;color:var(--ink-soft);line-height:1.65}
+.sh-row b{display:block;font-family:var(--display);font-weight:600;font-size:.74rem;letter-spacing:.1em;color:var(--theme-deep)}
+.cols{display:flex;flex-wrap:wrap;gap:5px;margin-top:3px}
+.cols span{font-size:.76rem;background:var(--theme-soft);color:var(--ink);border-radius:100px;padding:1px 10px;font-weight:500}
+.sh .warn{margin-top:auto;font-size:.84rem;background:var(--gap-yellow);border-radius:12px;padding:9px 12px;color:#7a5a00;line-height:1.6}
+.aux{display:grid;grid-template-columns:repeat(var(--aux-cols,3),1fr);gap:12px;margin-top:16px}
+.ax{background:#fff;border-radius:18px;padding:14px 18px;box-shadow:var(--sh-s);font-size:.88rem;color:var(--ink-soft);line-height:1.6}
+.ax b{font-family:var(--display);font-weight:600;color:var(--ink);font-size:.98rem;display:block}
+
+/* 02 join diagram */
+.join{margin-top:30px;background:#fff;border-radius:var(--r-l);box-shadow:var(--sh);padding:clamp(22px,4vw,36px)}
+.join-grid{display:grid;grid-template-columns:1fr auto 1fr;gap:0;align-items:center}
+.jcol{display:grid;gap:12px}
+.jnode{border:2px solid var(--theme-soft);border-radius:18px;padding:12px 16px;background:#fff;position:relative}
+.jnode b{font-family:var(--display);font-weight:700;font-size:1rem;display:block}
+.jnode span{font-size:.84rem;color:var(--ink-soft)}
+.jnode.main{border-color:var(--theme);background:var(--theme-soft)}
+.jkey{display:flex;flex-direction:column;align-items:center;padding-inline:clamp(12px,3vw,34px);position:relative}
+.jkey .line{width:clamp(30px,6vw,80px);height:3px;background:repeating-linear-gradient(90deg,var(--theme) 0 8px,transparent 8px 14px)}
+.jkey .pill{font-family:var(--display);font-weight:700;background:var(--ink);color:#fff;border-radius:100px;padding:8px 18px;font-size:.95rem;white-space:nowrap;margin:8px 0}
+.jkey small{font-size:.78rem;color:var(--ink-soft);text-align:center;line-height:1.5}
+.jkey-row{display:flex;align-items:center}
+.join-notes{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:22px}
+.jn-note{font-size:.88rem;background:var(--gap-yellow);border-radius:14px;padding:11px 14px;color:#6a5000;line-height:1.65}
+.jn-note b{color:var(--ink)}
+
+/* 03 profile */
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:30px}
+.stat{background:#fff;border-radius:22px;padding:18px 20px;box-shadow:var(--sh-s)}
+.stat .v{font-family:var(--display);font-weight:700;font-size:clamp(1.6rem,3.6vw,2.1rem);line-height:1.15;color:var(--theme-deep)}
+.stat .v small{font-size:.9rem;font-weight:600;margin-left:3px;color:var(--ink-soft)}
+.stat .k{font-size:.88rem;color:var(--ink-soft);margin-top:4px;line-height:1.5}
+.panels{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:16px}
+.panel{background:#fff;border-radius:24px;padding:22px 24px;box-shadow:var(--sh-s)}
+.panel h3{font-family:var(--display);font-weight:600;font-size:1.04rem;margin-bottom:4px}
+.panel .ps{font-size:.82rem;color:var(--ink-soft);margin-bottom:14px}
+.bars{display:grid;gap:8px}
+.bar{display:grid;grid-template-columns:minmax(92px,34%) 1fr 64px;align-items:center;gap:10px;font-size:.86rem}
+.bar .l{color:var(--ink);line-height:1.35}
+.bar .l em{display:block;font-style:normal;font-size:.72rem;color:var(--ink-soft)}
+.bar .t,.bar .f{display:block}
+.bar .t{height:12px;background:#eef4f6;border-radius:100px;overflow:hidden}
+.bar .f{height:100%;background:var(--theme);border-radius:100px}
+.bar.gapbar .f{background:var(--sun)}
+.bar .n{font-family:var(--display);font-weight:600;text-align:right;color:var(--ink);font-size:.86rem;white-space:nowrap}
+
+/* 04 gaps */
+.legend-y{display:inline-flex;align-items:center;gap:9px;font-size:.9rem;color:var(--ink-soft);margin-top:6px}
+.legend-y i{width:34px;height:18px;border-radius:5px;background:#ffff00;border:1px solid #e0d200;display:inline-block}
+.gaps{display:grid;grid-template-columns:repeat(var(--gap-cols,3),1fr);gap:14px;margin-top:26px}
+.gp{background:#fff;border-radius:22px;padding:20px 20px 22px;box-shadow:var(--sh-s);border:2px dashed #e4ecef;transition:transform .2s ease,border-color .2s ease}
+.gp:hover{transform:translateY(-5px);border-color:var(--sun)}
+.gp .where{display:inline-block;font-family:var(--display);font-weight:600;font-size:.72rem;letter-spacing:.06em;background:var(--theme-soft);border-radius:100px;padding:2px 11px;margin-bottom:10px}
+.gp h3{font-family:var(--display);font-weight:600;font-size:1.02rem;line-height:1.5;margin-bottom:6px}
+.gp p{font-size:.9rem;color:var(--ink-soft);line-height:1.72}
+
+/* 05 field table */
+.filters{display:flex;flex-wrap:wrap;gap:8px;margin-top:24px}
+.filters button{font-family:var(--display);font-weight:600;font-size:.88rem;border:0;cursor:pointer;background:#fff;color:var(--ink);padding:8px 16px;border-radius:100px;box-shadow:0 4px 0 rgba(19,63,79,.08);transition:transform .15s ease}
+.filters button:hover{transform:translateY(-2px)}
+.filters button[aria-pressed="true"]{background:var(--ink);color:#fff}
+.ft{margin-top:16px;background:#fff;border-radius:var(--r-l);box-shadow:var(--sh);overflow:hidden}
+.ft-scroll{overflow-x:auto}
+.ft table{width:100%;border-collapse:collapse;min-width:760px}
+.ft th,.ft td{padding:13px 16px;text-align:left;font-size:.9rem;border-bottom:1px solid #eef4f6;vertical-align:top;line-height:1.65}
+.ft thead th{font-family:var(--display);font-weight:600;font-size:.84rem;background:#f7fbfc;position:sticky;top:0}
+.ft td.sheet{white-space:nowrap}
+.ft td.sheet span{font-family:var(--display);font-weight:600;font-size:.76rem;background:var(--theme-soft);border-radius:100px;padding:2px 10px}
+.ft td.name{font-weight:700;min-width:120px}
+.ft td.desc,.ft td.src{color:var(--ink-soft)}
+.ft td.caveat{background:#fffbea;color:#6a5000;min-width:220px}
+.ft td .blank{display:inline-block;white-space:nowrap;margin-top:4px;font-family:var(--display);font-weight:600;font-size:.72rem;background:var(--sun);color:var(--ink);border-radius:100px;padding:0 9px}
+.ft tr[hidden]{display:none}
+
+/* 06 tasks */
+.tasks{display:grid;grid-template-columns:repeat(var(--task-cols,2),1fr);gap:16px;margin-top:30px}
+.tk{background:#fff;border-radius:24px;box-shadow:var(--sh);overflow:hidden;display:flex;flex-direction:column}
+.tk-top{padding:18px 22px 16px;color:#fff}
+.tk-top .no{font-family:var(--display);font-weight:600;font-size:.76rem;letter-spacing:.1em;opacity:.92}
+.tk-top h3{font-family:var(--display);font-weight:700;font-size:1.22rem;line-height:1.4}
+.tk:nth-child(1) .tk-top{background:var(--teal)} .tk:nth-child(2) .tk-top{background:var(--blue)} .tk:nth-child(3) .tk-top{background:var(--coral)}
+.tk-body{padding:18px 22px 22px;display:flex;flex-direction:column;gap:12px;flex:1}
+.tk-row{font-size:.9rem;color:var(--ink-soft);line-height:1.72}
+.tk-row b{display:block;font-family:var(--display);font-weight:600;font-size:.74rem;letter-spacing:.1em;color:var(--ink)}
+.tk-row.think{background:#f6fafb;border-radius:14px;padding:11px 14px}
+.tk-use{margin-top:auto;display:flex;flex-wrap:wrap;gap:6px;align-items:center;font-size:.8rem;color:var(--ink-soft);padding-top:6px;border-top:1px dashed #dde8ec}
+.tk-use span{font-family:var(--display);font-weight:600;background:var(--theme-soft);color:var(--ink);border-radius:100px;padding:1px 10px}
+
+/* 07 finale */
+.finale-grid{display:grid;grid-template-columns:1.1fr .9fr;gap:18px;margin-top:30px;align-items:stretch}
+.tbox{background:var(--ink);color:#fff;border-radius:var(--r-l);padding:28px 30px;box-shadow:var(--sh)}
+.tbox h3{font-family:var(--display);font-weight:600;font-size:1.12rem;margin-bottom:16px}
+.tbox ol{counter-reset:q;list-style:none}
+.tbox ol li{counter-increment:q;position:relative;padding-left:44px;margin-bottom:14px;font-size:1rem}
+.tbox ol li:last-child{margin-bottom:0}
+.tbox ol li::before{content:counter(q);position:absolute;left:0;top:0;width:30px;height:30px;border-radius:50%;background:var(--sun);color:var(--ink);font-family:var(--display);font-weight:700;display:flex;align-items:center;justify-content:center}
+.remind{background:#fff;border-radius:var(--r-l);padding:26px 28px;box-shadow:var(--sh-s)}
+.remind h3{font-family:var(--display);font-weight:600;font-size:1.08rem;margin-bottom:12px}
+.remind li{list-style:none;font-size:.93rem;color:var(--ink-soft);padding-left:22px;position:relative;margin-bottom:9px;line-height:1.7}
+.remind li::before{content:"✓";position:absolute;left:0;color:var(--theme);font-weight:700}
+.dl-end{margin-top:26px;text-align:center}
+footer{background:var(--ink);color:#bcdde8;padding-block:30px;font-size:.88rem}
+footer .wrap{display:flex;flex-wrap:wrap;gap:14px;justify-content:center;text-align:center}
+
+/* responsive */
+@media (max-width:980px){
+  .sheets,.gaps,.tasks{grid-template-columns:1fr 1fr}
+  .stats,.aux{grid-template-columns:1fr 1fr}
+  .panels,.finale-grid{grid-template-columns:1fr}
+}
+@media (max-width:880px){
+  .hero-grid{grid-template-columns:1fr;gap:30px}
+  .hero p.sub{max-width:none}
+  .join-grid{grid-template-columns:1fr}
+  .jkey{padding:14px 0}
+  .jkey .line{width:3px;height:22px;background:repeating-linear-gradient(180deg,var(--theme) 0 8px,transparent 8px 14px)}
+  .jkey-row{flex-direction:column}
+}
+@media (max-width:640px){
+  .sheets,.gaps,.tasks,.aux,.join-notes{grid-template-columns:1fr}
+  .bar{grid-template-columns:96px 1fr 56px}
+}
+@media (prefers-reduced-motion:reduce){
+  *{animation-duration:.01ms !important;transition-duration:.01ms !important}
+  html{scroll-behavior:auto}
+}
+
+/* ===== 組織主題：微客 ===== */
+:root{--page:#fff7ef;--page-alt:#fffcf8;--page-deep:#fbe9d8;--theme:#e0702e;--theme-deep:#a84f17;--theme-soft:#ffe5cf;--hero-bg:linear-gradient(180deg,#fff3e6 0%,#ffe0c4 55%,#fff7ef 100%);--hero-sub:#6b4a33}
+.flake{position:absolute;top:-12px;width:7px;height:7px;border-radius:50%;background:#fff;opacity:.85;box-shadow:0 0 6px rgba(255,255,255,.9);animation:snow 14s linear infinite}
+.flake:nth-child(odd){width:5px;height:5px;animation-duration:18s}
+@keyframes snow{to{transform:translate(30px,720px)}}
+.kid{animation:hop 2.6s ease-in-out infinite;transform-box:fill-box;transform-origin:bottom}
+.kid.k2{animation-delay:-.9s}.kid.k3{animation-delay:-1.7s}
+@keyframes hop{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
+@media (prefers-reduced-motion:reduce){.kid{animation:none}}
+@media (max-width:880px){.kids{display:none}}
+@media (prefers-reduced-motion:reduce){.flake{display:none}}
+
+</style>
+</head>
+<body>
+
+<div class="hero-bg">
+  <div class="deco" aria-hidden="true">
+<svg width="100%" height="100%" preserveAspectRatio="xMidYMax slice" viewBox="0 0 1200 640" style="position:absolute;inset:0">
+  <circle cx="1010" cy="150" r="70" fill="#ffd27a" opacity=".45"/>
+  <circle cx="1010" cy="150" r="110" fill="#ffd27a" opacity=".16"/>
+  <path d="M0 540 C 180 490 340 500 520 530 S 860 480 1040 510 S 1160 530 1200 520 L1200 640 L0 640Z" fill="#f7c9a0" opacity=".55"/>
+  <path d="M0 585 C 220 555 420 575 640 585 S 980 560 1200 580 L1200 640 L0 640Z" fill="#f3b789" opacity=".4"/>
+  <g transform="translate(150 488)" opacity=".5">
+    <path d="M0 40 Q0 6 34 0 Q68 6 68 40Z" fill="#fff"/><rect x="0" y="38" width="68" height="18" rx="3" fill="#fff"/>
+    <path d="M30 56 v-14 h10 v14" fill="#f3b789"/><circle cx="34" cy="-4" r="4" fill="#fff"/>
+  </g>
+  <g class="kids" transform="translate(452 520)">
+    <ellipse cx="80" cy="96" rx="96" ry="7" fill="#e9a676" opacity=".35"/>
+    <!-- 大孩子：紅帽、藍外套 -->
+    <g class="kid k1">
+      <rect x="18" y="40" width="34" height="42" rx="14" fill="#3d6fb6"/>
+      <rect x="22" y="78" width="10" height="16" rx="4" fill="#2c3e57"/><rect x="38" y="78" width="10" height="16" rx="4" fill="#2c3e57"/>
+      <circle cx="35" cy="26" r="15" fill="#f6d2b4"/>
+      <path d="M19 24 Q35 2 51 24Z" fill="#e0482f"/><circle cx="35" cy="6" r="5" fill="#fff"/>
+      <rect x="20" y="38" width="30" height="7" rx="3.5" fill="#f5b731"/><rect x="40" y="42" width="7" height="14" rx="3" fill="#f5b731"/>
+      <circle cx="30" cy="28" r="1.8" fill="#4a3426"/><circle cx="40" cy="28" r="1.8" fill="#4a3426"/>
+      <path d="M31 33 q4 3 8 0" stroke="#4a3426" stroke-width="1.6" fill="none" stroke-linecap="round"/>
+      <circle cx="26" cy="31" r="2.6" fill="#f29a8a" opacity=".6"/><circle cx="44" cy="31" r="2.6" fill="#f29a8a" opacity=".6"/>
+    </g>
+    <!-- 牽手 -->
+    <path d="M52 56 Q62 60 72 58" stroke="#3d6fb6" stroke-width="7" stroke-linecap="round" fill="none"/>
+    <!-- 小孩子：黃帽、綠外套 -->
+    <g class="kid k2">
+      <rect x="66" y="54" width="28" height="32" rx="12" fill="#3c9a6b"/>
+      <rect x="70" y="82" width="8" height="12" rx="3" fill="#2c3e57"/><rect x="82" y="82" width="8" height="12" rx="3" fill="#2c3e57"/>
+      <circle cx="80" cy="42" r="13" fill="#e9bb93"/>
+      <path d="M66 40 Q80 22 94 40Z" fill="#f5b731"/><circle cx="80" cy="24" r="4" fill="#fff"/>
+      <rect x="68" y="53" width="24" height="6" rx="3" fill="#e0482f"/>
+      <circle cx="76" cy="44" r="1.6" fill="#4a3426"/><circle cx="84" cy="44" r="1.6" fill="#4a3426"/>
+      <path d="M77 49 q3 2.4 6 0" stroke="#4a3426" stroke-width="1.4" fill="none" stroke-linecap="round"/>
+    </g>
+    <!-- 第三個孩子：粉帽、抱小熊 -->
+    <g class="kid k3">
+      <rect x="112" y="46" width="32" height="38" rx="13" fill="#d9603b"/>
+      <rect x="116" y="80" width="9" height="14" rx="4" fill="#2c3e57"/><rect x="131" y="80" width="9" height="14" rx="4" fill="#2c3e57"/>
+      <circle cx="128" cy="32" r="14" fill="#c99573"/>
+      <path d="M113 30 Q128 10 143 30Z" fill="#f29ab4"/><circle cx="128" cy="12" r="4.5" fill="#fff"/>
+      <circle cx="123" cy="33" r="1.7" fill="#3b2a20"/><circle cx="133" cy="33" r="1.7" fill="#3b2a20"/>
+      <path d="M124 38 q4 3 8 0" stroke="#3b2a20" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+      <!-- 小熊 -->
+      <circle cx="128" cy="64" r="10" fill="#a8774f"/><circle cx="128" cy="52" r="7.5" fill="#a8774f"/>
+      <circle cx="122.5" cy="46.5" r="3" fill="#a8774f"/><circle cx="133.5" cy="46.5" r="3" fill="#a8774f"/>
+      <circle cx="128" cy="54" r="3" fill="#e2c09b"/><circle cx="125.5" cy="51" r="1" fill="#3b2a20"/><circle cx="130.5" cy="51" r="1" fill="#3b2a20"/>
+      <path d="M126 64 q2 -2.4 4 0 q2 -2.4 4 0 l-4 4z" fill="#e0482f" transform="translate(-2 0)"/>
+      <rect x="112" y="58" width="9" height="7" rx="3.5" fill="#d9603b"/><rect x="135" y="58" width="9" height="7" rx="3.5" fill="#d9603b"/>
+    </g>
+  </g>
+</svg>
+<span class="flake" style="left:8%;animation-delay:-2s"></span><span class="flake" style="left:22%;animation-delay:-7s"></span>
+<span class="flake" style="left:41%;animation-delay:-4s"></span><span class="flake" style="left:58%;animation-delay:-10s"></span>
+<span class="flake" style="left:73%;animation-delay:-1s"></span><span class="flake" style="left:88%;animation-delay:-6s"></span></div>
+  <div class="wrap topbar">
+    <a class="brand" href="index.html"><svg viewBox="0 0 40 40" aria-hidden="true">
+<path d="M20 6 L33 13 L28 32 L12 32 L7 13 Z" fill="none" stroke="#1d7a3d" stroke-width="2.5" stroke-linejoin="round"/>
+<circle cx="20" cy="6" r="4" fill="#f5b731"/><circle cx="33" cy="13" r="4" fill="#1fa8a0"/>
+<circle cx="28" cy="32" r="4" fill="#f2705f"/><circle cx="12" cy="32" r="4" fill="#34a853"/>
+<circle cx="7" cy="13" r="4" fill="#3d8ce0"/></svg>好事在數聚村莊</a>
+    <a class="mini-cta" href="#fields">直接看欄位說明 ↓</a>
+  </div>
+  <header class="hero wrap">
+    <div class="hero-grid">
+      <div>
+        <span class="kicker">11/15 當天資料說明 · 微客</span>
+        <h1>兩張資料表，<br>都用<span class="hl">捐款人代碼</span>串起來</h1>
+        <p class="sub">這頁是微客示範資料的說明書：檔案裡有哪些分頁、一列代表什麼、欄位從哪來、哪裡刻意不完整。資料全部虛構，欄位與寫法照抄微客的捐款人名單。</p>
+        <div class="chips"><span class="chip"><span class="tag">資料</span> 2,000 位捐款人 · 6,794 筆捐款</span><span class="chip"><span class="tag">任務</span> 3 張任務卡，選一個主要任務</span><span class="chip hot">代碼、金額、日期全部虛構</span></div>
+        <div class="btn-row"><a class="btn btn-main" href="https://drive.google.com/drive/folders/16gxUnmh-3Ra7DnnCLuGnA_QDQ3inu1Vw?usp=sharing" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11"/><path d="m7 10 5 5 5-5"/><path d="M5 20h14"/></svg>下載示範資料</a><a class="btn btn-ghost" href="#tasks">看任務卡 ↓</a></div>
+      </div>
+      
+      <div class="filebox">
+        <span class="filebox-label">你拿到的檔案</span>
+        <div class="file"><div class="ico">XLSX</div><div><b>微客_示範資料_v1.xlsx</b><span>Excel · 約 500 KB · 6 個分頁</span></div></div>
+        <div class="tabs-mini"><div class="tm"><span class="n">讀</span>讀我<span class="c"></span></div><div class="tm data"><span class="n">①</span>捐款人名單<span class="c">2,000 位</span></div><div class="tm data"><span class="n">②</span>一年內捐款紀錄<span class="c">6,794 筆</span></div><div class="tm"><span class="n">③</span>接觸時間軸<span class="c">15 則</span></div><div class="tm"><span class="n">④</span>任務卡<span class="c">3 個任務</span></div><div class="tm"><span class="n">⑤</span>欄位說明<span class="c">25 列</span></div></div>
+        <p class="filebox-foot">橘色編號是資料分頁；其他是說明分頁。</p>
+      </div>
+    </div>
+  </header>
+</div>
+
+<section class="block band-a" id="sheets">
+  <div class="wrap">
+    <span class="eyebrow">01 · 檔案裡有什麼</span>
+    <h2>兩張資料表，加上四張說明</h2>
+    <p class="lede">以捐款人為中心：① 是一人一列的捐款人名單（含定期定額狀態、寄信與開信紀錄），② 是這一年每一筆成功收到的捐款。</p>
+    <div class="sheets" style="--sheet-cols:2"><article class="sh"><div class="sh-top"><div class="no">分頁 ①</div><h3>捐款人名單</h3>
+          <div class="big">2,000<small>位捐款人</small></div></div>
+          <div class="sh-body"><div class="sh-row"><b>一列代表</b>一位捐款人（2026/11 匯出）</div><div class="sh-row"><b>時間範圍</b>定期定額開始日期 2019/01 – 2026/10</div>
+          <div class="sh-row"><b>主要欄位</b><div class="cols"><span>捐款人名代碼</span><span>身分證字號</span><span>出生日期</span><span>性別</span><span>縣市</span><span>捐款方式</span><span>每月扣款金額</span><span>專案名稱</span><span>來源</span><span>付款方式</span><span>執行期數 / 約定總期數</span><span>定期定額狀態</span><span>停止原因</span><span>接觸紀錄（寄信）</span><span>接觸紀錄（開信狀況）</span><span>年底有無收到桌曆</span><span>備註</span></div></div><div class="warn">一人一列：有 2 個以上定期方案的 50 位，只看得到其中一個方案；每月扣款金額是合計。</div></div></article><article class="sh"><div class="sh-top"><div class="no">分頁 ②</div><h3>一年內捐款紀錄</h3>
+          <div class="big">6,794<small>筆捐款</small></div></div>
+          <div class="sh-body"><div class="sh-row"><b>一列代表</b>一筆成功收到的捐款（定期定額每次扣款一列）</div><div class="sh-row"><b>時間範圍</b>2025/11 – 2026/10</div>
+          <div class="sh-row"><b>主要欄位</b><div class="cols"><span>捐款人名代碼</span><span>收到日期</span><span>捐款方式</span><span>專案名稱</span><span>金額</span><span>付款方式</span><span>期數</span></div></div><div class="warn">只有這一年：之前就捐過的人，在這裡看起來會像新朋友。</div></div></article></div>
+    <div class="aux" style="--aux-cols:4"><div class="ax"><b>讀我</b>資料怎麼看、提醒事項。第一次打開先看這頁。</div><div class="ax"><b>③ 接觸時間軸</b>微客平常在什麼時候、用什麼方式聯繫捐款人（主辦方整理的示意，刻意不完整）。</div><div class="ax"><b>④ 任務卡</b>三個任務，各組選一個主要任務。本頁第 06 段有完整內容。</div><div class="ax"><b>⑤ 欄位說明</b>每個欄位是什麼、從哪來、哪裡會缺。本頁第 05 段可以篩選。</div></div>
+  </div>
+</section>
+
+<section class="block band-b" id="join">
+  <div class="wrap">
+    <span class="eyebrow">02 · 資料怎麼串</span>
+    <h2>捐款人代碼是所有分頁的共同語言</h2>
+    <p class="lede">① 和 ② 用「捐款人名代碼」（W0001…）接起來。③ 接觸時間軸沒有代碼，要用 ① 接觸紀錄裡的年月去對。</p>
+    <div class="join">
+      <div class="join-grid">
+        <div class="jcol"><div class="jnode main"><b>① 捐款人名單</b><span>一人一列 · 2,000 位</span></div></div>
+        <div class="jkey"><div class="jkey-row"><span class="line"></span><span class="pill">捐款人名代碼 W0001–W2000</span><span class="line"></span></div><small>真實名單是 A、B、C…</small></div>
+        <div class="jcol"><div class="jnode"><b>② 一年內捐款紀錄</b><span>一筆捐款一列 · 6,794 筆 · 1,236 位</span></div><div class="jnode"><b>③ 接觸時間軸</b><span>沒有代碼 · 用年月對 ① 的接觸紀錄</span></div></div>
+      </div>
+      <div class="join-notes"><div class="jn-note">① 一人一列，有 <b>50 位</b>同時有 2 個以上定期方案，名單只顯示其中一個；② 每次扣款一列，可以還原。</div><div class="jn-note">② 只有這一年的成功捐款：<b>764 位</b>捐款人這一年沒有出現在 ②；扣款失敗的月份沒有紀錄，期數會跳號。</div></div>
+    </div>
+  </div>
+</section>
+
+<section class="block band-a" id="profile">
+  <div class="wrap">
+    <span class="eyebrow">03 · 資料概況</span>
+    <h2>打開之前，先知道資料長什麼樣子</h2>
+    <p class="lede">以下數字由主辦方從示範資料直接算出，讓你在動手前先掌握規模與缺口。</p>
+    <div class="stats"><div class="stat"><div class="v">2,000<small>位</small></div><div class="k">捐款人（單筆 904、定期 897、兩種都有 199）</div></div><div class="stat"><div class="v">6,794<small>筆</small></div><div class="k">一年內捐款，來自 1,236 位捐款人</div></div><div class="stat"><div class="v">9<small>個</small></div><div class="k">專案，最多的是「熊愛做公益」</div></div><div class="stat"><div class="v">265<small>位</small></div><div class="k">寫著「無email」，約 13% 收不到任何信</div></div></div>
+    <div class="panels"><div class="panel"><h3>① 曾經定期定額的人，現在狀態如何？</h3><p class="ps">有定期定額狀態的 1,096 位</p><div class="bars"><div class="bar"><span class="l">進行中</span><span class="t"><span class="f" style="width:100.0%"></span></span><span class="n">546 位</span></div><div class="bar"><span class="l">已停止</span><span class="t"><span class="f" style="width:73.3%"></span></span><span class="n">400 位</span></div><div class="bar"><span class="l">已結束</span><span class="t"><span class="f" style="width:16.5%"></span></span><span class="n">90 位</span></div><div class="bar"><span class="l">授權失敗</span><span class="t"><span class="f" style="width:11.0%"></span></span><span class="n">60 位</span></div></div></div><div class="panel"><h3>哪些欄位最常空著？</h3><p class="ps">空白筆數 ／ 應該要有資料的筆數</p><div class="bars"><div class="bar gapbar"><span class="l">出生日期<em>① 選填，格式混雜</em></span><span class="t"><span class="f" style="width:73.7%"></span></span><span class="n">74%</span></div><div class="bar gapbar"><span class="l">身分證字號<em>① 報稅才會填</em></span><span class="t"><span class="f" style="width:44.8%"></span></span><span class="n">45%</span></div><div class="bar gapbar"><span class="l">接觸紀錄（開信狀況）<em>① 自由文字</em></span><span class="t"><span class="f" style="width:26.6%"></span></span><span class="n">27%</span></div><div class="bar gapbar"><span class="l">年底有無收到桌曆<em>① 2025 年底贈禮</em></span><span class="t"><span class="f" style="width:25.2%"></span></span><span class="n">25%</span></div><div class="bar gapbar"><span class="l">停止原因<em>① 已停止／結束／授權失敗者</em></span><span class="t"><span class="f" style="width:23.1%"></span></span><span class="n">23%</span></div><div class="bar gapbar"><span class="l">來源<em>① 只能部分追蹤</em></span><span class="t"><span class="f" style="width:16.7%"></span></span><span class="n">17%</span></div><div class="bar gapbar"><span class="l">性別<em>① 可用身分證字號補</em></span><span class="t"><span class="f" style="width:15.4%"></span></span><span class="n">15%</span></div></div></div><div class="panel"><h3>① 捐款人從哪裡來？</h3><p class="ps">依「來源」計算人數</p><div class="bars"><div class="bar"><span class="l">官網</span><span class="t"><span class="f" style="width:100.0%"></span></span><span class="n">851 位</span></div><div class="bar"><span class="l">銀行帳夾</span><span class="t"><span class="f" style="width:41.7%"></span></span><span class="n">355 位</span></div><div class="bar"><span class="l">（空白）</span><span class="t"><span class="f" style="width:39.2%"></span></span><span class="n">334 位</span></div><div class="bar"><span class="l">Meta廣告</span><span class="t"><span class="f" style="width:37.0%"></span></span><span class="n">315 位</span></div><div class="bar"><span class="l">Google廣告</span><span class="t"><span class="f" style="width:17.0%"></span></span><span class="n">145 位</span></div></div></div><div class="panel"><h3>② 這一年的捐款捐給哪個專案？</h3><p class="ps">依專案名稱計算筆數</p><div class="bars"><div class="bar"><span class="l">熊愛做公益</span><span class="t"><span class="f" style="width:100.0%"></span></span><span class="n">4,454 筆</span></div><div class="bar"><span class="l">蒙古—冬季溫暖計畫</span><span class="t"><span class="f" style="width:16.0%"></span></span><span class="n">712 筆</span></div><div class="bar"><span class="l">線上數位陪伴</span><span class="t"><span class="f" style="width:14.5%"></span></span><span class="n">645 筆</span></div><div class="bar"><span class="l">柬埔寨—燭光計畫</span><span class="t"><span class="f" style="width:11.4%"></span></span><span class="n">506 筆</span></div><div class="bar"><span class="l">一般捐款</span><span class="t"><span class="f" style="width:7.2%"></span></span><span class="n">320 筆</span></div><div class="bar"><span class="l">為愛而走</span><span class="t"><span class="f" style="width:1.6%"></span></span><span class="n">72 筆</span></div><div class="bar"><span class="l">2027桌曆認購</span><span class="t"><span class="f" style="width:1.5%"></span></span><span class="n">68 筆</span></div><div class="bar"><span class="l">生日祝福捐款</span><span class="t"><span class="f" style="width:0.4%"></span></span><span class="n">17 筆</span></div></div></div></div>
+  </div>
+</section>
+
+<section class="block band-b" id="gaps">
+  <div class="wrap">
+    <span class="eyebrow">04 · 刻意留下的缺口</span>
+    <h2>資料不完整，是題目的一部分</h2>
+    <p class="lede">真實名單就是這樣：出生日期大多沒填、開信狀況是自由文字、一位捐款人有多個方案卻只看得到一個。你的方案要怎麼跟這樣的資料相處，就是題目的一部分。</p>
+    <span class="legend-y"><i></i>Excel 裡的黃底格子＝刻意留下的資料缺口（只標了一部分，其他要自己找）</span>
+    <div class="gaps" style="--gap-cols:3"><article class="gp"><span class="where">① 出生日期</span><h3>大多空白，格式還混雜</h3><p>有 1959-08、11月、1972/03/05、日期格式等寫法；生日電子報只有填了的人收得到。</p></article><article class="gp"><span class="where">① 一人一列</span><h3>多個方案只看得到一個</h3><p>同時有兩個定期方案的人，專案名稱只顯示一個，每月扣款金額是合計。</p></article><article class="gp"><span class="where">① 執行期數 / 約定總期數</span><h3>續約後從 1 重算</h3><p>續約後開始日期也會重算，「捐了多久」要自己還原；17、47、83 等總期數推測是填到信用卡到期月。</p></article><article class="gp"><span class="where">① 接觸紀錄（寄信）</span><h3>一格寫好幾行</h3><p>一行一封信、新的在上面，寫法不一（有的沒空格、有的沒日期）；「無email」代表收不到任何信。</p></article><article class="gp"><span class="where">① 接觸紀錄（開信狀況）</span><h3>開信狀況是自由文字</h3><p>例如「部分開啟（3/5）」「2026-09沒開/其他有開」，要先整理成能比較的格式。</p></article><article class="gp"><span class="where">① 來源</span><h3>只能部分追蹤</h3><p>官網、銀行帳夾、Meta 廣告、Google 廣告之外，有不少人的來源是空白。</p></article><article class="gp"><span class="where">① 年底有無收到桌曆</span><h3>名單規則和口述對不上</h3><p>口述是捐滿三年以上才寄，但實際名單比這個寬，規則待確認。</p></article><article class="gp"><span class="where">② 一年內捐款紀錄</span><h3>只有一年，而且只有成功的</h3><p>之前就捐過的人會被誤認成新朋友；扣款失敗的月份沒有紀錄，期數會跳號。</p></article><article class="gp"><span class="where">① 地址</span><h3>「臺／台」混用、區名重複</h3><p>少數空白；東區、北區等同名，要搭配郵遞區號或縣市判斷。</p></article></div>
+  </div>
+</section>
+
+<section class="block band-a" id="fields">
+  <div class="wrap">
+    <span class="eyebrow">05 · 欄位說明</span>
+    <h2>每個欄位是什麼、哪裡要小心</h2>
+    <p class="lede">內容和 Excel 裡的「⑤欄位說明」分頁相同。可以按分頁篩選；黃底那一欄是缺漏或注意事項，空白比例由主辦方從示範資料算出。</p>
+    <div class="filters" role="group" aria-label="依分頁篩選"><button type="button" aria-pressed="true" data-f="all">全部</button><button type="button" aria-pressed="false" data-f="①捐款人名單">①捐款人名單</button><button type="button" aria-pressed="false" data-f="②一年內捐款紀錄">②一年內捐款紀錄</button></div>
+    <div class="ft"><div class="ft-scroll"><table>
+      <thead><tr><th>分頁</th><th>欄位</th><th>說明</th><th>資料從哪來（真實情境）</th><th>缺漏或注意事項</th></tr></thead>
+      <tbody><tr data-s="①捐款人名單"><td class="sheet"><span>①捐款人名單</span></td><td class="name">捐款人名代碼</td><td class="desc">每位捐款人唯一的代號，所有分頁用它串接</td><td class="src">捐款系統</td><td class="caveat">真實名單是 A、B、C…，這裡改成 W0001…</td></tr><tr data-s="①捐款人名單"><td class="sheet"><span>①捐款人名單</span></td><td class="name">身分證字號<br><span class="blank">空白 896／2,000（45%）</span></td><td class="desc">已去識別，只留第二碼：1＝男、2＝女</td><td class="src">報稅用（上傳國稅局才會填）</td><td class="caveat">約一半空白；性別空白時可用它補</td></tr><tr data-s="①捐款人名單"><td class="sheet"><span>①捐款人名單</span></td><td class="name">出生日期<br><span class="blank">空白 1,473／2,000（74%）</span></td><td class="desc">生日</td><td class="src">捐款表單（選填）</td><td class="caveat">大多空白；格式混雜：1959-08、11月、1972/03/05、日期</td></tr><tr data-s="①捐款人名單"><td class="sheet"><span>①捐款人名單</span></td><td class="name">收據抬頭或統編</td><td class="desc">個人或企業</td><td class="src">捐款表單</td><td class="caveat">企業以公司名義開收據</td></tr><tr data-s="①捐款人名單"><td class="sheet"><span>①捐款人名單</span></td><td class="name">性別<br><span class="blank">空白 308／2,000（15%）</span></td><td class="desc">男／女</td><td class="src">捐款表單</td><td class="caveat">有空白（黃底＝可用身分證字號補）</td></tr><tr data-s="①捐款人名單"><td class="sheet"><span>①捐款人名單</span></td><td class="name">郵遞區號、縣市、鄉鎮市區</td><td class="desc">收據寄送地址</td><td class="src">捐款表單</td><td class="caveat">「臺／台」混用；少數空白；東區、北區等同名</td></tr><tr data-s="①捐款人名單"><td class="sheet"><span>①捐款人名單</span></td><td class="name">捐款方式</td><td class="desc">定期定額／單筆／定期定額/單筆（兩種都有）</td><td class="src">捐款系統</td><td class="caveat">是「曾經」的方式，不是這一年</td></tr><tr data-s="①捐款人名單"><td class="sheet"><span>①捐款人名單</span></td><td class="name">最近一筆收到日期<br><span class="blank">空白 81／2,000（4%）</span></td><td class="desc">最後一次成功收到款項</td><td class="src">捐款系統</td><td class="caveat">文字與日期格式混雜；已結束的人有些空白</td></tr><tr data-s="①捐款人名單"><td class="sheet"><span>①捐款人名單</span></td><td class="name">每月扣款金額</td><td class="desc">定期定額每月金額</td><td class="src">捐款系統</td><td class="caveat">多個方案時是合計；單筆捐款人空白</td></tr><tr data-s="①捐款人名單"><td class="sheet"><span>①捐款人名單</span></td><td class="name">專案名稱</td><td class="desc">捐給哪個專案</td><td class="src">捐款系統</td><td class="caveat">多個方案時只顯示一個</td></tr><tr data-s="①捐款人名單"><td class="sheet"><span>①捐款人名單</span></td><td class="name">來源<br><span class="blank">空白 334／2,000（17%）</span></td><td class="desc">從哪裡來捐款</td><td class="src">捐款系統／追蹤碼</td><td class="caveat">只能部分追蹤，空白很多（黃底）</td></tr><tr data-s="①捐款人名單"><td class="sheet"><span>①捐款人名單</span></td><td class="name">付款方式</td><td class="desc">信用卡、ATM轉帳、LINE Pay、郵政劃撥、超商代碼</td><td class="src">金流</td><td class="caveat">定期定額都是信用卡</td></tr><tr data-s="①捐款人名單"><td class="sheet"><span>①捐款人名單</span></td><td class="name">執行期數 / 約定總期數</td><td class="desc">已扣幾期 / 約定幾期（不限＝沒有期限）</td><td class="src">捐款系統</td><td class="caveat">17、47、83 等數字推測是填到信用卡到期月（待確認）；續約後從 1 重算</td></tr><tr data-s="①捐款人名單"><td class="sheet"><span>①捐款人名單</span></td><td class="name">開始日期、結束日期</td><td class="desc">這個定期定額方案的起訖</td><td class="src">捐款系統</td><td class="caveat">只顯示一個方案；續約後是新方案的日期</td></tr><tr data-s="①捐款人名單"><td class="sheet"><span>①捐款人名單</span></td><td class="name">定期定額狀態</td><td class="desc">進行中／已停止／已結束／授權失敗</td><td class="src">捐款系統</td><td class="caveat">授權失敗＝第一期就沒扣成功（主辦方解讀）</td></tr><tr data-s="①捐款人名單"><td class="sheet"><span>①捐款人名單</span></td><td class="name">停止原因<br><span class="blank">空白 已停止／結束者中 127／550（23%）</span></td><td class="desc">到期未續、扣款失敗、信用卡過期、捐款人來電／來信取消、經濟因素、首期扣款失敗</td><td class="src">勸募專員填寫</td><td class="caveat">已停止的人有一部分沒填</td></tr><tr data-s="①捐款人名單"><td class="sheet"><span>①捐款人名單</span></td><td class="name">接觸紀錄（寄信）<br><span class="blank">空白 266／2,000（13%）</span></td><td class="desc">寄過哪些信（新的在上面），一行一封</td><td class="src">勸募專員整理</td><td class="caveat">多行文字；寫法不一（有的沒空格、有的沒日期）；「無email」表示收不到任何信</td></tr><tr data-s="①捐款人名單"><td class="sheet"><span>①捐款人名單</span></td><td class="name">接觸紀錄（開信狀況）<br><span class="blank">空白 531／2,000（27%）</span></td><td class="desc">有沒有開信</td><td class="src">電子報系統，人工摘要</td><td class="caveat">自由文字，要先整理</td></tr><tr data-s="①捐款人名單"><td class="sheet"><span>①捐款人名單</span></td><td class="name">年底有無收到桌曆<br><span class="blank">空白 505／2,000（25%）</span></td><td class="desc">2025 年底是否收到桌曆＋明信片＋年報</td><td class="src">勸募專員</td><td class="caveat">名單規則與口述（三年以上）不一致</td></tr><tr data-s="①捐款人名單"><td class="sheet"><span>①捐款人名單</span></td><td class="name">備註<br><span class="blank">空白 1,848／2,000（92%）</span></td><td class="desc">勸募專員記下的特殊狀況</td><td class="src">勸募專員</td><td class="caveat">最有故事的地方，適合用 AI 整理</td></tr><tr data-s="①捐款人名單"><td class="sheet"><span>①捐款人名單</span></td><td class="name">每月捐款筆數</td><td class="desc">同時有幾個定期定額方案</td><td class="src">捐款系統</td><td class="caveat">≥2 時名單只顯示其中一個方案</td></tr><tr data-s="②一年內捐款紀錄"><td class="sheet"><span>②一年內捐款紀錄</span></td><td class="name">捐款人名代碼</td><td class="desc">對應 ①</td><td class="src">—</td><td class="caveat">示範新增的分頁，需確認微客能否匯出</td></tr><tr data-s="②一年內捐款紀錄"><td class="sheet"><span>②一年內捐款紀錄</span></td><td class="name">收到日期、金額</td><td class="desc">每一筆成功收到的款項</td><td class="src">捐款系統</td><td class="caveat">扣款失敗的月份沒有紀錄（期數會跳號）</td></tr><tr data-s="②一年內捐款紀錄"><td class="sheet"><span>②一年內捐款紀錄</span></td><td class="name">捐款方式、專案名稱、付款方式</td><td class="desc">這一筆是定期還是單筆、捐給哪個專案</td><td class="src">捐款系統</td><td class="caveat">桌曆認購、生日祝福捐款都算單筆</td></tr><tr data-s="②一年內捐款紀錄"><td class="sheet"><span>②一年內捐款紀錄</span></td><td class="name">期數</td><td class="desc">定期定額的第幾期</td><td class="src">捐款系統</td><td class="caveat">續約後重新從 1 算；單筆空白</td></tr></tbody></table></div></div>
+  </div>
+</section>
+
+<section class="block band-c" id="tasks">
+  <div class="wrap">
+    <span class="eyebrow">06 · 任務卡</span>
+    <h2>三張任務卡，選一個主要任務</h2>
+    <p class="lede">每張卡都寫了情境、使用者、微客現在怎麼做，以及可以思考的問題。各組選一個主要任務，也可以跨任務。</p>
+    <div class="tasks" style="--task-cols:3"><article class="tk"><div class="tk-top"><div class="no">任務一</div><h3>看懂誰會長期支持微客</h3></div><div class="tk-body"><div class="tk-row"><b>情境</b>微客想知道「為什麼有些人願意捐超過 12 個月」，但目前維繫捐款人大多靠感覺。組織資源多投在廣告，廣告商說公職、軍教比較會轉換，但微客自己沒有定義過要對誰說話。</div><div class="tk-row"><b>使用者</b>勸募專員（規劃電子報、廣告素材與年底贈禮名單的人）</div><div class="tk-row"><b>微客現在的做法</b>從捐款系統匯出名單，用 Excel 看；沒有分群，廣告素材一支打到底。</div><div class="tk-row think"><b>可以思考</b>撐過 12 期的人和中途停下的人，差在來源、約定期數、金額、專案、開信？「長期」要怎麼算（續約後開始日期會重算）？哪些答案資料說得出來、哪些要問捐款人本人（職業、動機）？分群結果怎麼變成「下一則廣告、下一封信寫給誰、說什麼」？</div><div class="tk-use">主要用到<span>①捐款人名單</span><span>②一年內捐款紀錄</span></div></div></article><article class="tk"><div class="tk-top"><div class="no">任務二</div><h3>讓首捐者留下來</h3></div><div class="tk-body"><div class="tk-row"><b>情境</b>每年有不少人第一次捐款，多數是單筆，之後就沒有再出現；選了定期定額的人，有些第一期就失敗、有些約定期數到了就結束。微客希望首捐者可以直接變成定期定額，而且不要停。</div><div class="tk-row"><b>使用者</b>勸募專員</div><div class="tk-row"><b>微客現在的做法</b>首捐後寄一封感謝信（微客簡介），之後要等到下一封 EDM；到期只在最後一期提醒。</div><div class="tk-row think"><b>可以思考</b>首捐者選單筆還是定期，跟來源、付款方式、年齡、首捐月份、專案（例如桌曆認購）有沒有關係？後來轉成定期的人，間隔多久、中間收到了什麼？首捐後第一、二個月可以多做什麼？選了 12 期的人要怎麼在到期前接住？注意：② 只有一年，之前就捐過的人會被誤認成新朋友。</div><div class="tk-use">主要用到<span>①捐款人名單</span><span>②一年內捐款紀錄</span><span>③接觸時間軸</span></div></div></article><article class="tk"><div class="tk-top"><div class="no">任務三</div><h3>多一個對的接觸點</h3></div><div class="tk-body"><div class="tk-row"><b>情境</b>微客目前只靠 Email（首捐信、EDM、生日電子報、到期與扣款失敗通知）和年底的實體桌曆，平常很少直接聯繫捐款人；還有不少人沒有 email，或從來不開信。</div><div class="tk-row"><b>使用者</b>負責捐款人關係維護的勸募專員</div><div class="tk-row"><b>微客現在的做法</b>扣款失敗寄通知、到期最後一期提醒；沉睡捐款人喚醒、捐款人回饋問卷都還在規劃。</div><div class="tk-row think"><b>可以思考</b>誰該在什麼時候收到什麼（Email、簡訊、電話、紙本、線上社群）？哪些人 email 永遠到不了？開信狀況是自由文字，要怎麼整理？扣款失敗、到期前、首捐後、生日、年底，哪一個時間點最值得加碼？收到桌曆後回來的人告訴我們什麼？</div><div class="tk-use">主要用到<span>①捐款人名單</span><span>③接觸時間軸</span></div></div></article></div>
+  </div>
+</section>
+
+<section class="block band-b" id="demo">
+  <div class="wrap">
+    <span class="eyebrow">07 · 展示時</span>
+    <h2>不看準確率，看「明天就想用」</h2>
+    <div class="finale-grid">
+      <div class="tbox"><h3>展示時，請回答這三個問題</h3><ol>
+        <li>誰、在什麼時刻會打開它？</li>
+        <li>用之前和用之後，差在哪裡？</li>
+        <li>還缺什麼資料？誰來補？怎麼持續下去？</li></ol></div>
+      <div class="remind"><h3>提醒</h3><ul><li>資料全部虛構：捐款人代碼、金額、日期都不是真的。</li><li>資料刻意不完整：出生日期大多沒填、開信狀況是自由文字、一人多方案只看得到一個、續約後日期重算。</li><li>不看分析得多複雜，看你們是否理解勸募專員的使用情境，做出「明天就想用」的雛形。</li><li>③ 接觸時間軸是主辦方整理的示意，不是微客實際的寄送排程。</li></ul></div>
+    </div>
+    <div class="dl-end"><a class="btn btn-main" href="https://drive.google.com/drive/folders/16gxUnmh-3Ra7DnnCLuGnA_QDQ3inu1Vw?usp=sharing" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11"/><path d="m7 10 5 5 5-5"/><path d="M5 20h14"/></svg>下載示範資料</a></div>
+  </div>
+</section>
+
+<footer><div class="wrap"><span>主辦：數聚村莊 Connect the Dots ｜ 好事在數聚村莊 · 合作組織：微客 ｜ 示範資料全部虛構</span></div></footer>
+
+<script>
+(function(){
+  var btns=document.querySelectorAll('.filters button'), rows=document.querySelectorAll('.ft tbody tr');
+  btns.forEach(function(b){b.addEventListener('click',function(){
+    var f=b.getAttribute('data-f');
+    btns.forEach(function(x){x.setAttribute('aria-pressed', x===b?'true':'false');});
+    rows.forEach(function(r){r.hidden = !(f==='all' || r.getAttribute('data-s')===f);});
+  });});
+})();
+</script>
+</body>
+</html>

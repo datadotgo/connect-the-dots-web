@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="zh-Hant-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>好事大平台｜當天示範資料說明 — 好事在數聚村莊</title>
+<meta name="description" content="AI Impact Day 好事大平台示範資料說明：檔案內容、分頁、欄位與任務卡。">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#133f4f; --ink-soft:#4f7889; --paper:#fff;
+  --leaf:#34a853; --leaf-deep:#1d7a3d; --teal:#1fa8a0; --blue:#3d8ce0; --sun:#f5b731; --coral:#f2705f;
+  --gap-yellow:#fff3c4;
+  --r-l:30px; --r-m:20px;
+  --sh:0 10px 0 rgba(19,63,79,.06), 0 20px 44px -22px rgba(19,63,79,.45);
+  --sh-s:0 6px 0 rgba(19,63,79,.05), 0 14px 28px -18px rgba(19,63,79,.4);
+  --display:"Fredoka","Noto Sans TC",system-ui,sans-serif;
+  --body:"Noto Sans TC",system-ui,-apple-system,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:var(--body);color:var(--ink);background:var(--page);line-height:1.8;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+a{color:inherit}
+:focus-visible{outline:3px solid var(--ink);outline-offset:3px;border-radius:8px}
+.wrap{width:min(1080px,92vw);margin-inline:auto}
+.block{padding-block:clamp(52px,7.5vw,88px)}
+.eyebrow{font-family:var(--display);font-weight:600;font-size:.8rem;letter-spacing:.18em;color:var(--theme-deep);display:inline-flex;align-items:center;gap:.55em}
+.eyebrow::before{content:"";width:20px;height:2px;background:var(--theme);border-radius:2px}
+h2{font-family:var(--display);font-weight:700;font-size:clamp(1.55rem,4.2vw,2.3rem);line-height:1.38;letter-spacing:-.01em;margin:.35em 0 .45em}
+.lede{font-size:clamp(1rem,2.2vw,1.08rem);color:var(--ink-soft);max-width:64ch}
+.note{margin-top:16px;font-size:.86rem;color:#6b8f9e;line-height:1.7}
+.note::before{content:"›";font-family:var(--display);font-weight:600;color:var(--coral);margin-right:7px}
+
+/* buttons */
+.btn{display:inline-flex;align-items:center;gap:10px;font-family:var(--display);font-weight:600;font-size:1.02rem;text-decoration:none;border:0;cursor:pointer;padding:15px 26px;border-radius:100px;transition:transform .16s ease, box-shadow .16s ease}
+.btn svg{width:20px;height:20px;flex:none}
+.btn-main{background:var(--theme);color:#fff;box-shadow:0 6px 0 var(--theme-deep), 0 18px 32px -16px var(--theme)}
+.btn-main:hover{transform:translateY(-3px);box-shadow:0 9px 0 var(--theme-deep), 0 22px 36px -16px var(--theme)}
+.btn-main:active{transform:translateY(3px);box-shadow:0 3px 0 var(--theme-deep)}
+.btn-ghost{background:#fff;color:var(--ink);box-shadow:0 6px 0 rgba(19,63,79,.09)}
+.btn-ghost:hover{transform:translateY(-3px);box-shadow:0 9px 0 rgba(19,63,79,.09)}
+.btn-row{display:flex;flex-wrap:wrap;gap:12px;margin-top:28px}
+
+/* hero */
+.hero-bg{background:var(--hero-bg);position:relative;overflow:hidden;color:var(--hero-ink,var(--ink))}
+.deco{position:absolute;inset:0;pointer-events:none;z-index:1}
+.topbar{position:relative;z-index:5;display:flex;align-items:center;justify-content:space-between;gap:16px;padding-block:18px}
+.brand{display:inline-flex;align-items:center;gap:9px;font-family:var(--display);font-weight:600;font-size:.95rem;color:var(--ink);background:rgba(255,255,255,.8);padding:7px 16px 7px 9px;border-radius:100px;backdrop-filter:blur(6px);box-shadow:0 4px 14px -9px rgba(19,63,79,.6);text-decoration:none}
+.brand svg{width:24px;height:24px;flex:none}
+.mini-cta{font-family:var(--display);font-weight:600;font-size:.9rem;text-decoration:none;color:var(--ink);background:#fff;padding:9px 18px;border-radius:100px;box-shadow:0 4px 0 rgba(19,63,79,.1);transition:transform .16s ease}
+.mini-cta:hover{transform:translateY(-2px)}
+.hero{position:relative;z-index:4;padding-bottom:clamp(40px,6vw,72px)}
+.hero-grid{display:grid;grid-template-columns:1.05fr .95fr;gap:clamp(22px,4vw,52px);align-items:center}
+.kicker{font-family:var(--display);font-weight:600;font-size:.88rem;letter-spacing:.05em;color:var(--ink);background:#fff;border-radius:100px;padding:6px 16px;display:inline-block;box-shadow:var(--sh-s)}
+.hero h1{font-family:var(--display);font-weight:700;font-size:clamp(1.95rem,5.2vw,3rem);line-height:1.28;letter-spacing:-.02em;margin:.42em 0 .45em}
+.hl{position:relative;white-space:nowrap;z-index:0}
+.hl::after{content:"";position:absolute;left:-2%;right:-2%;bottom:.05em;height:.32em;background:var(--sun);border-radius:100px;z-index:-1;opacity:.85;transform:rotate(-1deg)}
+.hero p.sub{font-size:clamp(1rem,2.3vw,1.1rem);color:var(--hero-sub);max-width:42ch}
+.chips{display:flex;flex-wrap:wrap;gap:9px;margin-top:22px}
+.chip{display:inline-flex;align-items:center;gap:7px;background:#fff;color:var(--ink);border-radius:100px;padding:8px 16px;font-size:.88rem;font-weight:500;box-shadow:var(--sh-s)}
+.chip.hot{background:var(--coral);color:#fff}
+.chip .tag{font-family:var(--display);font-weight:600;background:var(--theme-soft);color:var(--ink);border-radius:100px;padding:0 9px;font-size:.82rem}
+
+/* hero right: 檔案盒 */
+.filebox{background:rgba(255,255,255,.62);border:2px dashed rgba(255,255,255,.95);border-radius:var(--r-l);padding:28px 18px 18px;position:relative;color:var(--ink);backdrop-filter:blur(4px)}
+.filebox-label{position:absolute;top:-13px;left:22px;background:var(--ink);color:#fff;font-family:var(--display);font-weight:600;font-size:.74rem;letter-spacing:.06em;padding:3px 14px;border-radius:100px}
+.file{display:flex;gap:14px;align-items:center;background:#fff;border-radius:18px;padding:14px 16px;box-shadow:var(--sh-s)}
+.file .ico{width:44px;height:52px;flex:none;border-radius:8px 16px 8px 8px;background:#1f7a45;color:#fff;font-family:var(--display);font-weight:700;font-size:.72rem;display:flex;align-items:flex-end;justify-content:center;padding-bottom:7px;position:relative}
+.file .ico::before{content:"";position:absolute;top:0;right:0;width:14px;height:14px;background:rgba(255,255,255,.35);border-radius:0 16px 0 6px}
+.file b{font-family:var(--display);font-weight:600;display:block;font-size:1rem;line-height:1.4;word-break:break-all}
+.file span{font-size:.82rem;color:var(--ink-soft)}
+.tabs-mini{display:grid;gap:6px;margin-top:12px}
+.tm{display:flex;align-items:center;gap:10px;background:#fff;border-radius:13px;padding:8px 14px;font-size:.88rem;box-shadow:0 3px 0 rgba(19,63,79,.04)}
+.tm .n{font-family:var(--display);font-weight:700;width:26px;height:26px;border-radius:9px;display:flex;align-items:center;justify-content:center;flex:none;font-size:.82rem;background:var(--theme-soft);color:var(--ink)}
+.tm.data .n{background:var(--theme);color:#fff}
+.tm .c{margin-left:auto;font-family:var(--display);font-weight:600;color:var(--theme-deep);font-size:.84rem;white-space:nowrap}
+.filebox-foot{padding:10px 6px 0;font-size:.82rem;color:var(--ink-soft)}
+
+/* bands */
+.band-a{background:var(--page)} .band-b{background:var(--page-alt)} .band-c{background:var(--page-deep)}
+
+/* 01 sheet cards */
+.sheets{display:grid;grid-template-columns:repeat(var(--sheet-cols,3),1fr);gap:16px;margin-top:30px}
+.sh{background:#fff;border-radius:24px;box-shadow:var(--sh);overflow:hidden;display:flex;flex-direction:column}
+.sh-top{background:var(--theme);color:#fff;padding:16px 20px 14px;position:relative}
+.sh-top .no{font-family:var(--display);font-weight:600;font-size:.74rem;letter-spacing:.1em;opacity:.9}
+.sh-top h3{font-family:var(--display);font-weight:700;font-size:1.18rem;line-height:1.4}
+.sh-top .big{position:absolute;right:18px;top:14px;text-align:right;font-family:var(--display);font-weight:700;font-size:1.5rem;line-height:1.1}
+.sh-top .big small{display:block;font-size:.7rem;font-weight:500;opacity:.9}
+.sh-body{padding:16px 20px 20px;display:flex;flex-direction:column;gap:10px;flex:1}
+.sh-row{font-size:.9rem;color:var(--ink-soft);line-height:1.65}
+.sh-row b{display:block;font-family:var(--display);font-weight:600;font-size:.74rem;letter-spacing:.1em;color:var(--theme-deep)}
+.cols{display:flex;flex-wrap:wrap;gap:5px;margin-top:3px}
+.cols span{font-size:.76rem;background:var(--theme-soft);color:var(--ink);border-radius:100px;padding:1px 10px;font-weight:500}
+.sh .warn{margin-top:auto;font-size:.84rem;background:var(--gap-yellow);border-radius:12px;padding:9px 12px;color:#7a5a00;line-height:1.6}
+.aux{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:16px}
+.ax{background:#fff;border-radius:18px;padding:14px 18px;box-shadow:var(--sh-s);font-size:.88rem;color:var(--ink-soft);line-height:1.6}
+.ax b{font-family:var(--display);font-weight:600;color:var(--ink);font-size:.98rem;display:block}
+
+/* 02 join diagram */
+.join{margin-top:30px;background:#fff;border-radius:var(--r-l);box-shadow:var(--sh);padding:clamp(22px,4vw,36px)}
+.join-grid{display:grid;grid-template-columns:1fr auto 1fr;gap:0;align-items:center}
+.jcol{display:grid;gap:12px}
+.jnode{border:2px solid var(--theme-soft);border-radius:18px;padding:12px 16px;background:#fff;position:relative}
+.jnode b{font-family:var(--display);font-weight:700;font-size:1rem;display:block}
+.jnode span{font-size:.84rem;color:var(--ink-soft)}
+.jnode.main{border-color:var(--theme);background:var(--theme-soft)}
+.jkey{display:flex;flex-direction:column;align-items:center;padding-inline:clamp(12px,3vw,34px);position:relative}
+.jkey .line{width:clamp(30px,6vw,80px);height:3px;background:repeating-linear-gradient(90deg,var(--theme) 0 8px,transparent 8px 14px)}
+.jkey .pill{font-family:var(--display);font-weight:700;background:var(--ink);color:#fff;border-radius:100px;padding:8px 18px;font-size:.95rem;white-space:nowrap;margin:8px 0}
+.jkey small{font-size:.78rem;color:var(--ink-soft);text-align:center;line-height:1.5}
+.jkey-row{display:flex;align-items:center}
+.join-notes{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:22px}
+.jn-note{font-size:.88rem;background:var(--gap-yellow);border-radius:14px;padding:11px 14px;color:#6a5000;line-height:1.65}
+.jn-note b{color:var(--ink)}
+
+/* 03 profile */
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:30px}
+.stat{background:#fff;border-radius:22px;padding:18px 20px;box-shadow:var(--sh-s)}
+.stat .v{font-family:var(--display);font-weight:700;font-size:clamp(1.6rem,3.6vw,2.1rem);line-height:1.15;color:var(--theme-deep)}
+.stat .v small{font-size:.9rem;font-weight:600;margin-left:3px;color:var(--ink-soft)}
+.stat .k{font-size:.88rem;color:var(--ink-soft);margin-top:4px;line-height:1.5}
+.panels{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:16px}
+.panel{background:#fff;border-radius:24px;padding:22px 24px;box-shadow:var(--sh-s)}
+.panel h3{font-family:var(--display);font-weight:600;font-size:1.04rem;margin-bottom:4px}
+.panel .ps{font-size:.82rem;color:var(--ink-soft);margin-bottom:14px}
+.bars{display:grid;gap:8px}
+.bar{display:grid;grid-template-columns:minmax(92px,34%) 1fr 64px;align-items:center;gap:10px;font-size:.86rem}
+.bar .l{color:var(--ink);line-height:1.35}
+.bar .l em{display:block;font-style:normal;font-size:.72rem;color:var(--ink-soft)}
+.bar .t,.bar .f{display:block}
+.bar .t{height:12px;background:#eef4f6;border-radius:100px;overflow:hidden}
+.bar .f{height:100%;background:var(--theme);border-radius:100px}
+.bar.gapbar .f{background:var(--sun)}
+.bar .n{font-family:var(--display);font-weight:600;text-align:right;color:var(--ink);font-size:.86rem;white-space:nowrap}
+
+/* 04 gaps */
+.legend-y{display:inline-flex;align-items:center;gap:9px;font-size:.9rem;color:var(--ink-soft);margin-top:6px}
+.legend-y i{width:34px;height:18px;border-radius:5px;background:#ffff00;border:1px solid #e0d200;display:inline-block}
+.gaps{display:grid;grid-template-columns:repeat(var(--gap-cols,3),1fr);gap:14px;margin-top:26px}
+.gp{background:#fff;border-radius:22px;padding:20px 20px 22px;box-shadow:var(--sh-s);border:2px dashed #e4ecef;transition:transform .2s ease,border-color .2s ease}
+.gp:hover{transform:translateY(-5px);border-color:var(--sun)}
+.gp .where{display:inline-block;font-family:var(--display);font-weight:600;font-size:.72rem;letter-spacing:.06em;background:var(--theme-soft);border-radius:100px;padding:2px 11px;margin-bottom:10px}
+.gp h3{font-family:var(--display);font-weight:600;font-size:1.02rem;line-height:1.5;margin-bottom:6px}
+.gp p{font-size:.9rem;color:var(--ink-soft);line-height:1.72}
+
+/* 05 field table */
+.filters{display:flex;flex-wrap:wrap;gap:8px;margin-top:24px}
+.filters button{font-family:var(--display);font-weight:600;font-size:.88rem;border:0;cursor:pointer;background:#fff;color:var(--ink);padding:8px 16px;border-radius:100px;box-shadow:0 4px 0 rgba(19,63,79,.08);transition:transform .15s ease}
+.filters button:hover{transform:translateY(-2px)}
+.filters button[aria-pressed="true"]{background:var(--ink);color:#fff}
+.ft{margin-top:16px;background:#fff;border-radius:var(--r-l);box-shadow:var(--sh);overflow:hidden}
+.ft-scroll{overflow-x:auto}
+.ft table{width:100%;border-collapse:collapse;min-width:760px}
+.ft th,.ft td{padding:13px 16px;text-align:left;font-size:.9rem;border-bottom:1px solid #eef4f6;vertical-align:top;line-height:1.65}
+.ft thead th{font-family:var(--display);font-weight:600;font-size:.84rem;background:#f7fbfc;position:sticky;top:0}
+.ft td.sheet{white-space:nowrap}
+.ft td.sheet span{font-family:var(--display);font-weight:600;font-size:.76rem;background:var(--theme-soft);border-radius:100px;padding:2px 10px}
+.ft td.name{font-weight:700;min-width:120px}
+.ft td.desc,.ft td.src{color:var(--ink-soft)}
+.ft td.caveat{background:#fffbea;color:#6a5000;min-width:220px}
+.ft td .blank{display:inline-block;white-space:nowrap;margin-top:4px;font-family:var(--display);font-weight:600;font-size:.72rem;background:var(--sun);color:var(--ink);border-radius:100px;padding:0 9px}
+.ft tr[hidden]{display:none}
+
+/* 06 tasks */
+.tasks{display:grid;grid-template-columns:repeat(var(--task-cols,2),1fr);gap:16px;margin-top:30px}
+.tk{background:#fff;border-radius:24px;box-shadow:var(--sh);overflow:hidden;display:flex;flex-direction:column}
+.tk-top{padding:18px 22px 16px;color:#fff}
+.tk-top .no{font-family:var(--display);font-weight:600;font-size:.76rem;letter-spacing:.1em;opacity:.92}
+.tk-top h3{font-family:var(--display);font-weight:700;font-size:1.22rem;line-height:1.4}
+.tk:nth-child(1) .tk-top{background:var(--teal)} .tk:nth-child(2) .tk-top{background:var(--blue)} .tk:nth-child(3) .tk-top{background:var(--coral)}
+.tk-body{padding:18px 22px 22px;display:flex;flex-direction:column;gap:12px;flex:1}
+.tk-row{font-size:.9rem;color:var(--ink-soft);line-height:1.72}
+.tk-row b{display:block;font-family:var(--display);font-weight:600;font-size:.74rem;letter-spacing:.1em;color:var(--ink)}
+.tk-row.think{background:#f6fafb;border-radius:14px;padding:11px 14px}
+.tk-use{margin-top:auto;display:flex;flex-wrap:wrap;gap:6px;align-items:center;font-size:.8rem;color:var(--ink-soft);padding-top:6px;border-top:1px dashed #dde8ec}
+.tk-use span{font-family:var(--display);font-weight:600;background:var(--theme-soft);color:var(--ink);border-radius:100px;padding:1px 10px}
+
+/* 07 finale */
+.finale-grid{display:grid;grid-template-columns:1.1fr .9fr;gap:18px;margin-top:30px;align-items:stretch}
+.tbox{background:var(--ink);color:#fff;border-radius:var(--r-l);padding:28px 30px;box-shadow:var(--sh)}
+.tbox h3{font-family:var(--display);font-weight:600;font-size:1.12rem;margin-bottom:16px}
+.tbox ol{counter-reset:q;list-style:none}
+.tbox ol li{counter-increment:q;position:relative;padding-left:44px;margin-bottom:14px;font-size:1rem}
+.tbox ol li:last-child{margin-bottom:0}
+.tbox ol li::before{content:counter(q);position:absolute;left:0;top:0;width:30px;height:30px;border-radius:50%;background:var(--sun);color:var(--ink);font-family:var(--display);font-weight:700;display:flex;align-items:center;justify-content:center}
+.remind{background:#fff;border-radius:var(--r-l);padding:26px 28px;box-shadow:var(--sh-s)}
+.remind h3{font-family:var(--display);font-weight:600;font-size:1.08rem;margin-bottom:12px}
+.remind li{list-style:none;font-size:.93rem;color:var(--ink-soft);padding-left:22px;position:relative;margin-bottom:9px;line-height:1.7}
+.remind li::before{content:"✓";position:absolute;left:0;color:var(--theme);font-weight:700}
+.dl-end{margin-top:26px;text-align:center}
+footer{background:var(--ink);color:#bcdde8;padding-block:30px;font-size:.88rem}
+footer .wrap{display:flex;flex-wrap:wrap;gap:14px;justify-content:center;text-align:center}
+
+/* responsive */
+@media (max-width:980px){
+  .sheets,.gaps,.tasks{grid-template-columns:1fr 1fr}
+  .stats{grid-template-columns:1fr 1fr}
+  .panels,.finale-grid{grid-template-columns:1fr}
+}
+@media (max-width:880px){
+  .hero-grid{grid-template-columns:1fr;gap:30px}
+  .hero p.sub{max-width:none}
+  .join-grid{grid-template-columns:1fr}
+  .jkey{padding:14px 0}
+  .jkey .line{width:3px;height:22px;background:repeating-linear-gradient(180deg,var(--theme) 0 8px,transparent 8px 14px)}
+  .jkey-row{flex-direction:column}
+}
+@media (max-width:640px){
+  .sheets,.gaps,.tasks,.aux,.join-notes{grid-template-columns:1fr}
+  .bar{grid-template-columns:96px 1fr 56px}
+}
+@media (prefers-reduced-motion:reduce){
+  *{animation-duration:.01ms !important;transition-duration:.01ms !important}
+  html{scroll-behavior:auto}
+}
+
+/* ===== 組織主題：好事大平台 ===== */
+:root{--page:#fdf8ec;--page-alt:#fffdf7;--page-deep:#f6ebd6;--theme:#34a853;--theme-deep:#1d7a3d;--theme-soft:#d9f0fb;--hero-bg:linear-gradient(180deg,#ecfaff 0%,#d9f0fb 55%,#fdf8ec 100%);--hero-sub:#2c6076}
+.cloud{position:absolute;background:#fff;border-radius:100px;opacity:.85}
+.cloud::before{content:"";position:absolute;background:#fff;border-radius:50%}
+.c1{width:120px;height:36px;top:16%;left:-16%;animation:drift 56s linear infinite}
+.c1::before{width:58px;height:58px;top:-26px;left:22px}
+.c2{width:92px;height:28px;top:52%;left:-30%;animation:drift 78s linear infinite 8s;opacity:.65}
+.c2::before{width:44px;height:44px;top:-20px;left:14px}
+.c3{width:70px;height:22px;top:30%;left:-40%;animation:drift 96s linear infinite 20s;opacity:.5}
+.c3::before{width:34px;height:34px;top:-16px;left:12px}
+@keyframes drift{to{transform:translateX(200vw)}}
+@media (prefers-reduced-motion:reduce){.cloud{display:none}}
+
+</style>
+</head>
+<body>
+
+<div class="hero-bg">
+  <div class="deco" aria-hidden="true">
+<svg width="100%" height="100%" preserveAspectRatio="xMidYMid slice" viewBox="0 0 1200 640" style="position:absolute;inset:0;opacity:.55">
+  <g stroke="#9fd3ea" stroke-width="2" stroke-dasharray="4 8" fill="none">
+    <path d="M60 520 L220 430 L400 500 L560 400"/><path d="M220 430 L260 300"/>
+    <path d="M820 120 L960 190 L1120 110"/><path d="M960 190 L1010 330 L1160 380"/>
+  </g>
+  <g fill="#fff" stroke="#9fd3ea" stroke-width="2">
+    <circle cx="60" cy="520" r="7"/><circle cx="220" cy="430" r="9"/><circle cx="400" cy="500" r="6"/><circle cx="560" cy="400" r="7"/><circle cx="260" cy="300" r="6"/>
+    <circle cx="820" cy="120" r="6"/><circle cx="960" cy="190" r="9"/><circle cx="1120" cy="110" r="6"/><circle cx="1010" cy="330" r="7"/><circle cx="1160" cy="380" r="6"/>
+  </g>
+</svg>
+<div class="cloud c1"></div><div class="cloud c2"></div><div class="cloud c3"></div></div>
+  <div class="wrap topbar">
+    <a class="brand" href="index.html"><svg viewBox="0 0 40 40" aria-hidden="true">
+<path d="M20 6 L33 13 L28 32 L12 32 L7 13 Z" fill="none" stroke="#1d7a3d" stroke-width="2.5" stroke-linejoin="round"/>
+<circle cx="20" cy="6" r="4" fill="#f5b731"/><circle cx="33" cy="13" r="4" fill="#1fa8a0"/>
+<circle cx="28" cy="32" r="4" fill="#f2705f"/><circle cx="12" cy="32" r="4" fill="#34a853"/>
+<circle cx="7" cy="13" r="4" fill="#3d8ce0"/></svg>好事在數聚村莊</a>
+    <a class="mini-cta" href="#fields">直接看欄位說明 ↓</a>
+  </div>
+  <header class="hero wrap">
+    <div class="hero-grid">
+      <div>
+        <span class="kicker">11/15 當天資料說明 · 好事大平台</span>
+        <h1>一份 Excel、三張表，<br>都用<span class="hl">組織編號</span>串起來</h1>
+        <p class="sub">這頁是好事大平台示範資料的說明書：檔案裡有哪些分頁、一列代表什麼、欄位從哪來、哪裡刻意不完整。資料全部虛構，只模仿真實資料的結構與「不完整」的程度。</p>
+        <div class="chips"><span class="chip"><span class="tag">資料</span> 48 家組織 · 206 筆接觸</span><span class="chip"><span class="tag">任務</span> 2 張任務卡，任選一張</span><span class="chip hot">組織、統編、事件全部虛構</span></div>
+        <div class="btn-row"><a class="btn btn-main" href="https://drive.google.com/drive/folders/13M3Rbq2fNc4m3nfEiJ5OEnn-5fYrCFn9?usp=sharing" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11"/><path d="m7 10 5 5 5-5"/><path d="M5 20h14"/></svg>下載示範資料</a><a class="btn btn-ghost" href="#tasks">看任務卡 ↓</a></div>
+      </div>
+      
+      <div class="filebox">
+        <span class="filebox-label">你拿到的檔案</span>
+        <div class="file"><div class="ico">XLSX</div><div><b>好事_示範資料_v2.xlsx</b><span>Excel · 約 40 KB · 6 個分頁</span></div></div>
+        <div class="tabs-mini"><div class="tm"><span class="n">讀</span>讀我<span class="c"></span></div><div class="tm data"><span class="n">①</span>組織主檔<span class="c">48 家</span></div><div class="tm data"><span class="n">②</span>接觸紀錄<span class="c">206 筆</span></div><div class="tm data"><span class="n">③</span>顧問筆記<span class="c">16 筆</span></div><div class="tm"><span class="n">④</span>任務卡<span class="c">2 個任務</span></div><div class="tm"><span class="n">⑤</span>欄位說明<span class="c">22 列</span></div></div>
+        <p class="filebox-foot">綠色編號是資料分頁；其他是說明分頁。</p>
+      </div>
+    </div>
+  </header>
+</div>
+
+<section class="block band-a" id="sheets">
+  <div class="wrap">
+    <span class="eyebrow">01 · 檔案裡有什麼</span>
+    <h2>三張資料表，加上三張說明</h2>
+    <p class="lede">以組織為中心：① 是每家組織的基本資料，② 是每一次接觸留下的紀錄，③ 是同仁腦中的「體感」。每一次接觸都像一張標籤，貼在組織身上。</p>
+    <div class="sheets" style="--sheet-cols:3"><article class="sh"><div class="sh-top"><div class="no">分頁 ①</div><h3>組織主檔</h3>
+          <div class="big">48<small>家組織</small></div></div>
+          <div class="sh-body"><div class="sh-row"><b>一列代表</b>一家組織（入會時收集的基本資料）</div>
+          <div class="sh-row"><b>主要欄位</b><div class="cols"><span>組織編號</span><span>統一編號（虛構）</span><span>一句話簡介</span><span>議題</span><span>服務對象</span><span>區域</span><span>會籍</span><span>全職人數</span><span>財報類型</span><span>桑基圖上架</span><span>陪跑分級</span></div></div><div class="warn">最右邊三欄（接觸紀錄筆數、最近一次接觸、顧問筆記筆數）是公式，從 ②③ 自動算出來。</div></div></article><article class="sh"><div class="sh-top"><div class="no">分頁 ②</div><h3>接觸紀錄</h3>
+          <div class="big">206<small>筆接觸</small></div></div>
+          <div class="sh-body"><div class="sh-row"><b>一列代表</b>一次接觸（課程、陪跑、走訪、會員大會、危機事件…）</div><div class="sh-row"><b>時間範圍</b>2023/03 – 2026/10</div>
+          <div class="sh-row"><b>主要欄位</b><div class="cols"><span>組織編號</span><span>日期</span><span>接觸類型</span><span>活動或事件名稱</span><span>參與者職稱</span><span>組織名稱（自填）</span><span>留下的話</span><span>資料來源</span></div></div><div class="warn">有 4 筆沒填組織編號，只能靠自填的組織名稱對回去。</div></div></article><article class="sh"><div class="sh-top"><div class="no">分頁 ③</div><h3>顧問筆記</h3>
+          <div class="big">16<small>則筆記</small></div></div>
+          <div class="sh-body"><div class="sh-row"><b>一列代表</b>一則同仁對組織的觀察（資深顧問、培力 PM、會員管理經理）</div><div class="sh-row"><b>時間範圍</b>2025/08 – 2026/08</div>
+          <div class="sh-row"><b>主要欄位</b><div class="cols"><span>組織編號</span><span>日期</span><span>記錄者</span><span>筆記</span></div></div><div class="warn">48 家中只有 16 家有筆記，其中一筆只寫了一半。</div></div></article></div>
+    <div class="aux"><div class="ax"><b>讀我</b>資料怎麼看、提醒事項。第一次打開先看這頁。</div><div class="ax"><b>④ 任務卡</b>當天兩個目的，任選一個，也可以都做。本頁第 06 段有完整內容。</div><div class="ax"><b>⑤ 欄位說明</b>每個欄位是什麼、從哪來、哪裡會缺。本頁第 05 段可以篩選。</div></div>
+  </div>
+</section>
+
+<section class="block band-b" id="join">
+  <div class="wrap">
+    <span class="eyebrow">02 · 資料怎麼串</span>
+    <h2>組織編號是所有分頁的共同語言</h2>
+    <p class="lede">三張資料表都用「組織編號」接起來，這也是好事大平台實際的工作方式。統一編號（虛構）是好事大平台認為最準的主鍵，也可以拿來串。</p>
+    <div class="join">
+      <div class="join-grid">
+        <div class="jcol"><div class="jnode main"><b>① 組織主檔</b><span>一家一列 · 48 家</span></div></div>
+        <div class="jkey"><div class="jkey-row"><span class="line"></span><span class="pill">組織編號 H01–H48</span><span class="line"></span></div><small>或 統一編號（虛構，X 開頭）</small></div>
+        <div class="jcol"><div class="jnode"><b>② 接觸紀錄</b><span>一次接觸一列 · 206 筆</span></div><div class="jnode"><b>③ 顧問筆記</b><span>一則筆記一列 · 16 家有</span></div></div>
+      </div>
+      <div class="join-notes"><div class="jn-note">② 有 <b>4 筆</b>沒填組織編號：只能用「組織名稱（填寫者自填）」對回 ①，而且寫法可能和主檔不同。</div><div class="jn-note">① 的三個統計欄位是公式算的，沒填編號的紀錄不會被算進去；另外有 <b>5 家組織</b>一筆接觸紀錄都沒有。</div></div>
+    </div>
+  </div>
+</section>
+
+<section class="block band-a" id="profile">
+  <div class="wrap">
+    <span class="eyebrow">03 · 資料概況</span>
+    <h2>打開之前，先知道資料長什麼樣子</h2>
+    <p class="lede">以下數字由主辦方從示範資料直接算出，讓你在動手前先掌握規模與缺口。</p>
+    <div class="stats"><div class="stat"><div class="v">48<small>家</small></div><div class="k">組織（正式會員 43、贊助 3、非會員 2）</div></div><div class="stat"><div class="v">206<small>筆</small></div><div class="k">接觸紀錄，2023/03 到 2026/10</div></div><div class="stat"><div class="v">11<small>種</small></div><div class="k">接觸類型，來自 12 種資料來源</div></div><div class="stat"><div class="v">16<small>家</small></div><div class="k">有顧問筆記，約三分之一的組織</div></div></div>
+    <div class="panels"><div class="panel"><h3>② 接觸紀錄：哪一種接觸最多？</h3><p class="ps">依「接觸類型」計算筆數</p><div class="bars"><div class="bar"><span class="l">會員大會</span><span class="t"><span class="f" style="width:100.0%"></span></span><span class="n">80 筆</span></div><div class="bar"><span class="l">培力課程</span><span class="t"><span class="f" style="width:92.5%"></span></span><span class="n">74 筆</span></div><div class="bar"><span class="l">課後追蹤</span><span class="t"><span class="f" style="width:30.0%"></span></span><span class="n">24 筆</span></div><div class="bar"><span class="l">走訪</span><span class="t"><span class="f" style="width:10.0%"></span></span><span class="n">8 筆</span></div><div class="bar"><span class="l">入會審查</span><span class="t"><span class="f" style="width:5.0%"></span></span><span class="n">4 筆</span></div><div class="bar"><span class="l">陪跑計畫</span><span class="t"><span class="f" style="width:5.0%"></span></span><span class="n">4 筆</span></div><div class="bar"><span class="l">財報上架</span><span class="t"><span class="f" style="width:5.0%"></span></span><span class="n">4 筆</span></div><div class="bar"><span class="l">獎補助入選</span><span class="t"><span class="f" style="width:3.8%"></span></span><span class="n">3 筆</span></div><div class="bar"><span class="l">危機事件</span><span class="t"><span class="f" style="width:3.8%"></span></span><span class="n">3 筆</span></div><div class="bar"><span class="l">危機後續關心</span><span class="t"><span class="f" style="width:1.2%"></span></span><span class="n">1 筆</span></div><div class="bar"><span class="l">客服聯繫</span><span class="t"><span class="f" style="width:1.2%"></span></span><span class="n">1 筆</span></div></div></div><div class="panel"><h3>哪些欄位最常空著？</h3><p class="ps">空白筆數 ／ 總筆數</p><div class="bars"><div class="bar gapbar"><span class="l">陪跑分級<em>① 組織主檔</em></span><span class="t"><span class="f" style="width:79.2%"></span></span><span class="n">79%</span></div><div class="bar gapbar"><span class="l">沒有顧問筆記<em>① 對照 ③</em></span><span class="t"><span class="f" style="width:66.7%"></span></span><span class="n">67%</span></div><div class="bar gapbar"><span class="l">參與者職稱<em>② 接觸紀錄</em></span><span class="t"><span class="f" style="width:62.1%"></span></span><span class="n">62%</span></div><div class="bar gapbar"><span class="l">桑基圖上架<em>① 組織主檔</em></span><span class="t"><span class="f" style="width:12.5%"></span></span><span class="n">12%</span></div><div class="bar gapbar"><span class="l">沒有任何接觸<em>① 接觸紀錄筆數＝0</em></span><span class="t"><span class="f" style="width:10.4%"></span></span><span class="n">10%</span></div><div class="bar gapbar"><span class="l">入會年／全職人數／財報類型<em>① 組織主檔</em></span><span class="t"><span class="f" style="width:4.2%"></span></span><span class="n">各 4%</span></div><div class="bar gapbar"><span class="l">組織編號<em>② 接觸紀錄</em></span><span class="t"><span class="f" style="width:1.9%"></span></span><span class="n">2%</span></div></div></div></div>
+  </div>
+</section>
+
+<section class="block band-b" id="gaps">
+  <div class="wrap">
+    <span class="eyebrow">04 · 刻意留下的缺口</span>
+    <h2>資料不完整，是題目的一部分</h2>
+    <p class="lede">真實資料就是這樣：散在好幾個地方、有人沒填、有人寫法不一樣、最重要的判斷只在人腦裡。你的方案要怎麼跟這樣的資料相處，就是題目的一部分。</p>
+    <span class="legend-y"><i></i>Excel 裡的黃底格子＝刻意留下的資料缺口</span>
+    <div class="gaps" style="--gap-cols:3"><article class="gp"><span class="where">② 組織編號</span><h3>報名表沒填組織編號</h3><p>4 筆紀錄只有填寫者自己寫的組織名稱，要先對回主檔，才知道是哪一家。</p></article><article class="gp"><span class="where">② 組織名稱（自填）</span><h3>同一家組織，寫法不一樣</h3><p>報名者自己填的名稱可能是簡稱、舊名或服務項目，和主檔的名稱不同，需要對照。</p></article><article class="gp"><span class="where">① 服務對象</span><h3>入會時只能選一項</h3><p>很多組織同時服務多個對象（例如長者和青少年），其他對象要靠對組織的認識判斷，有時寫在顧問筆記裡。</p></article><article class="gp"><span class="where">① 陪跑分級</span><h3>只有少數組織有，而且沒留理由</h3><p>A、B1、B2、X 是資深顧問的判斷，只有 10 家有分級，為什麼這樣分沒有寫下來。</p></article><article class="gp"><span class="where">③ 顧問筆記</span><h3>最關鍵的體感，大多沒被寫下來</h3><p>只有 16 家有筆記，有一筆只寫了一半。真實情況中，這些觀察多半只在顧問腦中、LINE 或 email。</p></article><article class="gp"><span class="where">① 桑基圖上架</span><h3>「不同意」不等於不努力</h3><p>不同意或未回覆，常代表組織內部對財報溝通有困難，不代表組織不認真。</p></article><article class="gp"><span class="where">① 全職人數、財報類型</span><h3>規模資訊不完整</h3><p>部分空白，財報數字也沒有進表；非會員沒有入會年和財報類型。</p></article><article class="gp"><span class="where">② 留下的話</span><h3>很多資訊藏在自由文字</h3><p>報名動機、課後追蹤、事件內容都是一段話，適合用 AI 整理成標籤或摘要。</p></article><article class="gp"><span class="where">② 資料來源</span><h3>同一家組織的資料散在各處</h3><p>真實情況分散在 Ragic、應援系統、Google 表單、Excel、LINE、email，示範資料把它們合在同一張表。</p></article></div>
+  </div>
+</section>
+
+<section class="block band-a" id="fields">
+  <div class="wrap">
+    <span class="eyebrow">05 · 欄位說明</span>
+    <h2>每個欄位是什麼、哪裡要小心</h2>
+    <p class="lede">內容和 Excel 裡的「⑤欄位說明」分頁相同。可以按分頁篩選；黃底那一欄是缺漏或注意事項，空白比例由主辦方從示範資料算出。</p>
+    <div class="filters" role="group" aria-label="依分頁篩選"><button type="button" aria-pressed="true" data-f="all">全部</button><button type="button" aria-pressed="false" data-f="①組織主檔">①組織主檔</button><button type="button" aria-pressed="false" data-f="②接觸紀錄">②接觸紀錄</button><button type="button" aria-pressed="false" data-f="③顧問筆記">③顧問筆記</button></div>
+    <div class="ft"><div class="ft-scroll"><table>
+      <thead><tr><th>分頁</th><th>欄位</th><th>說明</th><th>資料從哪來（真實情境）</th><th>缺漏或注意事項</th></tr></thead>
+      <tbody><tr data-s="①組織主檔"><td class="sheet"><span>①組織主檔</span></td><td class="name">組織編號</td><td class="desc">每家組織唯一的代號，所有分頁用它串接</td><td class="src">會員管理系統的會員編號</td><td class="caveat">非會員也有編號，方便示範；真實情況非會員通常沒有</td></tr><tr data-s="①組織主檔"><td class="sheet"><span>①組織主檔</span></td><td class="name">統一編號（虛構）</td><td class="desc">組織的統一編號，好事大平台認為最準的串接主鍵</td><td class="src">入會資料</td><td class="caveat">全部是虛構的 X 開頭號碼</td></tr><tr data-s="①組織主檔"><td class="sheet"><span>①組織主檔</span></td><td class="name">組織名稱</td><td class="desc">示範用代號</td><td class="src">入會資料</td><td class="caveat">真實名稱已全部替換</td></tr><tr data-s="①組織主檔"><td class="sheet"><span>①組織主檔</span></td><td class="name">一句話簡介</td><td class="desc">組織在做什麼</td><td class="src">入會資料、官網</td><td class="caveat">由主辦方撰寫的示意文字</td></tr><tr data-s="①組織主檔"><td class="sheet"><span>①組織主檔</span></td><td class="name">議題</td><td class="desc">服務領域分類</td><td class="src">入會資料</td><td class="caveat">分類方式僅供示範</td></tr><tr data-s="①組織主檔"><td class="sheet"><span>①組織主檔</span></td><td class="name">服務對象</td><td class="desc">組織主要服務誰（入會時只選一項）</td><td class="src">入會資料</td><td class="caveat">很多組織其實服務多個對象（例如同時做長者和青少年），但入會時只填一項；其他對象要靠對組織的認識判斷，有時會寫在顧問筆記裡</td></tr><tr data-s="①組織主檔"><td class="sheet"><span>①組織主檔</span></td><td class="name">區域、成立年、入會年、會籍</td><td class="desc">基本資料</td><td class="src">入會資料</td><td class="caveat">非會員沒有入會年</td></tr><tr data-s="①組織主檔"><td class="sheet"><span>①組織主檔</span></td><td class="name">全職人數<br><span class="blank">空白 2／48（4%）</span></td><td class="desc">組織規模的參考</td><td class="src">少數行前問卷、入會資料</td><td class="caveat">部分空白；財報數字沒有進表</td></tr><tr data-s="①組織主檔"><td class="sheet"><span>①組織主檔</span></td><td class="name">財報類型<br><span class="blank">空白 2／48（4%）</span></td><td class="desc">會計師簽證或自行編製</td><td class="src">入會時繳交的財報</td><td class="caveat">非會員空白</td></tr><tr data-s="①組織主檔"><td class="sheet"><span>①組織主檔</span></td><td class="name">桑基圖上架<br><span class="blank">空白 6／48（12%）</span></td><td class="desc">是否同意聯盟用年度財報製作桑基圖上架</td><td class="src">桑基圖意願表單</td><td class="caveat">「不同意」或「未回覆」常代表財報內部溝通有困難，不代表組織不努力</td></tr><tr data-s="①組織主檔"><td class="sheet"><span>①組織主檔</span></td><td class="name">陪跑分級<br><span class="blank">空白 38／48（79%）</span></td><td class="desc">A：穩定且主動；B1：需陪伴、主動參與；B2：需陪伴、需聯盟主動推；X：現在不適合列入陪跑對象</td><td class="src">資深顧問判斷</td><td class="caveat">只有少數組織有，且沒有留下理由</td></tr><tr data-s="①組織主檔"><td class="sheet"><span>①組織主檔</span></td><td class="name">接觸紀錄筆數、最近一次接觸、顧問筆記筆數</td><td class="desc">由公式自動計算</td><td class="src">②、③分頁</td><td class="caveat">沒填組織編號的紀錄不會被算進來</td></tr><tr data-s="②接觸紀錄"><td class="sheet"><span>②接觸紀錄</span></td><td class="name">紀錄編號</td><td class="desc">每筆接觸一個編號</td><td class="src">—</td><td class="caveat">—</td></tr><tr data-s="②接觸紀錄"><td class="sheet"><span>②接觸紀錄</span></td><td class="name">組織編號<br><span class="blank">空白 4／206（2%）</span></td><td class="desc">這筆接觸屬於哪家組織</td><td class="src">各表單</td><td class="caveat">部分空白（黃底）：報名表常只填組織名稱</td></tr><tr data-s="②接觸紀錄"><td class="sheet"><span>②接觸紀錄</span></td><td class="name">日期</td><td class="desc">接觸發生的日期</td><td class="src">各表單</td><td class="caveat">—</td></tr><tr data-s="②接觸紀錄"><td class="sheet"><span>②接觸紀錄</span></td><td class="name">接觸類型</td><td class="desc">培力課程、課後追蹤、陪跑計畫、走訪、會員大會、財報上架、危機事件、危機後續關心、獎補助入選、客服聯繫、入會審查</td><td class="src">各系統與表單</td><td class="caveat">培力是單場課程；陪跑是半年期、每月見面的計畫</td></tr><tr data-s="②接觸紀錄"><td class="sheet"><span>②接觸紀錄</span></td><td class="name">活動或事件名稱</td><td class="desc">課程、計畫或事件名稱</td><td class="src">各表單</td><td class="caveat">—</td></tr><tr data-s="②接觸紀錄"><td class="sheet"><span>②接觸紀錄</span></td><td class="name">參與者職稱<br><span class="blank">空白 128／206（62%）</span></td><td class="desc">來參加的人是什麼職位</td><td class="src">報名表</td><td class="caveat">可看出組織派誰來（執行長、專員…）</td></tr><tr data-s="②接觸紀錄"><td class="sheet"><span>②接觸紀錄</span></td><td class="name">組織名稱（填寫者自填）</td><td class="desc">報名者自己寫的組織名稱</td><td class="src">報名表</td><td class="caveat">寫法可能和主檔不同，需要對照</td></tr><tr data-s="②接觸紀錄"><td class="sheet"><span>②接觸紀錄</span></td><td class="name">留下的話／紀錄內容</td><td class="desc">報名動機、課後追蹤、事件內容等自由文字</td><td class="src">行前／後追問卷、客服、走訪紀錄</td><td class="caveat">自由文字，適合用 AI 整理</td></tr><tr data-s="②接觸紀錄"><td class="sheet"><span>②接觸紀錄</span></td><td class="name">資料來源</td><td class="desc">這筆資料原本存在哪裡</td><td class="src">—</td><td class="caveat">真實情況分散在 Ragic、應援系統、Google 表單、Excel、LINE、email</td></tr><tr data-s="③顧問筆記"><td class="sheet"><span>③顧問筆記</span></td><td class="name">組織編號、日期、記錄者、筆記</td><td class="desc">資深顧問、PM、會員管理經理對組織的觀察與體感</td><td class="src">真實情況多半只在腦中、LINE 或 email</td><td class="caveat">只有 16 家有；有一筆只寫了一半</td></tr></tbody></table></div></div>
+  </div>
+</section>
+
+<section class="block band-c" id="tasks">
+  <div class="wrap">
+    <span class="eyebrow">06 · 任務卡</span>
+    <h2>兩張任務卡，任選一張，也可以都做</h2>
+    <p class="lede">每張卡都寫了情境、使用者、好事大平台現在怎麼做，以及可以思考的問題。挑一個人、一個時刻，做一件事。</p>
+    <div class="tasks" style="--task-cols:2"><article class="tk"><div class="tk-top"><div class="no">任務一</div><h3>為一個計畫找對的組織</h3></div><div class="tk-body"><div class="tk-row"><b>情境</b>某管理顧問公司今年要寫 ESG 報告，想用自己的專業（而不是直接捐款）支持公益組織，提出一個「公關行銷能力陪跑計畫」，為期半年，預計支持 10 家組織。他們不太了解公益組織，所以來找好事大平台推薦。</div><div class="tk-row"><b>使用者</b>接到這個需求的專案 PM</div><div class="tk-row"><b>好事大平台平常的做法</b>先釐清資源方為什麼現在來、想找誰 → 把需求轉成條件（例如：有基本行銷能力、樂意配合、有動機，但規模不要大到不需要合作）→ 翻培力紀錄、前後測、獎補助名單 → 問會員管理同事的體感 → 先打關心電話判斷 → 提出約 3–5 倍的候選名單和理由，由企業決定。</div><div class="tk-row think"><b>可以思考</b>需求怎麼變成條件？候選名單和「為什麼邀」長什麼樣子？哪些地方一定要由人來判斷？名單交給同事或企業時，怎麼讓他們一眼看懂？</div><div class="tk-use">主要用到<span>①組織主檔</span><span>②接觸紀錄</span><span>③顧問筆記</span></div></div></article><article class="tk"><div class="tk-top"><div class="no">任務二</div><h3>讓散落的資料變成好用的入口</h3></div><div class="tk-body"><div class="tk-row"><b>情境</b>一家會員組織打電話來，問明年有沒有財務相關的課程。接電話的 PM 是今年剛到職的新同事，對這家組織完全不熟。</div><div class="tk-row"><b>使用者</b>剛到職的 PM，或負責不同主題、不熟這家組織的同事</div><div class="tk-row"><b>好事大平台的期待</b>讓旅程資料自動拼出組織畫像，顧問只需要補上腦中的那一半；有一個輕鬆的入口或小面板，讓不同 PM 都能接著用。</div><div class="tk-row think"><b>可以思考</b>PM 在 30 秒內需要看到什麼？資料缺口（例如實際服務的多個對象、組織狀態、顧問體感）要怎麼補、由誰補、什麼時候補？下一次這家組織再來時，資料怎麼已經在那裡？</div><div class="tk-use">主要用到<span>①組織主檔</span><span>②接觸紀錄</span><span>③顧問筆記</span></div></div></article></div>
+  </div>
+</section>
+
+<section class="block band-b" id="demo">
+  <div class="wrap">
+    <span class="eyebrow">07 · 展示時</span>
+    <h2>不看準確率，看「明天就想用」</h2>
+    <div class="finale-grid">
+      <div class="tbox"><h3>展示時，請回答這三個問題</h3><ol>
+        <li>誰、在什麼時刻會打開它？</li>
+        <li>用之前和用之後，差在哪裡？</li>
+        <li>還缺什麼資料？誰來補？怎麼持續下去？</li></ol></div>
+      <div class="remind"><h3>提醒</h3><ul><li>資料全部虛構：組織、統編、事件都不是真的。</li><li>資料刻意不完整：有空格、有報名表沒填編號、有自由文字。</li><li>不看準確率，看你們是否理解使用者，做出「明天就想用」的雛形。</li><li>Excel 裡的黃底格子＝刻意留下的資料缺口。</li></ul></div>
+    </div>
+    <div class="dl-end"><a class="btn btn-main" href="https://drive.google.com/drive/folders/13M3Rbq2fNc4m3nfEiJ5OEnn-5fYrCFn9?usp=sharing" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11"/><path d="m7 10 5 5 5-5"/><path d="M5 20h14"/></svg>下載示範資料</a></div>
+  </div>
+</section>
+
+<footer><div class="wrap"><span>主辦：數聚村莊 Connect the Dots ｜ 好事在數聚村莊 · 合作組織：好事大平台 ｜ 示範資料全部虛構</span></div></footer>
+
+<script>
+(function(){
+  var btns=document.querySelectorAll('.filters button'), rows=document.querySelectorAll('.ft tbody tr');
+  btns.forEach(function(b){b.addEventListener('click',function(){
+    var f=b.getAttribute('data-f');
+    btns.forEach(function(x){x.setAttribute('aria-pressed', x===b?'true':'false');});
+    rows.forEach(function(r){r.hidden = !(f==='all' || r.getAttribute('data-s')===f);});
+  });});
+})();
+</script>
+</body>
+</html>
