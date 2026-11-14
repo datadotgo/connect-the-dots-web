@@ -254,6 +254,32 @@ body.screen .queuecard{width:460px;font-size:16px;transform:scale(1.15);transfor
 body.screen .counts{transform:scale(1.15);transform-origin:bottom left}
 body.screen .brand{transform:scale(1.1);transform-origin:top left}
 @media (max-width:900px){ body.screen .counts,body.screen .queuecard{display:grid} }
+.me{display:flex;gap:6px;align-items:center;margin-top:6px}
+.mebtn{cursor:pointer;display:inline-flex;align-items:center;gap:6px;border:0;border-radius:99px;padding:4px 12px 4px 8px;font-size:13px;background:color-mix(in srgb,var(--c) 14%,#fff);box-shadow:inset 0 0 0 1.5px var(--c)}
+.mebtn:hover{background:color-mix(in srgb,var(--c) 22%,#fff)}
+.crown{color:#d99e00;font-size:15px;line-height:1}
+.melink{cursor:pointer;border:0;background:none;color:var(--muted);font-size:12px;text-decoration:underline;padding:2px}
+.welcome{position:fixed;inset:0;z-index:50;display:grid;place-items:center;padding:16px;background:rgba(20,45,52,.45);backdrop-filter:blur(3px);overflow:auto}
+.welcome[hidden]{display:none}
+.wcard{background:var(--paper);border-radius:22px;box-shadow:0 30px 80px rgba(20,60,70,.35);padding:24px;width:min(860px,100%);display:grid;gap:12px}
+.wcard h2{font-size:30px}
+.wsub{margin:0;color:var(--muted)}
+.wislands{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.wis{border-radius:16px;background:color-mix(in srgb,var(--c) 8%,#fff);border-top:4px solid var(--c);padding:12px;display:grid;gap:8px;align-content:start}
+.wis header{display:grid}
+.wis header small{font-family:var(--font-mono);font-size:11px;color:var(--c)}
+.wis header b{font-family:var(--font-display);font-weight:400;font-size:20px}
+.wis header span{font-size:12px;color:var(--muted)}
+.wgroups{display:grid;gap:6px}
+.wg{cursor:pointer;display:flex;gap:8px;align-items:center;text-align:left;border:1.5px solid transparent;border-radius:12px;background:#fff;padding:9px 10px;font-size:14px;box-shadow:0 1px 2px rgba(20,60,70,.08)}
+.wg:hover{border-color:var(--c);transform:translateY(-1px)}
+.wid{font-family:var(--font-mono);font-size:12px;color:#fff;background:var(--c);border-radius:6px;padding:1px 6px}
+.wnm{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.wskip{justify-self:center;color:var(--muted)}
+.lbl.mine{border-top-color:#ffc93c;box-shadow:0 0 0 2.5px #ffc93c,0 8px 24px rgba(217,158,0,.35)}
+.mine-badge{font-size:11px;font-weight:700;color:#a57a00;background:#fff1bf;border-radius:99px;padding:0 7px;justify-self:start}
+@media (max-width:760px){ .wislands{grid-template-columns:1fr} .wcard h2{font-size:24px} }
+.banner.ok{background:#fff6d6;border-color:#f2c14e;color:#7a5600}
 .addpts{justify-self:start;color:var(--muted);font-size:12px}
 .flbl{position:absolute;left:0;top:0;pointer-events:auto;cursor:pointer;will-change:transform;white-space:nowrap;font-size:12px;padding:2px 9px;border-radius:99px;background:var(--paper);border:2px solid var(--mc);box-shadow:var(--shadow)}
 .mentor{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:12px;align-items:center;padding:10px;border-radius:14px;background:#f5f8f7;text-decoration:none;color:inherit}
@@ -319,6 +345,17 @@ body.nogl{overflow:auto;background:linear-gradient(var(--sky),#cfeceb)}
     <span>11/15（日）台北社企大樓 3F</span>
     <span class="sync" id="sync" data-s="wait"><i></i><span id="syncText">連線中…</span></span>
     <span class="rehearsal" id="rehearsal" hidden>彩排模式 14:20</span>
+  </div>
+  <div class="me" id="meBar" hidden></div>
+</div>
+
+<div class="welcome" id="welcome" hidden>
+  <div class="wcard" role="dialog" aria-modal="true" aria-labelledby="wTitle">
+    <div class="eb">AI IMPACT DAY · 11/15</div>
+    <h2 id="wTitle">歡迎登島！你是哪一組？</h2>
+    <p class="wsub">選好之後，我們會帶你飛到你們的小屋。之後也可以從左上角換組別。</p>
+    <div class="wislands" id="wIslands"></div>
+    <button type="button" class="btn ghost wskip" id="wSkip">我是工作人員／先逛逛就好</button>
   </div>
 </div>
 
@@ -551,7 +588,7 @@ function unlockURL(k, code){
   }catch(e){ return null; }
 }
 const unlocked = {};  // island -> url
-(function(){ try{ const c = sessionStorage.getItem("aiday-vault"); if (c) ISLANDS.forEach(i=>{ const u=unlockURL(i.k,c); if(u) unlocked[i.k]=u; }); }catch(e){} })();
+(function(){ try{ const m = JSON.parse(sessionStorage.getItem("aiday-vault2")||"{}"); Object.keys(m).forEach(k=>{ if (VAULT[k]){ const u=unlockURL(k,m[k]); if(u) unlocked[k]=u; } }); }catch(e){} })();
 
 
 /* ---------- time ---------- */
@@ -589,7 +626,7 @@ function save(id, patch){
       else flash("剛剛的修改沒有存到，請再試一次。");
     });
 }
-function flash(msg){ const b=document.getElementById("banner"); b.textContent=msg; b.classList.add("show"); clearTimeout(flash.t); flash.t=setTimeout(()=>b.classList.remove("show"),5000); }
+function flash(msg, ok){ const b=document.getElementById("banner"); b.textContent=msg; b.classList.toggle("ok", !!ok); b.classList.add("show"); clearTimeout(flash.t); flash.t=setTimeout(()=>b.classList.remove("show"),5000); }
 function showRO(){ flash("你目前只能查看，無法修改。請工作人員把你加為可編輯的成員，或請工作人員幫忙更新。"); }
 function setSync(s, text){ const el=document.getElementById("sync"); el.dataset.s=s; document.getElementById("syncText").textContent=text; }
 
@@ -943,8 +980,8 @@ document.getElementById("vform").addEventListener("submit", e=>{
     const f = document.getElementById("vform"); f.classList.remove("shake"); void f.offsetWidth; f.classList.add("shake");
     return;
   }
-  ISLANDS.forEach(i=>{ const x = unlockURL(i.k, code); if (x) unlocked[i.k] = x; });
-  try{ sessionStorage.setItem("aiday-vault", code); }catch(err){}
+  unlocked[vIsland] = u;
+  try{ const m = JSON.parse(sessionStorage.getItem("aiday-vault2")||"{}"); m[vIsland] = code; sessionStorage.setItem("aiday-vault2", JSON.stringify(m)); }catch(err){}
   showVaultState(); if (window.updateChests) updateChests(); renderDrawer();
 });
 function vaultHTML(){
@@ -1147,6 +1184,18 @@ function buildWorld(){
     const el = document.createElement("div"); el.className="chlbl"; el.dataset.vault=isl.k; el.style.setProperty("--c", isl.color);
     document.getElementById("labels").appendChild(el); anchors.push({el, obj:g, y:1.6, chest:true});
   });
+  /* ---- "我們這組" marker ---- */
+  const mine = new THREE.Group();
+  const gem = new THREE.Mesh(new THREE.OctahedronGeometry(.42,0), mat("#ffd23f",{emissive:"#ffb000",emissiveIntensity:.8}));
+  gem.scale.set(1,1.35,1); gem.position.y = 4.55; mine.add(gem);
+  const mBeam = new THREE.Mesh(new THREE.CylinderGeometry(.5,1.6,4.2,16,1,true), new THREE.MeshBasicMaterial({color:"#ffe27a",transparent:true,opacity:.18,side:THREE.DoubleSide,depthWrite:false}));
+  mBeam.position.y = 2.1; mine.add(mBeam);
+  const ringM = new THREE.Mesh(new THREE.RingGeometry(2.0,2.25,32), new THREE.MeshBasicMaterial({color:"#ffc93c",transparent:true,opacity:.75,side:THREE.DoubleSide,depthWrite:false}));
+  ringM.rotation.x = -Math.PI/2; ringM.position.y = .27; mine.add(ringM);
+  mine.visible = false; scene.add(mine);
+  window.setMineMarker = id => { const st = id && stations[id]; mine.visible = !!st; if (st) mine.position.copy(st.g.position); };
+  window.animMine = time => { if (!mine.visible) return; gem.rotation.y = time*1.5; gem.position.y = 4.55 + Math.sin(time*2)*.15; mBeam.material.opacity = .14 + .06*Math.sin(time*2.5); };
+
   window.updateChests = ()=>{
     ISLANDS.forEach(i=>{
       const c = chests[i.k], open = !!unlocked[i.k];
@@ -1412,6 +1461,7 @@ function buildWorld(){
     const time = t/1000; frame++;
     const dt = Math.min(.1, time - (loop.last||time)); loop.last = time;
     if (!reduce) stepCrowd(dt, time);
+    if (!reduce && window.animMine) animMine(time);
     stepTAs(reduce ? 10 : dt, time);
     if (fly){
       const k = Math.min(1,(t-fly.t0)/900), e = k<.5?2*k*k:1-Math.pow(-2*k+2,2)/2;
@@ -1461,13 +1511,47 @@ function buildWorld(){
 
 /* ---------- refresh + boot ---------- */
 function refresh(){
-  IDS.forEach(id=>{ const el=labelEls[id]; if(!el) return; const g=get(id); el.innerHTML=labelHTML(id); el.style.setProperty("--sc", ST[g.status].c); el.dataset.alert = (g.status==="stuck"||g.status==="help")?"1":"0"; });
+  IDS.forEach(id=>{ const el=labelEls[id]; if(!el) return; const g=get(id); el.innerHTML=(typeof myGroup!=="undefined" && id===myGroup?'<span class="mine-badge">♛ 我們這組</span>':"")+labelHTML(id); el.style.setProperty("--sc", ST[g.status].c); el.dataset.alert = (g.status==="stuck"||g.status==="help")?"1":"0"; el.classList.toggle("mine", typeof myGroup!=="undefined" && id===myGroup); });
+  if (typeof myGroup!=="undefined"){ if (window.setMineMarker) setMineMarker(myGroup); renderMe(); if (!document.getElementById("welcome").hidden) renderWelcome(); }
   updateStations(); renderCounts(); renderDrawer(); renderDlgStars();
 }
 
 try { buildWorld(); } catch(e){ document.body.classList.add("nogl"); }
 if (STAFF) document.body.classList.add("staff");
 if (SCREEN) setTimeout(()=>setScreen(true), 300);
+var myGroup = null;
+try{ const v = localStorage.getItem("aiday-mygroup"); if (IDS.includes(v)) myGroup = v; }catch(e){}
+function renderWelcome(){
+  document.getElementById("wIslands").innerHTML = ISLANDS.map(isl=>`<section class="wis" style="--c:${isl.color}">
+    <header><small>${isl.branch}</small><b>${isl.name}</b><span>助教 ${isl.ta}</span></header>
+    <div class="wgroups">${IDS.filter(id=>id[0]===isl.k).map(id=>{ const g=get(id);
+      return `<button type="button" class="wg" data-pick="${id}"><span class="wid">${id}</span><span class="wnm">${g.name?esc(g.name):"還沒取名"}</span></button>`; }).join("")}</div>
+  </section>`).join("");
+}
+function showWelcome(){ renderWelcome(); document.getElementById("welcome").hidden = false; }
+function hideWelcome(){ document.getElementById("welcome").hidden = true; }
+function renderMe(){
+  const bar = document.getElementById("meBar");
+  if (!myGroup){ bar.hidden = true; return; }
+  const g = get(myGroup), isl = ISL[myGroup[0]];
+  bar.hidden = false; bar.style.setProperty("--c", isl.color);
+  bar.innerHTML = `<button type="button" class="mebtn" data-act="edit" data-id="${myGroup}"><span class="crown">♛</span><span>我們是 <b>${myGroup}</b>${g.name?` · ${esc(g.name)}`:""}</span></button>
+    <button type="button" class="melink" id="meSwitch">換組別</button>`;
+}
+function pickGroup(id){
+  myGroup = id; try{ localStorage.setItem("aiday-mygroup", id); }catch(e){}
+  hideWelcome(); refresh(); flyTo(id[0]);
+  const g = get(id);
+  setTimeout(()=>{ if (!g.name){ openEditor(id); document.getElementById("dlgTitle").textContent = `歡迎 ${id}！先幫你們的小組取個名字吧`; }
+    else flash(`♛ 歡迎回來，${id} ${g.name}！`, true); }, 1000);
+}
+document.addEventListener("click", e=>{
+  const pk = e.target.closest("[data-pick]"); if (pk){ pickGroup(pk.dataset.pick); return; }
+  if (e.target.id==="wSkip"){ hideWelcome(); return; }
+  if (e.target.closest("#meSwitch")){ showWelcome(); return; }
+});
+renderMe();
+if (!myGroup && !STAFF && !SCREEN) showWelcome();
 window.addEventListener("hashchange", ()=>{
   const h = location.hash;
   if (h==="#staff") document.body.classList.add("staff");
