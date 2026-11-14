@@ -1,0 +1,1483 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AI Impact Day 群島看板</title>
+<!--
+  AI Impact Day 群島看板（3D 版）
+  資料儲存會自動選擇：
+  1. 在 Claude 的 artifact 裡：artifact 內建共享資料庫（即時同步）
+  2. 放到自己的網站：在 FIREBASE_CONFIG 填入 Firebase 專案設定，任何人免登入即時共寫
+  3. 都沒有：本機示範模式（只存在這台瀏覽器）
+-->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Huninn&family=Noto+Sans+TC:wght@400;500;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<style>
+/* Layout idea: a toy-like low-poly archipelago fills the screen; small paper-white cards float
+   at the corners like signboards. Lit stars are the only glowing things on the map. */
+:root{
+  --sea:#4cbac0;
+  --sky:#e3f2ee;
+  --ink:#1f3238;
+  --paper:#fffdf9;
+  --muted:#6b8087;
+  --gold:#ffc93c;
+  --isl-a:#25a68f; --isl-b:#e3962f; --isl-c:#e0668f;
+  --ok:#2fae66; --stuck:#e8513f; --help:#8a63dc; --done:#3a87d8; --idle:#97a6ab;
+  --line:rgba(31,50,56,.12);
+  --shadow:0 6px 20px rgba(20,60,70,.16),0 1px 3px rgba(20,60,70,.12);
+  --font-display:"Huninn","Noto Sans TC",system-ui,sans-serif;
+  --font-body:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif;
+  --font-mono:"JetBrains Mono",ui-monospace,Menlo,monospace;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;overflow:hidden}
+body{background:var(--sky);color:var(--ink);font-family:var(--font-body);font-size:14px;line-height:1.5}
+button{font:inherit;color:inherit}
+:focus-visible{outline:2.5px solid var(--ink);outline-offset:2px;border-radius:8px}
+h1,h2,h3{font-family:var(--font-display);font-weight:400;margin:0;text-wrap:balance}
+
+#scene{position:fixed;inset:0;width:100%;height:100%;display:block;touch-action:none}
+#labels{position:fixed;inset:0;pointer-events:none;overflow:hidden}
+
+.card{background:var(--paper);border-radius:16px;box-shadow:var(--shadow)}
+.ui{position:fixed;z-index:20}
+
+/* brand */
+.brand{top:14px;left:14px;padding:12px 16px;display:grid;gap:2px;max-width:330px}
+.brand .eb{font-family:var(--font-mono);font-size:10.5px;letter-spacing:.08em;color:var(--muted)}
+.brand h1{font-size:26px;line-height:1.15}
+.brand h1 em{font-style:normal;color:var(--isl-a)}
+.brand .sub{display:flex;flex-wrap:wrap;gap:4px 10px;align-items:center;color:var(--muted);font-size:12.5px;margin-top:2px}
+.sync{display:inline-flex;align-items:center;gap:5px}
+.sync i{width:7px;height:7px;border-radius:50%;background:var(--idle)}
+.sync[data-s="live"] i{background:var(--ok)}
+.sync[data-s="local"] i{background:var(--isl-b)}
+.sync[data-s="ro"] i{background:var(--stuck)}
+.rehearsal{font-size:11.5px;padding:1px 8px;border-radius:99px;background:var(--gold);color:#3a2a00}
+
+/* countdown */
+.clock{top:14px;left:50%;transform:translateX(-50%);padding:10px 18px 12px;min-width:330px;text-align:center}
+.clbl{font-size:12.5px;color:var(--muted)}
+.clbl b{color:var(--ink);font-weight:500}
+.digits{font-family:var(--font-mono);font-weight:700;font-variant-numeric:tabular-nums;font-size:40px;line-height:1.05;letter-spacing:-.02em}
+.digits .d{font-size:.5em;color:var(--muted);margin-right:.2em;font-weight:500}
+.clock[data-urgent="1"] .digits{color:var(--stuck)}
+.phase{font-size:12.5px;margin-top:2px}
+.phase span{color:var(--muted)}
+.mini{position:relative;height:8px;border-radius:99px;background:#e9efee;margin-top:8px;display:flex;overflow:hidden}
+.mini i{display:block;height:100%;border-right:1.5px solid var(--paper)}
+.mini i.work{background:color-mix(in srgb,var(--isl-a) 30%,#e9efee)}
+.mini i.key{background:color-mix(in srgb,var(--stuck) 45%,#e9efee)}
+.mini i.past{opacity:.35}
+.mini .needle{position:absolute;top:-2px;bottom:-2px;width:3px;border-radius:2px;background:var(--ink);display:none}
+.mini .mark{position:absolute;top:0;bottom:0;border-left:1.5px dashed var(--stuck)}
+.mticks{position:relative;height:14px;font-family:var(--font-mono);font-size:10px;color:var(--muted);margin-top:2px}
+.mticks span{position:absolute;transform:translateX(-50%);white-space:nowrap}
+.mticks span:first-child{transform:none}.mticks span:last-child{transform:translateX(-100%)}
+.mini .mark.star{border-left:2px solid var(--gold)}
+.hint{font-size:12px;color:var(--muted);margin-top:4px}
+.clock[data-urgent="1"] .hint{color:var(--stuck)}
+
+/* nav */
+.nav{top:14px;right:14px;display:flex;flex-direction:column;gap:8px;align-items:flex-end}
+.navrow{display:flex;gap:6px;padding:6px;border-radius:14px}
+.nb{cursor:pointer;border:0;background:transparent;padding:7px 11px;border-radius:10px;font-size:13px;display:inline-flex;align-items:center;gap:6px;white-space:nowrap}
+.nb:hover{background:#eef4f3}
+.nb.on{background:var(--ink);color:var(--paper)}
+.nb .sw{width:9px;height:9px;border-radius:3px;background:var(--c)}
+
+/* status counts */
+.counts{left:14px;bottom:14px;padding:12px 14px;display:grid;gap:8px}
+.counts h2{font-size:15px;display:flex;gap:8px;align-items:baseline}
+.counts h2 small{font-family:var(--font-body);font-size:12px;color:var(--muted)}
+.clist{display:flex;gap:6px;flex-wrap:wrap;max-width:380px}
+.cnt{display:flex;align-items:center;gap:6px;padding:5px 10px;border-radius:10px;background:#f2f6f5;font-size:12.5px}
+.cnt b{font-family:var(--font-mono);font-size:16px;font-variant-numeric:tabular-nums}
+.dot{width:9px;height:9px;border-radius:50%;flex:none;background:var(--c,var(--idle))}
+
+/* queue */
+.queuecard{right:14px;bottom:14px;padding:12px 14px;width:340px;display:grid;gap:8px}
+.queuecard h2{font-size:15px;display:grid;gap:1px}
+.queuecard h2 small{font-family:var(--font-body);font-size:12px;color:var(--muted)}
+.queue{display:grid;gap:6px;max-height:188px;overflow:auto}
+.qrow{display:grid;grid-template-columns:auto auto minmax(0,1fr) auto auto;gap:8px;align-items:center;padding:6px 8px;border-radius:10px;background:#fff6d9}
+.qrow .n{font-family:var(--font-mono);font-size:12px;color:#a57a00}
+.qrow .g{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:13px}
+.qrow .w{font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums}
+.tag{font-family:var(--font-mono);font-size:11.5px;padding:0 6px;border-radius:6px;color:#fff;background:var(--c)}
+.empty{color:var(--muted);font-size:13px}
+.btn{cursor:pointer;border:1px solid var(--line);background:#fff;padding:4px 10px;border-radius:9px;font-size:12.5px}
+.btn:hover{background:#f2f6f5}
+.btn.primary{background:var(--ink);color:var(--paper);border-color:transparent}
+.btn.ghost{background:transparent}
+
+/* 3D labels */
+.lbl{position:absolute;left:0;top:0;pointer-events:auto;cursor:pointer;will-change:transform;
+  background:var(--paper);border-radius:12px;box-shadow:var(--shadow);border-top:3px solid var(--c);
+  padding:5px 8px 6px;min-width:112px;max-width:168px;display:grid;gap:3px}
+.lbl::after{content:"";position:absolute;left:50%;bottom:-6px;width:10px;height:10px;background:var(--paper);transform:translateX(-50%) rotate(45deg);border-radius:2px}
+.lbl .r1{display:flex;gap:6px;align-items:center;min-width:0}
+.lbl .id{font-family:var(--font-mono);font-size:11px;color:var(--c);flex:none}
+.lbl .nm{font-weight:700;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lbl .nm.ph{color:var(--muted);font-weight:400}
+.lbl .r2{display:flex;gap:6px;align-items:center}
+.pill{display:inline-flex;align-items:center;gap:4px;font-size:11.5px;color:var(--sc);font-weight:500;white-space:nowrap}
+.pill .dot{background:var(--sc);width:7px;height:7px}
+.sts{display:flex;gap:2px;margin-left:auto}
+.star{width:24px;height:24px;padding:0;border:0;border-radius:7px;background:transparent;cursor:pointer;display:grid;place-items:center}
+.star svg{width:17px;height:17px}
+.star[data-s="off"] path{fill:none;stroke:#9aa9ad;stroke-width:1.8}
+.star[data-s="off"]:hover path{stroke:#d99e00}
+.star[data-s="lit"]{background:#fff1bf}
+.star[data-s="lit"] path{fill:var(--gold);stroke:#d99e00;stroke-width:1.2}
+.star[data-s="used"]{cursor:default}
+.star[data-s="used"] path{fill:#e6d9b3}
+.lbl .q{font-size:11.5px;color:#a57a00;display:flex;gap:4px;align-items:center;flex-wrap:wrap}
+.lbl .q .btn{padding:1px 7px;font-size:11.5px}
+.lbl[data-alert="1"]{box-shadow:0 0 0 2px var(--sc),var(--shadow)}
+.ilbl{position:absolute;left:0;top:0;pointer-events:auto;cursor:pointer;will-change:transform;white-space:nowrap;
+  font-family:var(--font-display);font-size:17px;color:#fff;background:var(--c);padding:4px 14px 5px;border-radius:99px;box-shadow:var(--shadow)}
+.ilbl small{font-family:var(--font-mono);font-size:11px;opacity:.85;margin-right:6px}
+.mlbl{background:var(--ink)}
+
+/* drawer */
+.drawer{position:fixed;z-index:30;top:0;right:0;bottom:0;width:min(420px,100%);background:var(--paper);box-shadow:-10px 0 30px rgba(20,60,70,.18);
+  display:grid;grid-template-rows:auto minmax(0,1fr);transform:translateX(105%);transition:transform .28s ease}
+.drawer.open{transform:none}
+.dhead{display:flex;gap:6px;align-items:center;padding:12px 12px 10px;border-bottom:1px solid var(--line)}
+.dhead .x{margin-left:auto}
+.dbody{overflow:auto;padding:14px;display:grid;gap:16px;align-content:start}
+.isec h3{font-size:18px;display:flex;gap:8px;align-items:center}
+.isec h3 .sw{width:12px;height:12px;border-radius:4px;background:var(--c)}
+.isec p{margin:2px 0 8px;color:var(--muted);font-size:12.5px}
+.rows{display:grid;gap:6px}
+.lrow{display:grid;gap:4px;padding:8px 10px;border-radius:12px;background:#f5f8f7;border-left:3px solid var(--c);cursor:pointer}
+.lrow:hover{background:#edf3f2}
+.lrow .mem{font-size:12px;color:var(--muted)}
+.lrow .note{font-size:12.5px}
+.crew{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px}
+.crewb{cursor:pointer;border:1.5px solid transparent;background:#f5f8f7;border-radius:14px;padding:8px 2px 6px;display:grid;justify-items:center;gap:2px;font-size:12px}
+.crewb:hover{background:#edf3f2}
+.crewb.on{border-color:var(--mc);background:color-mix(in srgb,var(--mc) 10%,#fff)}
+.crewb svg{transition:transform .2s}
+.crewb:hover svg,.crewb.on svg{transform:translateY(-2px)}
+.mcard{display:grid;gap:14px;padding:16px;border-radius:18px;background:#fff;border:1px solid var(--line);border-top:4px solid var(--mc)}
+.mhead{display:flex;gap:12px;align-items:center}
+.mhead .role{font-family:var(--font-mono);font-size:10.5px;color:var(--muted);letter-spacing:.05em}
+.mhead .nm{font-family:var(--font-display);font-size:19px;line-height:1.25}
+.mhead .desc{font-size:12px;color:var(--muted)}
+.watch{justify-self:start;text-decoration:none;color:#fff;background:var(--ink);padding:6px 14px;border-radius:99px;font-size:13px}
+.watch.live{background:var(--stuck)}
+.mcard h4{font-family:var(--font-display);font-weight:400;font-size:16px;margin:0 0 6px;display:flex;align-items:center;gap:8px}
+.mcard h4 .btn{margin-left:auto}
+.mcard p{margin:0;font-size:13.5px}
+.mcard .sm{font-size:12px;color:var(--muted);margin:-2px 0 6px}
+.pts,.qs{margin:0;padding:0;list-style:none;display:grid;gap:6px;counter-reset:n}
+.pts li,.qs li{counter-increment:n;display:grid;grid-template-columns:22px minmax(0,1fr);gap:8px;font-size:13.5px;line-height:1.55}
+.pts li::before{content:counter(n);font-family:var(--font-mono);font-size:11.5px;width:20px;height:20px;border-radius:50%;display:grid;place-items:center;background:var(--mc);color:#fff;margin-top:1px}
+.qs li{padding:8px 10px;border-radius:12px;background:color-mix(in srgb,var(--mc) 9%,#fff)}
+.qs li::before{content:"?";font-family:var(--font-display);font-size:16px;color:var(--mc);line-height:1.3}
+.mq{margin:0;padding:12px 14px;border-radius:12px;background:color-mix(in srgb,var(--mc) 12%,#fff);font-family:var(--font-display);font-size:18px;line-height:1.45;text-wrap:balance}
+.mcard h4 .src{font-family:var(--font-body);font-size:11.5px;color:var(--muted)}
+.pts li{grid-template-columns:22px minmax(0,1fr)}
+.chlbl{position:absolute;left:0;top:0;pointer-events:auto;cursor:pointer;will-change:transform;white-space:nowrap;display:inline-flex;align-items:center;gap:4px;
+  font-size:12px;padding:2px 9px 2px 6px;border-radius:99px;background:var(--paper);color:#8a5a12;border:1.5px solid #f2c14e;box-shadow:var(--shadow)}
+.chlbl svg{width:14px;height:14px}
+.vault .vhead{display:flex;gap:12px;align-items:center}
+.vicon{width:44px;height:44px;border-radius:12px;display:grid;place-items:center;flex:none;color:#fff;background:var(--c,#a8703f)}
+.vk{font-family:var(--font-mono);font-size:11px;color:var(--muted)}
+.vault input#vCode{font-family:var(--font-mono);font-size:22px;letter-spacing:.3em;text-align:center}
+.verr{margin:6px 0 0;min-height:1.2em;color:var(--stuck);font-size:13px}
+.vok{margin:0;font-size:14px}
+.vnote{margin:0;font-size:12px;color:var(--muted)}
+.vlink{display:inline-block;margin:10px 0;background:var(--c,var(--ink))}
+@media (prefers-reduced-motion:no-preference){ .shake{animation:shake .35s} @keyframes shake{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}} }
+.vrow{cursor:pointer;display:flex;gap:12px;align-items:center;text-align:left;padding:10px;border-radius:14px;border:0;background:#f5f8f7;border-left:3px solid var(--c)}
+.vrow:hover{background:#edf3f2}
+.vrow small{color:var(--muted)}
+.star[data-s="talk"]{background:#ffe2c2}
+.star[data-s="talk"] path{fill:#ff9f1c;stroke:#d96f00;stroke-width:1.2}
+.lbl .q.talk{color:#c25e00}
+.qrow.talk{background:#ffe7cc}
+.qrow .n{white-space:nowrap}
+.tmr{font-variant-numeric:tabular-nums;font-family:var(--font-mono);font-size:.95em}
+.tmr.over{color:var(--stuck);font-weight:700}
+.dstars{display:grid;gap:8px;padding:12px;border-radius:14px;background:#fff8e1}
+.dsh{display:grid;gap:2px}
+.dsh b{font-family:var(--font-display);font-weight:400;font-size:16px;color:var(--ink)}
+.dsh span{font-size:12px;color:var(--muted)}
+.dsrow{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.dstar{display:flex;gap:10px;align-items:flex-start;padding:8px;border-radius:12px;background:#fff}
+.dstar b{font-size:13px}
+.dst{font-size:12.5px;color:var(--muted)}
+.dstar[data-s="talk"] .dst{color:#c25e00}
+.dacts{display:flex;gap:4px;flex-wrap:wrap;margin-top:4px}
+.dacts .btn{padding:3px 9px;font-size:12px}
+.star.big{width:44px;height:44px;border-radius:12px;background:#f2f6f5;flex:none}
+.star.big svg{width:28px;height:28px}
+.star.big[data-s="off"]:not(:disabled){background:#fff1bf;box-shadow:0 0 0 2px #ffd34d inset}
+.star.big:disabled{cursor:default}
+@media (max-width:480px){.dsrow{grid-template-columns:1fr}}
+.links{display:grid;gap:8px;padding:12px;border-radius:14px;background:#eef6f4}
+.glinks{display:flex;flex-wrap:wrap;gap:4px}
+.glinks a{font-size:11.5px;padding:1px 8px;border-radius:99px;background:#e3f2ef;color:#17695a;text-decoration:none;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.glinks a:hover{background:#cfeae4}
+.ita{display:block;font-family:var(--font-body);font-size:11px;opacity:.92;text-align:center;margin-top:-1px}
+.talbl{position:absolute;left:0;top:0;pointer-events:auto;cursor:pointer;will-change:transform;white-space:nowrap;font-size:11.5px;padding:1px 8px;border-radius:99px;
+  background:#ffcf3a;color:#3a2a00;box-shadow:var(--shadow);border:1.5px solid #fff}
+.talbl b{font-weight:700;margin-right:2px}
+.talbl.busy{background:#8a63dc;color:#fff}
+.talbl span{font-family:var(--font-mono)}
+.tahint{margin:8px 0 0;font-size:12.5px;color:var(--muted)}
+.tahint b{color:#8a63dc}
+.staffonly{display:none !important}
+body.staff .staffonly{display:inline-flex !important}
+.spanel{display:grid;gap:8px;padding:14px;border-radius:14px;background:#f5f8f7}
+.spanel h4{margin:0;font-family:var(--font-display);font-weight:400;font-size:16px}
+.spanel p{margin:0;font-size:13px}
+.spanel .sm{font-size:12px;color:var(--muted)}
+.spanel label{display:grid;gap:4px;font-size:12.5px;color:var(--muted)}
+.spanel input{font:inherit;padding:8px 10px;border-radius:10px;border:1px solid var(--line);background:#fff}
+.srow{display:flex;gap:6px;flex-wrap:wrap}
+.spanel.danger{background:#fff0ed}
+.btn.danger{background:var(--stuck);color:#fff;border-color:transparent;justify-self:start}
+.exitscreen{display:none;position:fixed;z-index:25;right:14px;top:14px;cursor:pointer;border:0;border-radius:99px;padding:6px 14px;font-size:12.5px;background:rgba(255,253,249,.8);box-shadow:var(--shadow);opacity:.35}
+.exitscreen:hover{opacity:1}
+body.screen .exitscreen{display:block}
+body.screen .nav,body.screen .mbar{display:none}
+body.screen .clock{transform:translateX(-50%) scale(1.3);transform-origin:top center}
+body.screen .queuecard{width:460px;font-size:16px;transform:scale(1.15);transform-origin:bottom right}
+body.screen .counts{transform:scale(1.15);transform-origin:bottom left}
+body.screen .brand{transform:scale(1.1);transform-origin:top left}
+@media (max-width:900px){ body.screen .counts,body.screen .queuecard{display:grid} }
+.addpts{justify-self:start;color:var(--muted);font-size:12px}
+.flbl{position:absolute;left:0;top:0;pointer-events:auto;cursor:pointer;will-change:transform;white-space:nowrap;font-size:12px;padding:2px 9px;border-radius:99px;background:var(--paper);border:2px solid var(--mc);box-shadow:var(--shadow)}
+.mentor{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:12px;align-items:center;padding:10px;border-radius:14px;background:#f5f8f7;text-decoration:none;color:inherit}
+.mentor:hover{background:#edf3f2}
+.avatar{width:48px;height:48px;border-radius:50%;display:grid;place-items:center;font-family:var(--font-display);font-size:20px;color:#fff;background:var(--mc)}
+.mentor .role{font-family:var(--font-mono);font-size:10.5px;color:var(--muted);letter-spacing:.05em}
+.mentor .nm{font-family:var(--font-display);font-size:16px}
+.mentor .desc{font-size:12px;color:var(--muted)}
+.mentor .go{font-size:12px;padding:3px 10px;border-radius:99px;background:#fff;border:1px solid var(--line);white-space:nowrap}
+.mentor .go.live{background:var(--stuck);color:#fff;border-color:transparent}
+
+/* dialog */
+dialog{border:0;border-radius:18px;background:var(--paper);color:var(--ink);padding:0;width:min(500px,calc(100% - 28px));box-shadow:0 20px 60px rgba(20,60,70,.3)}
+dialog::backdrop{background:rgba(20,45,52,.35)}
+.dlg{display:grid;gap:13px;padding:20px}
+.dlg h3{font-size:21px}
+.dlg label{display:grid;gap:5px;font-size:13px;color:var(--muted)}
+.dlg input,.dlg textarea{font:inherit;color:var(--ink);background:#f5f8f7;border:1px solid var(--line);border-radius:10px;padding:9px 11px;width:100%}
+.dlg textarea{min-height:72px;resize:vertical}
+.stpick{display:flex;flex-wrap:wrap;gap:6px}
+.stpick input{position:absolute;opacity:0;width:1px;height:1px}
+.stpick label{cursor:pointer;display:inline-flex;align-items:center;gap:6px;color:var(--ink);padding:6px 11px;border-radius:99px;border:1px solid var(--line);font-size:13px}
+.stpick input:checked+label{background:color-mix(in srgb,var(--sc) 16%,#fff);border-color:var(--sc)}
+.stpick input:focus-visible+label{outline:2.5px solid var(--ink);outline-offset:2px}
+.acts{display:flex;gap:8px;justify-content:flex-end;align-items:center}
+.acts .reset{margin-right:auto;color:var(--muted);font-size:12px}
+
+.banner{position:fixed;z-index:40;left:50%;top:150px;transform:translateX(-50%);max-width:min(520px,calc(100% - 28px));padding:10px 14px;border-radius:12px;background:#fff0ed;border:1px solid #f3b4aa;color:#8a2a1d;font-size:13.5px;display:none;box-shadow:var(--shadow)}
+.banner.show{display:block}
+.mbar{display:none}
+
+/* no WebGL: list is the main view */
+body.nogl #scene,body.nogl #labels{display:none}
+body.nogl{overflow:auto;background:linear-gradient(var(--sky),#cfeceb)}
+
+@media (max-width:900px){
+  .counts,.queuecard{display:none}
+  .navrow.islands{display:none}
+  .brand{max-width:calc(100% - 28px);padding:9px 12px}
+  .brand h1{font-size:21px}
+  .clock{top:auto;bottom:66px;min-width:0;width:calc(100% - 28px);padding:8px 14px 10px}
+  .digits{font-size:32px}
+  .nav{top:auto;bottom:118px}
+  .nav .navrow:first-child{display:none}
+  .mbar{display:flex;position:fixed;z-index:20;left:14px;right:14px;bottom:14px;padding:6px;gap:6px;justify-content:space-between}
+  .mbar .nb{flex:1;justify-content:center}
+  .clock{bottom:68px}
+  .lbl{min-width:0;max-width:120px;padding:3px 7px 4px}
+  .lbl .sts,.lbl .q{display:none}
+  .ilbl{font-size:14px}
+}
+@media (prefers-reduced-motion:reduce){.drawer{transition:none}}
+</style>
+</head>
+<body>
+<canvas id="scene" aria-label="三座島的 3D 地圖，可拖曳旋轉、滾輪縮放"></canvas>
+<div id="labels"></div>
+
+<div class="ui card brand">
+  <div class="eb">AI IMPACT DAY · DIGITAL IMPACT SPRINT</div>
+  <h1>好事在<em>數聚</em>群島</h1>
+  <div class="sub">
+    <span>11/15（日）台北社企大樓 3F</span>
+    <span class="sync" id="sync" data-s="wait"><i></i><span id="syncText">連線中…</span></span>
+    <span class="rehearsal" id="rehearsal" hidden>彩排模式 14:20</span>
+  </div>
+</div>
+
+<div class="ui card clock" id="clock">
+  <div class="clbl" id="clockLbl">距離 <b>完成實作 16:15</b></div>
+  <div class="digits" id="digits">--:--:--</div>
+  <div class="phase" id="phase"></div>
+  <div class="mini" id="mini"><div class="needle" id="needle"></div></div>
+  <div class="mticks" id="mticks"></div>
+  <div class="hint" id="clockHint"></div>
+</div>
+
+<div class="ui nav">
+  <div class="card navrow">
+    <button class="nb" data-nav="home">全景</button>
+    <button class="nb" data-panel="list">清單</button>
+    <button class="nb" data-panel="mentor">Mentor 燈塔</button>
+    <button class="nb" data-panel="vault">資料寶箱</button>
+    <button class="nb staffonly" data-panel="staff">工作人員</button>
+  </div>
+  <div class="card navrow islands" id="islandNav"></div>
+</div>
+
+<div class="ui card counts">
+  <h2>各組狀況 <small id="totalNote"></small></h2>
+  <div class="clist" id="counts"></div>
+</div>
+
+<div class="ui card queuecard">
+  <h2>星星排隊中 <small>每組 2 顆，每顆換 1 次 NGO 或 mentor 諮詢（5 分鐘）</small></h2>
+  <div class="queue" id="queue"></div>
+</div>
+
+<div class="card mbar">
+  <button class="nb" data-nav="home">全景</button>
+  <button class="nb" data-panel="list">清單</button>
+  <button class="nb" data-panel="queue" id="mQueue">星星排隊</button>
+  <button class="nb" data-panel="mentor">Mentor</button>
+  <button class="nb" data-panel="vault">資料</button>
+  <button class="nb staffonly" data-panel="staff">工作</button>
+</div>
+
+<div class="banner" id="banner"></div>
+
+<aside class="drawer" id="drawer" aria-label="側邊面板">
+  <div class="dhead">
+    <button class="nb" data-panel="list">各組清單</button>
+    <button class="nb" data-panel="queue">星星排隊</button>
+    <button class="nb" data-panel="mentor">Mentor 分享</button>
+    <button class="nb" data-panel="vault">資料寶箱</button>
+    <button class="nb x" id="dClose" aria-label="關閉面板">✕</button>
+  </div>
+  <div class="dbody" id="dbody"></div>
+</aside>
+
+<dialog id="dlg">
+  <form class="dlg" id="form" method="dialog">
+    <h3 id="dlgTitle">編輯小組</h3>
+    <label for="fName">小組名稱
+      <input id="fName" maxlength="24" placeholder="幫你們這組取個名字">
+    </label>
+    <label for="fMembers">組員（用頓號、逗號或換行分開）
+      <textarea id="fMembers" maxlength="240" placeholder="例如：小明、阿華、Jenny"></textarea>
+    </label>
+    <div>
+      <div style="font-size:13px;color:var(--muted);margin-bottom:6px">現在狀態</div>
+      <div class="stpick" id="fStatus"></div>
+      <p class="tahint" id="fTaHint"></p>
+    </div>
+    <div class="dstars">
+      <div class="dsh"><b>舉星星找 NGO 或 mentor</b><span>每組 2 顆，每顆換 1 次諮詢，每次 5 分鐘。隨時都能舉，按下星星就生效，不用按儲存。</span></div>
+      <div class="dsrow" id="fStars"></div>
+    </div>
+    <div class="links">
+      <div class="dsh"><b>成果連結</b><span>完成後貼上簡報、Demo 或雲端資料夾的連結，16:15 前記得更新。</span></div>
+      <label for="fLink1">連結 1
+        <input id="fLink1" type="text" inputmode="url" maxlength="400" placeholder="https://… 例如簡報">
+      </label>
+      <label for="fLink2">連結 2
+        <input id="fLink2" type="text" inputmode="url" maxlength="400" placeholder="https://… 例如 Demo 或資料夾">
+      </label>
+      <p class="verr" id="fLinkErr" role="alert"></p>
+    </div>
+    <label for="fNote">一句話近況（選填）
+      <input id="fNote" maxlength="60" placeholder="例如：資料清完了，正在做 prototype">
+    </label>
+    <div class="acts">
+      <button type="button" class="btn ghost reset" id="fReset">重設這組的星星</button>
+      <button type="button" class="btn" id="fCancel">取消</button>
+      <button type="submit" class="btn primary">儲存</button>
+    </div>
+  </form>
+</dialog>
+
+<dialog id="vdlg">
+  <form class="dlg vault" id="vform" method="dialog">
+    <div class="vhead"><span class="vicon" id="vIcon"></span><div><div class="vk" id="vKicker">資料寶箱</div><h3 id="vTitle">示範資料</h3></div></div>
+    <div id="vLocked">
+      <label for="vCode">輸入通關密碼，打開這座島的示範資料
+        <input id="vCode" inputmode="numeric" autocomplete="off" maxlength="12" placeholder="通關密碼">
+      </label>
+      <p class="verr" id="vErr" role="alert"></p>
+      <div class="acts"><button type="button" class="btn" id="vCancel">先不要</button><button type="submit" class="btn primary">打開寶箱</button></div>
+    </div>
+    <div id="vOpen" hidden>
+      <p class="vok">寶箱打開了！裡面有資料說明、欄位介紹、任務卡和下載連結。</p>
+      <a class="watch vlink" id="vLink" href="#" target="_blank" rel="noopener">打開示範資料說明頁 ↗</a>
+      <p class="vnote">資料全部虛構，只用於今天的練習。下載後請留在自己的電腦，不要再轉傳。</p>
+      <div class="acts"><button type="button" class="btn" id="vClose">關閉</button></div>
+    </div>
+  </form>
+</dialog>
+
+<dialog id="ndlg">
+  <form class="dlg" id="nform" method="dialog">
+    <h3 id="nTitle">Mentor 重點</h3>
+    <label for="nText">一行一個重點（最多 6 點）
+      <textarea id="nText" maxlength="900" style="min-height:150px" placeholder="例如：先把問題縮小到一個具體的人、一個具體的時刻"></textarea>
+    </label>
+    <div class="acts">
+      <button type="button" class="btn" id="nCancel">取消</button>
+      <button type="submit" class="btn primary">儲存</button>
+    </div>
+  </form>
+</dialog>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+<script>
+/* ===== 放到自己的網站、讓所有人免登入共寫：填入 Firebase 設定 ===== */
+const FIREBASE_CONFIG = {
+  apiKey: "AIzaSyAbO64qx8cdN7AbHlwKBj7ROpWt_ZPzSfE",
+  authDomain: "aiday-islands.firebaseapp.com",
+  projectId: "aiday-islands",
+  storageBucket: "aiday-islands.firebasestorage.app",
+  messagingSenderId: "682479684426",
+  appId: "1:682479684426:web:b79b540cf33850647e4fb3"
+};
+/* ================================================================ */
+
+const DAY = "2026-11-15";
+const T = hm => new Date(`${DAY}T${hm}:00+08:00`).getTime();
+
+const ISLANDS = [
+  {k:"A", name:"好事大平台", branch:"分場 A", theme:"資料流程 × AI 自動化", meta:"2 項任務 · 48 家組織、約 200 筆接觸紀錄", n:5, ta:"Lavinia", color:"#25a68f", pos:[-15,0,3], R:9.5},
+  {k:"B", name:"野灣", branch:"分場 B", theme:"捐款人分析 × 支持者洞察", meta:"野灣野生動物保育協會 · 3 項任務 · 約 2.5 萬名聯絡人", n:5, ta:"Annie", color:"#e3962f", pos:[15,0,3], R:9.5},
+  {k:"C", name:"微客", branch:"分場 C", theme:"捐款人分析 × 關係經營", meta:"微客公益行動協會 · 3 項任務 · 2,000 位捐款人", n:3, ta:"Mila", color:"#e0668f", pos:[0,0,-15], R:7.8},
+];
+const ISL = Object.fromEntries(ISLANDS.map(i=>[i.k,i]));
+const STATUSES = [
+  {v:"idle",  t:"還沒開始",   c:"#97a6ab"},
+  {v:"going", t:"順利進行中", c:"#2fae66"},
+  {v:"stuck", t:"苦惱中",     c:"#e8513f"},
+  {v:"help",  t:"需要助教",   c:"#8a63dc"},
+  {v:"done",  t:"完成囉",     c:"#3a87d8"},
+];
+const ST = Object.fromEntries(STATUSES.map(s=>[s.v,s]));
+const PHASES = [
+  {s:"12:00", e:"12:30", t:"報到"},
+  {s:"12:30", e:"12:45", t:"活動開始"},
+  {s:"12:45", e:"16:15", t:"小組實作", work:true},
+  {s:"16:15", e:"16:50", t:"完成實作、準備分享", key:true},
+  {s:"16:50", e:"17:25", t:"NGO 分場成果分享"},
+  {s:"17:25", e:"17:35", t:"分場講評"},
+  {s:"17:35", e:"17:45", t:"全場集合、確認獎項"},
+  {s:"17:45", e:"17:55", t:"頒獎、合照"},
+  {s:"17:55", e:"18:00", t:"緩衝與離場"},
+].map(p=>({...p, S:T(p.s), E:T(p.e)}));
+const START=T("12:00"), END=T("18:00"), DUE=T("16:15"), STARS_OPEN=T("15:00");
+const MENTORS = [
+  {key:"framing", role:"FRAMING", zh:"問題定義", name:"Naiwen", acc:"frame", date:"2026-10-17", c:"#25a68f", hair:"#3b2a20", url:"https://youtube.com/live/wK_kfw_kL54?feature=share",
+   pts:["先理解組織，才能形成問題","流程圖幫助你看見節點","資料支持到哪，分析就切到哪","信心水平必須誠實標記"],
+   qs:["你的組織屬於哪一種切入框架？","你手上有哪些資料，還缺哪些？","你的候選問題中，哪個信心最高？","「現象」與「原因」，你能分開嗎？"]},
+  {key:"insight", role:"INSIGHT", zh:"資料洞察", name:"Liwen", acc:"glass", style:"bangs", date:"2026-10-24", c:"#3a87d8", hair:"#1f1a18", url:"https://youtube.com/live/SLyqntBprhw?feature=share",
+   quote:"比較讓我們看見差異，脈絡讓我們理解差異。",
+   pts:["Same Metric, Different Segments：用相同指標比較不同群體，理解差異可能來自哪裡","Same Metric, Different Contexts：用相同指標分析不同捐款情境，理解為什麼需要不同的分析維度與解讀方式"],
+   qs:["你們選了哪個指標？拿它來比較哪些群體？","看到差異之後，背後可能的脈絡是什麼？","同一個指標，放在不同的捐款情境裡，解讀會不會不一樣？"]},
+  {key:"builder", role:"BUILDER", zh:"AI 實作", name:"Sheng", acc:"laptop", glasses:true, date:"2026-10-25", c:"#8a63dc", hair:"#2a221c", url:"https://youtube.com/live/ZblDJOk1LRI?feature=share",
+   quote:"先挑一個當天做得出結果的小問題。",
+   pts:["值不值得做：痛點、頻率、價值、資料拿得到","想清楚 AI 幫的是哪一步","做不做得動：時間、誰願意用、手上的起點"],
+   qs:["這個問題痛在哪？多常發生？","AI 幫的是哪一步？","16:15 前做得出結果嗎？做完誰會願意用？"]},
+  {key:"guest", role:"GUEST MENTOR", zh:"AI 為什麼會有記憶", name:"Chichieh", acc:"bubble", date:"2026-11-01", c:"#e0668f", hair:"#4a3326", url:"https://youtube.com/live/II0I38F6X08?feature=share",
+   about:"和數據早餐桌合辦的加碼場：AI 怎麼從一次性的工具，變成理解組織脈絡的協作者，不用每次都重講背景，還能慢慢累積經驗。",
+   quote:"第一週行動：打造 80 分的個人助理。",
+   pts:["選一項工作：低風險、範圍小、成果容易核對","先試跑一次：用公開或合成資料，先確認公司規範","逐次核對：記錄錯誤與耗時，留下每次結果","一週後回顧：看結果，再決定是否擴大；調整後，再試一輪"],
+   qs:["你們的成果裡，哪一項工作最適合先交給 AI 試跑？","AI 做出來的結果，你們打算怎麼核對？","每次都要重新跟 AI 解釋的背景，有哪些可以先整理好？"]},
+  {key:"impact", role:"IMPACT", zh:"影響力落地", name:"趙恩", acc:"flag", date:"2026-11-08", c:"#e3962f", hair:"#1c1714", url:"https://youtube.com/live/zPzcX1AEhK0?feature=share",
+   quote:"改善證據有四層：越往上，越接近影響力。",
+   pts:["自述：說明痛點、作法與預期效益","可重跑：用測試資料再跑一次，得到一致的結果（11/15 Demo 的目標）","真實使用：放進真實工作，留下前後工時、錯誤與往返紀錄（三個月計畫要寫到）","能接手：換人操作，仍能完成工作、處理例外（真正落地）","Demo 站穩第 2 層就很好；三個月行動建議，要寫清楚怎麼走到第 3、4 層"],
+   qs:["你們的 demo 用測試資料再跑一次，結果會一樣嗎？","放進 NGO 真實工作後，要記錄哪些前後差異？","換一個人操作還能完成嗎？遇到例外怎麼處理？"]},
+];
+const MK = Object.fromEntries(MENTORS.map(m=>[m.key,m]));
+let mentorNotes = {}, mentorSel = "framing";
+function personSVG(m, size=48){
+  const acc = {
+    frame:`<rect x="40" y="34" width="17" height="14" rx="1.5" fill="#fff" stroke="#5b4636" stroke-width="2.4"/><path d="M43 45l4-5 3 3 2-2 3 4" fill="none" stroke="${m.c}" stroke-width="1.8" stroke-linejoin="round"/>`,
+    glass:`<circle cx="47" cy="38" r="6.5" fill="#e8f4ff" stroke="#3c4a52" stroke-width="2.6"/><path d="M51.5 42.5l5 5" stroke="#3c4a52" stroke-width="3" stroke-linecap="round"/>`,
+    laptop:`<rect x="39" y="37" width="18" height="12" rx="1.5" fill="#3c4a52"/><rect x="41" y="39" width="14" height="8" rx=".8" fill="#a9dbff"/><path d="M43.5 42l-1.5 1.5 1.5 1.5M52.5 42l1.5 1.5-1.5 1.5" stroke="#3c4a52" stroke-width="1" fill="none"/><rect x="36.5" y="49" width="23" height="2.6" rx="1.2" fill="#5d6b6f"/>`,
+    bubble:`<path d="M42 6h16a4 4 0 0 1 4 4v8a4 4 0 0 1-4 4h-9l-5 4v-4h-2a4 4 0 0 1-4-4v-8a4 4 0 0 1 4-4z" fill="#fff" stroke="#c9d3d6" stroke-width="1.4"/><circle cx="45" cy="14" r="1.5" fill="${m.c}"/><circle cx="50" cy="14" r="1.5" fill="${m.c}"/><circle cx="55" cy="14" r="1.5" fill="${m.c}"/>`,
+    flag:`<path d="M48 18v34" stroke="#5b4636" stroke-width="2.4" stroke-linecap="round"/><path d="M49 19h11l-3 5 3 5H49z" fill="${m.c}" stroke="#fff" stroke-width="1"/>`,
+  }[m.acc];
+  const bangs = m.style==="bangs";
+  const back = bangs ? `<path d="M19.5 27c0-10 5.5-15.5 12.5-15.5S44.5 17 44.5 27v15c-3 1.5-6 2-8 2h-9c-2 0-5-.5-8-2z" fill="${m.hair}"/>` : "";
+  const hair = m.acc==="hat" ? "" : bangs
+    ? `<path d="M20.5 26c0-8.5 5-13.5 11.5-13.5S43.5 17.5 43.5 26c-1.5-.6-3-1.8-4-3.6-.6 1.8-2.4 2.6-4 2.6-1.4 0-2.6-.8-3.4-2-.8 1.2-2.2 2-3.8 2-1.8 0-3.2-1-3.8-2.4-.9 1.6-2.4 2.8-4 3.4z" fill="${m.hair}"/>`
+    : `<path d="M20 25c0-8 5-12 12-12s12 4 12 12c-3-4-7-5-12-5s-9 1-12 5z" fill="${m.hair}"/>`;
+  return `<svg viewBox="0 0 64 64" width="${size}" height="${size}" aria-hidden="true">
+    <circle cx="32" cy="32" r="31" fill="color-mix(in srgb, ${m.c} 16%, #fff)"/>
+    ${back}
+    <path d="M12 64c0-14 9-22 20-22s20 8 20 22z" fill="${m.c}"/>
+    <path d="M27 42l5 6 5-6" fill="#fff" opacity=".9"/>
+    <circle cx="32" cy="27" r="11" fill="#f6d2b4"/>
+    ${hair}
+    <circle cx="28" cy="28" r="1.4" fill="#2b2b2b"/><circle cx="36" cy="28" r="1.4" fill="#2b2b2b"/>
+    ${m.glasses?`<g fill="none" stroke="#2b2b2b" stroke-width="1.5"><circle cx="27.6" cy="28" r="3.6"/><circle cx="36.4" cy="28" r="3.6"/><path d="M31.2 28h1.6M24 27.4l-3-.8M40 27.4l3-.8"/></g>`:""}
+    <path d="M29 32.5q3 2.2 6 0" fill="none" stroke="#b5624a" stroke-width="1.4" stroke-linecap="round"/>
+    ${acc}</svg>`;
+}
+const WEEK = "日一二三四五六";
+
+/* ---------- 資料寶箱：連結以通關密碼加密，原始碼裡沒有明文網址或密碼 ---------- */
+const VAULT = {"A": "V2pbbnRQGBfydzU4HSONDazgrZ8eDTQxBHHlgRn3oWA2pjg3DtcPgwT5piMfG5SsYoGzQsW7RDrYlx0V0O2misa0mUI=", "B": "e2OcbS6i4GLldLAk9R4ChMENag4OCRegmkY3hb3m7ahI2kPNpf5sWpeUQ2h1yWTK4Pku7OsDGKaxievnI6DAavT9Jg==", "C": "cybTb6WwD3bj+ua0N061IoqCHbF6K7rhQms3khl6apAhA1sZ2xkSnEf6hMBmL5qPGE3T6iDauUNw9g5IBif4D2XAQA=="};
+function fnv(str){ let h=0x811c9dc5; for (const b of new TextEncoder().encode(str)){ h^=b; h=Math.imul(h,0x01000193)>>>0; } return h>>>0; }
+function unlockURL(k, code){
+  try{
+    const bin = atob(VAULT[k]); let x = fnv("dot-island:"+code+":"+k) || 1; const out = new Uint8Array(bin.length);
+    for (let i=0;i<bin.length;i++){ x^=x<<13; x>>>=0; x^=x>>>17; x^=x<<5; x>>>=0; out[i] = bin.charCodeAt(i) ^ (x&255); }
+    const t = new TextDecoder().decode(out);
+    return t.startsWith("OK|https://") ? t.slice(3) : null;
+  }catch(e){ return null; }
+}
+const unlocked = {};  // island -> url
+(function(){ try{ const c = sessionStorage.getItem("aiday-vault"); if (c) ISLANDS.forEach(i=>{ const u=unlockURL(i.k,c); if(u) unlocked[i.k]=u; }); }catch(e){} })();
+
+
+/* ---------- time ---------- */
+let offset = 0;
+const STAFF = location.hash === "#staff", SCREEN = location.hash === "#screen";
+if (location.hash === "#rehearsal"){ offset = T("14:20") - Date.now(); document.getElementById("rehearsal").hidden = false; }
+const eventNow = () => Date.now() + offset;
+const pad = n => String(n).padStart(2,"0");
+
+/* ---------- state ---------- */
+const IDS = ISLANDS.flatMap(i => Array.from({length:i.n},(_,j)=>i.k+(j+1)));
+let groups = {}, readOnly = false, adapter = null;
+function get(id){
+  const g = groups[id] || {};
+  const stars = [0,1].map(i=>{ const s = Array.isArray(g.stars) ? g.stars[i] : null; return {s:["off","lit","talk","used"].includes(s?.s)?s.s:"off", t:+s?.t||0}; });
+  return {
+    name: typeof g.name==="string" ? g.name.slice(0,24) : "",
+    members: Array.isArray(g.members) ? g.members.filter(m=>typeof m==="string").slice(0,12).map(m=>m.slice(0,20)) : [],
+    status: ST[g.status] ? g.status : "idle",
+    note: typeof g.note==="string" ? g.note.slice(0,60) : "",
+    links: [0,1].map(i=> Array.isArray(g.links) && typeof g.links[i]==="string" ? g.links[i].slice(0,400) : ""),
+    stars, updatedAt: +g.updatedAt || 0,
+  };
+}
+const chains = {};
+function save(id, patch){
+  if (readOnly){ showRO(); return; }
+  const next = {...get(id), ...patch, updatedAt: Date.now()};
+  groups[id] = next; refresh();
+  chains[id] = (chains[id]||Promise.resolve())
+    .then(()=>adapter.write("groups", id, next))
+    .catch(err=>{
+      if (err && ["invalid_argument","not_granted","permission-denied"].includes(err.code)){ readOnly = true; setSync("ro","只能查看"); showRO(); }
+      else if (err && err.code==="quota_exceeded") flash("資料庫空間已滿，請聯絡工作人員。");
+      else flash("剛剛的修改沒有存到，請再試一次。");
+    });
+}
+function flash(msg){ const b=document.getElementById("banner"); b.textContent=msg; b.classList.add("show"); clearTimeout(flash.t); flash.t=setTimeout(()=>b.classList.remove("show"),5000); }
+function showRO(){ flash("你目前只能查看，無法修改。請工作人員把你加為可編輯的成員，或請工作人員幫忙更新。"); }
+function setSync(s, text){ const el=document.getElementById("sync"); el.dataset.s=s; document.getElementById("syncText").textContent=text; }
+
+/* ---------- storage adapters ---------- */
+async function artifactAdapter(){
+  if (!(window.claude && typeof window.claude.use === "function")) return null;
+  let db = null; try { db = await window.claude.use("db"); } catch(e){}
+  if (!db) return null;
+  return {
+    local:false,
+    subscribe(name, cb){
+      const timer = setTimeout(()=>setSync("wait","資料還連不上，稍等一下"),10000);
+      db.collection(name).onSnapshot(snap=>{
+        if (!snap.metadata.fromCache){ clearTimeout(timer); if(!readOnly) setSync("live","即時同步中"); }
+        const m={}; snap.docs.forEach(d=>{ if(d.exists) m[d.id]=d.data(); }); cb(m);
+      }, ()=>{ clearTimeout(timer); setSync("ro","同步中斷，請重新整理"); });
+    },
+    write(name,id,data){ return db.collection(name).doc(id).set(JSON.parse(JSON.stringify(data))); }
+  };
+}
+function loadScript(src){ return new Promise((ok,no)=>{ const s=document.createElement("script"); s.src=src; s.onload=ok; s.onerror=no; document.head.appendChild(s); }); }
+async function firebaseAdapter(){
+  if (!FIREBASE_CONFIG.apiKey) return null;
+  try{
+    await loadScript("https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js");
+    await loadScript("https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js");
+  }catch(e){ return null; }
+  firebase.initializeApp(FIREBASE_CONFIG);
+  const fs = firebase.firestore();
+  return {
+    local:false,
+    subscribe(name, cb){ fs.collection("aiday-"+name).onSnapshot(s=>{ setSync("live","即時同步中"); const m={}; s.forEach(d=>m[d.id]=d.data()); cb(m); }, ()=>setSync("ro","同步中斷，請重新整理")); },
+    write(name,id,data){ return fs.collection("aiday-"+name).doc(id).set(data); }
+  };
+}
+function localAdapter(){
+  const key = name => name==="groups" ? "aiday-islands-v1" : "aiday-"+name+"-v1";
+  const read = name => { try{ return JSON.parse(localStorage.getItem(key(name))||"{}"); }catch(e){ return {}; } };
+  return {
+    local:true,
+    subscribe(name, cb){ cb(read(name)); window.addEventListener("storage",e=>{ if(e.key===key(name)) cb(read(name)); }); },
+    write(name,id,data){ const all=read(name); all[id]=data; try{ localStorage.setItem(key(name), JSON.stringify(all)); }catch(e){} return Promise.resolve(); }
+  };
+}
+
+/* ---------- HTML helpers ---------- */
+const esc = s => String(s).replace(/[&<>"']/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const STAR_SVG = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.8l2.75 5.6 6.15.9-4.45 4.34 1.05 6.12L12 16.87l-5.5 2.89 1.05-6.12L3.1 9.3l6.15-.9z" stroke-linejoin="round"/></svg>';
+const waitMin = ms => { const m=Math.max(0,Math.floor((Date.now()-ms)/60000)); return m<1?"剛舉起":`已等 ${m} 分`; };
+function safeURL(v){ try{ const u=new URL(v); return (u.protocol==="https:"||u.protocol==="http:") ? u.href : null; }catch(e){ return null; } }
+function linksHTML(g, compact){
+  const ls = g.links.map(safeURL).filter(Boolean); if (!ls.length) return "";
+  return `<div class="glinks">${ls.map((u,i)=>`<a href="${esc(u)}" target="_blank" rel="noopener" data-link="1">${compact?`成果 ${i+1}`:`成果連結 ${i+1}：${esc(new URL(u).hostname)}`} ↗</a>`).join("")}</div>`;
+}
+const TALK_MS = 5*60e3;
+const isActive = s => s.s==="lit" || s.s==="talk";
+const tmr = t => `<span class="tmr" data-t="${t}">${fmtLeft(t)}</span>`;
+function fmtLeft(t){ const ms = TALK_MS-(Date.now()-t); if (ms<=0) return "時間到"; const x=Math.ceil(ms/1000); return `剩 ${Math.floor(x/60)}:${pad(x%60)}`; }
+function starsHTML(id,g){
+  return g.stars.map((s,i)=>{
+    const lab = s.s==="off" ? `舉起第 ${i+1} 顆星星，排隊找 NGO 或 mentor 諮詢 5 分鐘` : s.s==="lit" ? `第 ${i+1} 顆星星排隊中` : s.s==="talk" ? `第 ${i+1} 顆星星諮詢中` : `第 ${i+1} 顆星星已使用`;
+    return `<button type="button" class="star" data-act="star" data-id="${id}" data-i="${i}" data-s="${s.s}" aria-label="${lab}" title="${lab}">${STAR_SVG}</button>`;
+  }).join("");
+}
+function queueBits(id,g){
+  const i = g.stars.findIndex(isActive); if (i<0) return "";
+  const s = g.stars[i];
+  if (s.s==="talk") return `<div class="q talk">諮詢中 · ${tmr(s.t)}
+    <button type="button" class="btn" data-act="finish" data-id="${id}" data-i="${i}">完成</button></div>`;
+  return `<div class="q">排隊中 · ${waitMin(s.t)}
+    <button type="button" class="btn ghost" data-act="cancel" data-id="${id}" data-i="${i}">取消</button></div>`;
+}
+function dlgStarsHTML(id){
+  const g = get(id), active = g.stars.findIndex(isActive);
+  return g.stars.map((s,i)=>{
+    let state, acts = "";
+    if (s.s==="off"){ state = active>=0 ? "先等另一顆用完" : "還沒用，按星星舉起"; }
+    else if (s.s==="lit"){ state = `排隊中 · ${waitMin(s.t)}`;
+      acts = `<button type="button" class="btn primary" data-act="start" data-id="${id}" data-i="${i}">開始諮詢</button><button type="button" class="btn ghost" data-act="cancel" data-id="${id}" data-i="${i}">放下</button>`; }
+    else if (s.s==="talk"){ state = `諮詢中 · ${tmr(s.t)}`;
+      acts = `<button type="button" class="btn primary" data-act="finish" data-id="${id}" data-i="${i}">諮詢完成</button>`; }
+    else state = "已使用";
+    return `<div class="dstar" data-s="${s.s}">
+      <button type="button" class="star big" data-act="star" data-id="${id}" data-i="${i}" data-s="${s.s}" aria-label="第 ${i+1} 顆星星：${state.replace(/<[^>]+>/g,"")}" ${s.s!=="off"||active>=0?"disabled":""}>${STAR_SVG}</button>
+      <div><b>第 ${i+1} 顆</b><div class="dst">${state}</div><div class="dacts">${acts}</div></div></div>`;
+  }).join("");
+}
+function renderDlgStars(){ if (editing && dlg.open) document.getElementById("fStars").innerHTML = dlgStarsHTML(editing); }
+function labelHTML(id){
+  const g = get(id), st = ST[g.status];
+  return `<div class="r1"><span class="id">${id}</span><span class="nm ${g.name?"":"ph"}">${g.name?esc(g.name):"點我取組名"}</span></div>
+    <div class="r2"><span class="pill"><span class="dot"></span>${st.t}</span><span class="sts">${starsHTML(id,g)}</span></div>${queueBits(id,g)}${linksHTML(g,true)}`;
+}
+
+/* ---------- panels ---------- */
+let panel = null;
+function renderCounts(){
+  const all = IDS.map(id=>[id,get(id)]);
+  document.getElementById("counts").innerHTML = STATUSES.map(s=>`<div class="cnt" style="--c:${s.c}"><span class="dot"></span>${s.t}<b>${all.filter(([,g])=>g.status===s.v).length}</b></div>`).join("");
+  const used = all.reduce((a,[,g])=>a+g.stars.filter(s=>s.s==="used").length,0);
+  document.getElementById("totalNote").textContent = `共 ${IDS.length} 組 · 星星已用 ${used}/${IDS.length*2}`;
+  const q = queueList();
+  document.getElementById("queue").innerHTML = queueHTML(q);
+  document.getElementById("mQueue").textContent = q.length ? `星星排隊 ${q.length}` : "星星排隊";
+}
+function queueList(){
+  const q=[]; IDS.forEach(id=>{ const g=get(id); g.stars.forEach((s,i)=>{ if(isActive(s)) q.push({id,g,i,t:s.t,talk:s.s==="talk"}); }); });
+  return q.sort((a,b)=>(b.talk-a.talk)||(a.t-b.t));
+}
+function queueHTML(q){
+  let n = 0;
+  return q.length ? q.map(x=>`<div class="qrow${x.talk?" talk":""}">
+      <span class="n">${x.talk?"諮詢中":"#"+(++n)}</span><span class="tag" style="--c:${ISL[x.id[0]].color}">${x.id}</span>
+      <span class="g">${x.g.name?esc(x.g.name):"（未取名）"} · ${ISL[x.id[0]].name}</span>
+      <span class="w">${x.talk?tmr(x.t):waitMin(x.t)}</span>
+      ${x.talk?`<button type="button" class="btn" data-act="finish" data-id="${x.id}" data-i="${x.i}">諮詢完成</button>`
+              :`<button type="button" class="btn primary" data-act="start" data-id="${x.id}" data-i="${x.i}">開始諮詢</button>`}</div>`).join("")
+    : `<div class="empty">目前沒有小組舉星星。</div>`;
+}
+function mentorPoints(key){
+  const d = mentorNotes[key]; const pts = d && Array.isArray(d.points) && d.points.length ? d.points : (MK[key].pts || []);
+  return pts.filter(x=>typeof x==="string" && x.trim()).slice(0,6).map(x=>x.slice(0,160));
+}
+function mentorHTML(){
+  const now = Date.now(), m = MK[mentorSel] || MENTORS[0];
+  const s = new Date(`${m.date}T10:00:00+08:00`).getTime(), e = s+3600e3;
+  const d = new Date(`${m.date}T12:00:00+08:00`);
+  const state = now<s ? ["即將直播",""] : now<e ? ["直播中","live"] : ["看回放",""];
+  const pts = mentorPoints(m.key);
+  return `<div class="isec"><h3>Mentor 燈塔 · 知識共享</h3><p>點一位 mentor，看重點、想一想，再去聽回放。</p></div>
+  <div class="crew">${MENTORS.map(x=>`<button type="button" class="crewb${x.key===m.key?" on":""}" data-mentor="${x.key}" style="--mc:${x.c}" aria-pressed="${x.key===m.key}">${personSVG(x,52)}<span>${x.name}</span></button>`).join("")}</div>
+  <article class="mcard" style="--mc:${m.c}">
+    <header class="mhead">${personSVG(m,72)}
+      <div><div class="role">${m.role}</div><div class="nm">${m.name} · ${m.zh}</div>
+      <div class="desc">${d.getMonth()+1}/${pad(d.getDate())}（${WEEK[d.getDay()]}）10:00–11:00</div></div>
+    </header>
+    <a class="watch ${state[1]}" href="${m.url}" target="_blank" rel="noopener">▶ ${state[0]}（YouTube）</a>
+    ${m.about?`<section><h4>這場在聊</h4><p>${m.about}</p></section>`:""}
+    ${m.quote?`<blockquote class="mq">「${m.quote}」</blockquote>`:""}
+    ${pts.length ? `<section><h4>重點分享 <small class="src">整理自分享簡報</small><button type="button" class="btn ghost" data-act="mnotes" data-id="${m.key}">編輯</button></h4>
+      <ol class="pts">${pts.map(x=>`<li>${esc(x)}</li>`).join("")}</ol></section>` : ""}
+    <section><h4>想想看</h4><p class="sm">跟組員聊聊，或帶著問題去舉星星問 NGO。</p>
+      <ol class="qs">${m.qs.map(q=>`<li>${q}</li>`).join("")}</ol>
+    </section>
+    ${pts.length ? "" : `<button type="button" class="btn ghost addpts" data-act="mnotes" data-id="${m.key}">＋ 新增重點</button>`}
+  </article>`;
+}
+function openMentor(key){ if (key) mentorSel = key; panel = "mentor"; renderDrawer(); }
+function listHTML(){
+  return ISLANDS.map(isl=>`<section class="isec" style="--c:${isl.color}">
+    <h3><span class="sw"></span>${isl.branch}｜${isl.name}</h3><p>助教：<b>${isl.ta}</b> · ${isl.theme} · ${isl.meta}</p>
+    <div class="rows">${IDS.filter(id=>id[0]===isl.k).map(id=>{ const g=get(id), st=ST[g.status];
+      return `<div class="lrow" role="button" tabindex="0" data-act="edit" data-id="${id}" style="--sc:${st.c}">
+        <div class="r1" style="display:flex;gap:8px;align-items:center"><span class="tag" style="--c:${isl.color}">${id}</span><b>${g.name?esc(g.name):'<span style="color:var(--muted);font-weight:400">點我取組名</span>'}</b>
+          <span class="pill" style="margin-left:auto"><span class="dot"></span>${st.t}</span></div>
+        <div class="mem">${g.members.length?g.members.map(esc).join("、"):"還沒填組員"}</div>
+        ${g.note?`<div class="note">${esc(g.note)}</div>`:""}
+        ${linksHTML(g,false)}
+        <div style="display:flex;align-items:center;gap:6px"><span class="sts" style="margin-left:0">${starsHTML(id,g)}</span>${queueBits(id,g)}</div>
+      </div>`;}).join("")}</div></section>`).join("");
+}
+/* ---------- 工作人員：投影模式、匯出成果、全部重設（網址加 #staff 才看得到） ---------- */
+function staffHTML(){
+  return `<div class="isec"><h3>工作人員</h3><p>這個面板只有網址加上 <b>#staff</b> 才看得到。</p></div>
+  <section class="spanel"><h4>投影模式</h4><p>隱藏按鈕、鏡頭慢慢繞島，倒數和排隊清單放大。適合大螢幕。投影用的電腦也可以直接開網址加 <b>#screen</b>。</p>
+    <button type="button" class="btn primary" id="sScreen">開啟投影模式</button></section>
+  <section class="spanel"><h4>匯出成果</h4><p id="sStats"></p>
+    <div class="srow"><button type="button" class="btn primary" id="sCsv">下載 CSV</button><button type="button" class="btn" id="sCopy">複製表格（可貼到 Google 試算表）</button></div>
+    <p class="sm" id="sMsg"></p></section>
+  <section class="spanel danger"><h4>全部重設</h4><p>清空 13 組的組名、組員、狀態、星星和成果連結。用在活動前清掉測試資料。<b>清掉就救不回來。</b></p>
+    <label for="sConfirm">輸入「全部重設」四個字確認
+      <input id="sConfirm" autocomplete="off" placeholder="全部重設"></label>
+    <button type="button" class="btn danger" id="sReset">清空所有小組資料</button><p class="sm" id="sResetMsg"></p></section>`;
+}
+function updateStaffStats(){
+  const el = document.getElementById("sStats"); if (!el) return;
+  const named = IDS.filter(id=>get(id).name).length, linked = IDS.filter(id=>get(id).links.some(Boolean)).length;
+  el.textContent = `目前 ${named} 組已取名，${linked} 組已貼成果連結。`;
+}
+function exportRows(){
+  const head = ["分場","島","組別","組名","組員","狀態","一句話近況","成果連結1","成果連結2","星星已用","最後更新"];
+  const rows = IDS.map(id=>{ const g=get(id), isl=ISL[id[0]];
+    return [isl.branch, isl.name, id, g.name, g.members.join("、"), ST[g.status].t, g.note, g.links[0], g.links[1],
+      String(g.stars.filter(x=>x.s==="used").length), g.updatedAt ? new Date(g.updatedAt).toLocaleString("zh-TW",{hour12:false}) : ""]; });
+  return [head, ...rows];
+}
+document.addEventListener("click", e=>{
+  const t = e.target.closest("button"); if (!t) return;
+  if (t.id==="sScreen"){ setScreen(true); panel=null; renderDrawer(); }
+  if (t.id==="exitScreen"){ setScreen(false); }
+  if (t.id==="sCsv"){
+    const csv = "\ufeff" + exportRows().map(r=>r.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(",")).join("\r\n");
+    const name = "AI-Impact-Day-成果.csv", msg = document.getElementById("sMsg");
+    (async ()=>{
+      let dl = null;
+      if (window.claude && typeof window.claude.use === "function"){ try{ dl = await window.claude.use("downloads"); }catch(err){} }
+      if (dl){ try{ await dl.save({filename:name, data:csv}); msg.textContent="已送出下載。"; }catch(err){ msg.textContent="下載被取消或失敗，可以改用「複製表格」。"; } return; }
+      try{ const a=document.createElement("a"); a.href=URL.createObjectURL(new Blob([csv],{type:"text/csv"})); a.download=name; document.body.appendChild(a); a.click(); a.remove(); msg.textContent="已開始下載。"; }
+      catch(err){ msg.textContent="沒辦法下載，請改用「複製表格」。"; }
+    })();
+  }
+  if (t.id==="sCopy"){
+    const tsv = exportRows().map(r=>r.map(v=>String(v).replace(/[\t\n]/g," ")).join("\t")).join("\n");
+    navigator.clipboard.writeText(tsv).then(()=>{ document.getElementById("sMsg").textContent="已複製！打開 Google 試算表，點 A1 貼上就好。"; })
+      .catch(()=>{ document.getElementById("sMsg").textContent="瀏覽器不讓複製，請改用「下載 CSV」。"; });
+  }
+  if (t.id==="sReset"){
+    const ok = document.getElementById("sConfirm").value.trim()==="全部重設";
+    const msg = document.getElementById("sResetMsg");
+    if (!ok){ msg.textContent = "請先在上面輸入「全部重設」。"; return; }
+    IDS.forEach(id=>save(id,{name:"",members:[],status:"idle",note:"",links:["",""],stars:[{s:"off",t:0},{s:"off",t:0}]}));
+    document.getElementById("sConfirm").value = ""; msg.textContent = "已清空 13 組的資料。";
+  }
+});
+function setScreen(on){
+  document.body.classList.toggle("screen", on);
+  if (window.setAutoRotate) setAutoRotate(on);
+  if (on){ flyHome(); try{ document.documentElement.requestFullscreen && document.documentElement.requestFullscreen().catch(()=>{}); }catch(e){} }
+}
+
+function renderDrawer(){
+  const d = document.getElementById("drawer");
+  d.classList.toggle("open", !!panel || document.body.classList.contains("nogl"));
+  const p = panel || "list";
+  document.querySelectorAll("#drawer .dhead [data-panel]").forEach(b=>b.classList.toggle("on", b.dataset.panel===p));
+  if (!d.classList.contains("open")) return;
+  const body = document.getElementById("dbody");
+  if (p==="staff"){ if (body.dataset.p!=="staff"){ body.innerHTML = staffHTML(); body.dataset.p="staff"; } updateStaffStats(); return; }
+  body.dataset.p = p;
+  body.innerHTML = p==="vault" ? vaultHTML() : p==="mentor" ? mentorHTML() : p==="queue" ? `<div class="isec"><h3>星星排隊中</h3><p>每組 2 顆，每顆換 1 次 NGO 或 mentor 諮詢，每次 5 分鐘。依舉起時間排序；按「開始諮詢」會倒數 5 分鐘。</p></div><div class="queue" style="max-height:none">${queueHTML(queueList())}</div>` : listHTML();
+}
+function openPanel(p){ panel = (panel===p) ? null : p; renderDrawer(); }
+document.getElementById("dClose").onclick = ()=>{ panel=null; renderDrawer(); };
+
+/* ---------- countdown ---------- */
+(function buildMini(){
+  const mini = document.getElementById("mini"), span = END-START;
+  PHASES.forEach((p,i)=>{ const el=document.createElement("i"); el.className=(p.work?"work":"")+(p.key?" key":""); el.style.width=((p.E-p.S)/span*100)+"%"; el.title=`${p.s}–${p.e} ${p.t}`; el.dataset.i=i; mini.insertBefore(el, document.getElementById("needle")); });
+  const mk=document.createElement("div"); mk.className="mark star"; mk.style.left=((STARS_OPEN-START)/span*100)+"%"; mk.title="15:00 開始舉星星"; mini.appendChild(mk);
+  document.getElementById("mticks").innerHTML = [["12:00","12:00"],["15:00","15:00 ★"],["16:15","16:15"],["18:00","18:00"]]
+    .map(([t,l])=>`<span style="left:${(T(t)-START)/span*100}%">${l}</span>`).join("");
+})();
+function fmt(ms){
+  ms=Math.max(0,ms); const s=Math.floor(ms/1000), d=Math.floor(s/86400), h=Math.floor(s%86400/3600), m=Math.floor(s%3600/60), x=s%60;
+  return (d?`<span class="d">${d} 天</span>`:"")+`${pad(h)}:${pad(m)}:${pad(x)}`;
+}
+function tickTimers(){ document.querySelectorAll(".tmr").forEach(el=>{ const t=+el.dataset.t, txt=fmtLeft(t); if (el.textContent!==txt) el.textContent=txt; el.classList.toggle("over", txt==="時間到"); }); }
+function tick(){
+  tickTimers();
+  const now = eventNow();
+  const lbl=document.getElementById("clockLbl"), dg=document.getElementById("digits"), hint=document.getElementById("clockHint");
+  let urgent=0;
+  if (now<START){ lbl.innerHTML="距離 <b>活動開始 12:00</b>"; dg.innerHTML=fmt(START-now); hint.textContent="記得帶筆電、充電器，先登入 Google 和 AI 工具"; }
+  else if (now<DUE){ lbl.innerHTML="距離 <b>完成實作 16:15</b>"; dg.innerHTML=fmt(DUE-now); urgent=DUE-now<=30*60e3?1:0;
+    hint.textContent = now<STARS_OPEN ? "有問題隨時舉星星，找 NGO 或 mentor 諮詢 5 分鐘" : "記得把成果連結貼到小組卡片，16:15 完成實作"; }
+  else if (now<END){ lbl.innerHTML="距離 <b>活動結束 18:00</b>"; dg.innerHTML=fmt(END-now); hint.textContent="實作時間結束，準備分享成果"; }
+  else { lbl.innerHTML="<b>活動結束</b>"; dg.innerHTML="00:00:00"; hint.textContent="謝謝大家，一起把好事做下去"; }
+  document.getElementById("clock").dataset.urgent = urgent;
+  const ph = PHASES.findIndex(p=>now>=p.S&&now<p.E);
+  document.querySelectorAll("#mini i").forEach(el=>el.classList.toggle("past", now>=PHASES[+el.dataset.i].E));
+  const nd=document.getElementById("needle");
+  if (now>=START&&now<=END){ nd.style.display="block"; nd.style.left=`calc(${(now-START)/(END-START)*100}% - 1.5px)`; } else nd.style.display="none";
+  const pe=document.getElementById("phase");
+  if (ph>=0){ const nx=PHASES[ph+1]; pe.innerHTML=`現在：${PHASES[ph].t} <span>${PHASES[ph].s}–${PHASES[ph].e}${nx?` · 下一段 ${nx.s} ${nx.t}`:""}</span>`; }
+  else pe.innerHTML = now<START ? "11/15（日）12:00 報到 <span>· 12:45 開始實作</span>" : "活動已結束";
+  if (window.setSkyByTime) setSkyByTime(now);
+}
+
+/* ---------- interactions ---------- */
+document.addEventListener("click", e=>{
+  const nav = e.target.closest("[data-nav]"); if (nav){ flyHome(); return; }
+  const pnl = e.target.closest("[data-panel]"); if (pnl){ openPanel(pnl.dataset.panel); return; }
+  const isl = e.target.closest("[data-island]"); if (isl){ flyTo(isl.dataset.island); return; }
+  if (e.target.closest("[data-link]")) return;
+  const vb = e.target.closest("[data-vault]"); if (vb){ openVault(vb.dataset.vault); return; }
+  const mb = e.target.closest("[data-mentor]"); if (mb){ openMentor(mb.dataset.mentor||null); if (window.focusMentor) focusMentor(); return; }
+  const el = e.target.closest("[data-act]"); if(!el) return;
+  const {act,id} = el.dataset, i = +el.dataset.i;
+  if (act==="edit") return openEditor(id);
+  if (act==="mnotes") return openNotes(id);
+  e.stopPropagation();
+  const stars = get(id).stars.map(s=>({...s}));
+  if (act==="star"){
+    if (stars[i].s!=="off") return;
+    if (stars.some(isActive)) return flash("這組已經有一顆星星在排隊或諮詢中，用完再舉下一顆。");
+    stars[i] = {s:"lit", t:Date.now()};
+  } else if (act==="start"){ if (stars[i].s!=="lit") return; stars[i] = {s:"talk", t:Date.now()}; }
+  else if (act==="finish") stars[i] = {s:"used", t:Date.now()};
+  else if (act==="cancel") stars[i] = {s:"off", t:0};
+  else return;
+  save(id,{stars});
+}, true);
+document.addEventListener("keydown", e=>{
+  const el = e.target.closest && e.target.closest('[data-act="edit"]');
+  if (el && e.target===el && (e.key==="Enter"||e.key===" ")){ e.preventDefault(); openEditor(el.dataset.id); }
+});
+
+const dlg = document.getElementById("dlg"); let editing = null;
+document.getElementById("fStatus").innerHTML = STATUSES.map(s=>`<input type="radio" name="st" id="st-${s.v}" value="${s.v}"><label for="st-${s.v}" style="--sc:${s.c}"><span class="dot" style="background:${s.c}"></span>${s.t}</label>`).join("");
+function openEditor(id){
+  if (readOnly){ showRO(); return; }
+  editing=id; const g=get(id);
+  document.getElementById("dlgTitle").textContent = `${ISL[id[0]].name} · ${id} 組`;
+  document.getElementById("fName").value=g.name;
+  document.getElementById("fMembers").value=g.members.join("、");
+  document.getElementById("fNote").value=g.note;
+  document.getElementById("fLink1").value=g.links[0]; document.getElementById("fLink2").value=g.links[1];
+  document.getElementById("fLinkErr").textContent="";
+  document.getElementById("st-"+g.status).checked=true;
+  document.getElementById("fTaHint").innerHTML = `卡住了？選「需要助教」並儲存，你們島上的助教 <b>${ISL[id[0]].ta}</b> 會走過來找你們。`;
+  dlg.showModal(); renderDlgStars(); document.getElementById("fName").focus();
+}
+document.getElementById("fCancel").onclick=()=>dlg.close();
+document.getElementById("fReset").onclick=()=>{ if(editing){ save(editing,{stars:[{s:"off",t:0},{s:"off",t:0}]}); } dlg.close(); };
+document.getElementById("form").addEventListener("submit", e=>{
+  e.preventDefault(); if(!editing) return;
+  const members=document.getElementById("fMembers").value.split(/[、,，\n;；\/]+/).map(s=>s.trim()).filter(Boolean).slice(0,12);
+  const status=(document.querySelector('#fStatus input:checked')||{}).value||"idle";
+  const links=["fLink1","fLink2"].map(k=>{ let v=document.getElementById(k).value.trim(); if (v && !/^https?:\/\//i.test(v)) v="https://"+v; return v; });
+  if (links.some(v=>v && !safeURL(v))){ document.getElementById("fLinkErr").textContent="連結格式不對，請貼上完整網址（https:// 開頭）。"; return; }
+  const prev=get(editing), patch={name:document.getElementById("fName").value.trim(), members, status, note:document.getElementById("fNote").value.trim(), links};
+  if (patch.name!==prev.name||patch.members.join("|")!==prev.members.join("|")||patch.status!==prev.status||patch.note!==prev.note||patch.links.join("|")!==prev.links.join("|")) save(editing,patch);
+  dlg.close();
+});
+const vdlg = document.getElementById("vdlg"); let vIsland = null;
+const LOCK_SVG = '<svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><rect x="4" y="10" width="16" height="11" rx="2.5" fill="currentColor"/><path d="M8 10V7.5a4 4 0 0 1 8 0V10" fill="none" stroke="currentColor" stroke-width="2.2"/></svg>';
+const OPEN_SVG = '<svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><rect x="4" y="10" width="16" height="11" rx="2.5" fill="currentColor"/><path d="M8 10V7.5a4 4 0 0 1 7.6-1.7" fill="none" stroke="currentColor" stroke-width="2.2"/></svg>';
+function showVaultState(){
+  const k = vIsland, u = unlocked[k];
+  document.getElementById("vLocked").hidden = !!u; document.getElementById("vOpen").hidden = !u;
+  document.getElementById("vIcon").innerHTML = u ? OPEN_SVG : LOCK_SVG;
+  if (u) document.getElementById("vLink").href = u;
+}
+function openVault(k){
+  vIsland = k; const isl = ISL[k];
+  vdlg.style.setProperty("--c", isl.color);
+  document.getElementById("vKicker").textContent = `${isl.branch} · 資料寶箱`;
+  document.getElementById("vTitle").textContent = `${isl.name} 示範資料`;
+  document.getElementById("vCode").value = ""; document.getElementById("vErr").textContent = "";
+  showVaultState(); vdlg.showModal();
+  if (!unlocked[k]) document.getElementById("vCode").focus();
+}
+document.getElementById("vCancel").onclick = ()=>vdlg.close();
+document.getElementById("vClose").onclick = ()=>vdlg.close();
+document.getElementById("vform").addEventListener("submit", e=>{
+  e.preventDefault();
+  const code = document.getElementById("vCode").value.trim().replace(/\s/g,"");
+  const u = unlockURL(vIsland, code);
+  if (!u){
+    const er = document.getElementById("vErr"); er.textContent = "密碼不對，再試一次。忘記的話可以問現場工作人員。";
+    const f = document.getElementById("vform"); f.classList.remove("shake"); void f.offsetWidth; f.classList.add("shake");
+    return;
+  }
+  ISLANDS.forEach(i=>{ const x = unlockURL(i.k, code); if (x) unlocked[i.k] = x; });
+  try{ sessionStorage.setItem("aiday-vault", code); }catch(err){}
+  showVaultState(); if (window.updateChests) updateChests(); renderDrawer();
+});
+function vaultHTML(){
+  return `<div class="isec"><h3>資料寶箱</h3><p>每座島都有一份示範資料。輸入通關密碼就能打開。資料全部虛構，只用於今天的練習。</p></div>
+  <div class="rows">${ISLANDS.map(i=>`<button type="button" class="vrow" data-vault="${i.k}" style="--c:${i.color}">
+    <span class="vicon">${unlocked[i.k]?OPEN_SVG:LOCK_SVG}</span>
+    <span><b>${i.branch}｜${i.name}</b><br><small>${unlocked[i.k]?"已打開，點一下看連結":"上鎖中，點一下輸入密碼"}</small></span></button>`).join("")}</div>`;
+}
+
+const ndlg = document.getElementById("ndlg"); let nEditing = null;
+function openNotes(key){
+  if (readOnly){ showRO(); return; }
+  nEditing = key; const m = MK[key];
+  document.getElementById("nTitle").textContent = `${m.name} · ${m.zh} 的重點`;
+  document.getElementById("nText").value = mentorPoints(key).join("\n");
+  ndlg.showModal(); document.getElementById("nText").focus();
+}
+document.getElementById("nCancel").onclick = ()=>ndlg.close();
+document.getElementById("nform").addEventListener("submit", e=>{
+  e.preventDefault(); if (!nEditing) return;
+  const points = document.getElementById("nText").value.split("\n").map(x=>x.trim()).filter(Boolean).slice(0,6).map(x=>x.slice(0,160));
+  const key = nEditing; ndlg.close();
+  if (points.join("|") === mentorPoints(key).join("|")) return;
+  mentorNotes = {...mentorNotes, [key]:{points, updatedAt:Date.now()}}; renderDrawer();
+  (chains["m-"+key] = (chains["m-"+key]||Promise.resolve()).then(()=>adapter.write("mentors", key, {points, updatedAt:Date.now()})))
+    .catch(err=>{ if (err && ["invalid_argument","not_granted","permission-denied"].includes(err.code)){ readOnly=true; setSync("ro","只能查看"); showRO(); } else flash("重點沒有存到，請再試一次。"); });
+});
+document.getElementById("islandNav").innerHTML = ISLANDS.map(i=>`<button class="nb" data-island="${i.k}" style="--c:${i.color}"><span class="sw"></span>${i.name}</button>`).join("");
+
+/* =================== 3D world =================== */
+let flyTo = ()=>{}, flyHome = ()=>{}, updateStations = ()=>{};
+const labelEls = {};
+function buildWorld(){
+  if (!window.THREE) throw new Error("no three");
+  const canvas = document.getElementById("scene");
+  const renderer = new THREE.WebGLRenderer({canvas, antialias:true});
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio||1, 2));
+  renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+  const scene = new THREE.Scene();
+  const SKY_NOON = new THREE.Color("#dff1ee"), SKY_DUSK = new THREE.Color("#f7d9bd");
+  scene.background = SKY_NOON.clone();
+  scene.fog = new THREE.Fog(scene.background, 70, 150);
+  const camera = new THREE.PerspectiveCamera(38, 1, 0.5, 400);
+
+  const hemi = new THREE.HemisphereLight(0xffffff, 0x7fa8a0, 0.5); scene.add(hemi);
+  const sun = new THREE.DirectionalLight(0xffffff, 0.68);
+  sun.position.set(-30, 50, 25); sun.castShadow = true;
+  sun.shadow.mapSize.set(2048,2048);
+  Object.assign(sun.shadow.camera,{left:-45,right:45,top:45,bottom:-45,near:1,far:150});
+  sun.shadow.bias = -0.0005;
+  scene.add(sun);
+  const SUN_NOON = new THREE.Color("#ffffff"), SUN_DUSK = new THREE.Color("#ffc58f");
+
+  const mat = (c, o={}) => new THREE.MeshStandardMaterial({color:c, flatShading:true, roughness:.85, metalness:0, ...o});
+  const mesh = (geo, m, cast=true, recv=true) => { const x = new THREE.Mesh(geo, m); x.castShadow=cast; x.receiveShadow=recv; return x; };
+  let seed = 7; const rnd = () => (seed = (seed*16807) % 2147483647) / 2147483647;
+
+  /* sea */
+  const seaGeo = new THREE.PlaneGeometry(220, 220, 70, 70); seaGeo.rotateX(-Math.PI/2);
+  const seaBase = seaGeo.attributes.position.array.slice();
+  const sea = mesh(seaGeo, mat("#3fa9b4",{roughness:.6}), false, true); sea.position.y = -0.2; scene.add(sea);
+
+  const pickables = [];
+  const stations = {};
+  const anchors = [];  // {el, pos, kind}
+
+  function tree(x,z,s=1,base=1.3){
+    const g = new THREE.Group();
+    const trunk = mesh(new THREE.CylinderGeometry(.12*s,.16*s,.7*s,5), mat("#9a6b47")); trunk.position.y = .35*s;
+    const greens = ["#5fae5a","#73bd5f","#4f9e5a","#86c46a"];
+    const top = mesh(new THREE.ConeGeometry(.75*s, 1.6*s, 6), mat(greens[Math.floor(rnd()*4)])); top.position.y = 1.35*s;
+    g.add(trunk, top); g.position.set(x, base, z); g.rotation.y = rnd()*6; return g;
+  }
+  function roundTree(x,z,s=1,base=1.3){
+    const g = new THREE.Group();
+    const trunk = mesh(new THREE.CylinderGeometry(.12*s,.16*s,.8*s,5), mat("#9a6b47")); trunk.position.y=.4*s;
+    const top = mesh(new THREE.IcosahedronGeometry(.75*s,0), mat(rnd()>.5?"#7cc063":"#68b25e")); top.position.y=1.25*s;
+    g.add(trunk, top); g.position.set(x,base,z); return g;
+  }
+  function islet(x,z,r,withTree=true){
+    const g = new THREE.Group();
+    const shallow = mesh(new THREE.CylinderGeometry(r*1.45,r*1.45,.06,7), mat("#8fdcd4"), false, true); shallow.position.y=-.12;
+    const sand = mesh(new THREE.CylinderGeometry(r,r*1.15,.9,7), mat("#ead8b2")); sand.position.y=.15;
+    const grass = mesh(new THREE.CylinderGeometry(r*.82,r*.9,.25,7), mat("#a8d27c")); grass.position.y=.7;
+    g.add(shallow,sand,grass);
+    if (withTree){ g.add(tree(r*.2,-r*.1,.8,.82)); if(r>2) g.add(roundTree(-r*.35,r*.25,.7,.82)); }
+    g.position.set(x,0,z); scene.add(g); return g;
+  }
+  function boat(color){
+    const g = new THREE.Group();
+    const hull = mesh(new THREE.BoxGeometry(1.4,.35,.6), mat("#f4efe6")); hull.position.y=.05;
+    const mast = mesh(new THREE.CylinderGeometry(.04,.04,1.4,4), mat("#8a6a4c")); mast.position.y=.8;
+    const sailGeo = new THREE.BufferGeometry(); sailGeo.setAttribute("position", new THREE.Float32BufferAttribute([0,.3,0, 0,1.45,0, .7,.3,0],3)); sailGeo.computeVertexNormals();
+    const sail = mesh(sailGeo, mat(color,{side:THREE.DoubleSide})); sail.position.x=.05;
+    g.add(hull,mast,sail); scene.add(g); return g;
+  }
+
+  function starGeo(r1,r2){
+    const sh = new THREE.Shape();
+    for (let i=0;i<10;i++){ const r=i%2?r2:r1, a=i/10*Math.PI*2+Math.PI/2; const x=Math.cos(a)*r, y=Math.sin(a)*r; i?sh.lineTo(x,y):sh.moveTo(x,y); }
+    const g = new THREE.ExtrudeGeometry(sh,{depth:.16,bevelEnabled:false}); g.center(); return g;
+  }
+  const STAR_G = starGeo(.48,.2);
+  const HALO_G = new THREE.SphereGeometry(.62, 12, 8);
+
+  function station(id, isl, x, z){
+    const g = new THREE.Group(); g.position.set(x, 1.3, z);
+    const c = new THREE.Color(isl.color);
+    const plot = mesh(new THREE.CylinderGeometry(1.75,1.85,.22,6), mat("#f6eedf")); plot.position.y=.11;
+    const body = mesh(new THREE.BoxGeometry(1.3,.95,1.05), mat("#fbf7ef")); body.position.y=.7;
+    const roof = mesh(new THREE.ConeGeometry(1.05,.85,4), mat(c)); roof.position.y=1.6; roof.rotation.y=Math.PI/4;
+    const door = mesh(new THREE.BoxGeometry(.32,.5,.04), mat(c.clone().multiplyScalar(.7))); door.position.set(0,.47,.54);
+    const pole = mesh(new THREE.CylinderGeometry(.04,.04,2.5,5), mat("#7c6a5a")); pole.position.set(1.15,1.35,.35);
+    const flagGeo = new THREE.PlaneGeometry(.85,.5,4,1); flagGeo.translate(.425,0,0);
+    const flagMat = mat("#97a6ab",{side:THREE.DoubleSide});
+    const flag = mesh(flagGeo, flagMat); flag.position.set(1.17,2.3,.35);
+    const ring = new THREE.Mesh(new THREE.RingGeometry(1.95,2.3,6), new THREE.MeshBasicMaterial({color:"#e8513f",transparent:true,opacity:.0,side:THREE.DoubleSide,depthWrite:false}));
+    ring.rotation.x=-Math.PI/2; ring.rotation.z=Math.PI/6; ring.position.y=.25;
+    const stars = [0,1].map(i=>{
+      const s = new THREE.Mesh(STAR_G, mat("#c9d2d4",{transparent:true,opacity:.5}));
+      s.position.set(i?.62:-.62, 3.15, 0);
+      const halo = new THREE.Mesh(HALO_G, new THREE.MeshBasicMaterial({color:"#ffe27a",transparent:true,opacity:0,depthWrite:false}));
+      s.add(halo); s.userData.halo = halo; g.add(s); return s;
+    });
+    g.add(plot,body,roof,door,pole,flag,ring);
+    g.traverse(o=>{ if(o.isMesh) { o.userData.id = id; pickables.push(o); } });
+    scene.add(g);
+    stations[id] = {g, flag, flagMat, ring, stars, phase: rnd()*6};
+    const el = document.createElement("div"); el.className="lbl"; el.dataset.act="edit"; el.dataset.id=id; el.setAttribute("role","button"); el.tabIndex=0; el.style.setProperty("--c", isl.color);
+    document.getElementById("labels").appendChild(el); labelEls[id]=el;
+    anchors.push({el, obj:g, y:3.9});
+  }
+
+  function landmark(isl, cx, cz){
+    const g = new THREE.Group(); g.position.set(cx,1.3,cz);
+    const c = new THREE.Color(isl.color);
+    if (isl.k==="A"){ // stacked data blocks
+      const cols = ["#25a68f","#7fd1bf","#1b7f6d","#bfe8de"];
+      for(let i=0;i<4;i++){ const b=mesh(new THREE.BoxGeometry(1.6-i*.25,.55,1.6-i*.25), mat(cols[i])); b.position.y=.3+i*.55; b.rotation.y=i*.35; g.add(b); }
+      const ant = mesh(new THREE.CylinderGeometry(.05,.05,1.2,4), mat("#5d6b6f")); ant.position.y=3; g.add(ant);
+      const tip = mesh(new THREE.SphereGeometry(.16,8,6), mat("#ffc93c",{emissive:"#ffb000",emissiveIntensity:.5})); tip.position.y=3.6; g.add(tip);
+    } else if (isl.k==="B"){ // pond + big tree
+      const pond = mesh(new THREE.CylinderGeometry(1.7,1.7,.08,8), mat("#6fcfd4",{roughness:.4}),false,true); pond.position.y=.06; g.add(pond);
+      const big = tree(0,-.2,1.6,0); g.add(big);
+      const rock = mesh(new THREE.DodecahedronGeometry(.4,0), mat("#b9b3a6")); rock.position.set(1.3,.25,.9); g.add(rock);
+    } else { // donation box with heart
+      const box = mesh(new THREE.BoxGeometry(1.4,1.1,1.1), mat("#fbe3ea")); box.position.y=.55; g.add(box);
+      const lid = mesh(new THREE.BoxGeometry(1.5,.18,1.2), mat(c)); lid.position.y=1.18; g.add(lid);
+      const hs = new THREE.Shape(); hs.moveTo(0,-.35); hs.bezierCurveTo(-.6,.05,-.3,.5,0,.22); hs.bezierCurveTo(.3,.5,.6,.05,0,-.35);
+      const heart = mesh(new THREE.ExtrudeGeometry(hs,{depth:.15,bevelEnabled:false}), mat(c,{emissive:c,emissiveIntensity:.25})); heart.position.set(0,1.9,0); heart.userData.spin=true; g.add(heart);
+    }
+    g.traverse(o=>{ if(o.isMesh){ o.userData.island = isl.k; pickables.push(o); } });
+    scene.add(g);
+    const el = document.createElement("div"); el.className="ilbl"; el.dataset.island=isl.k; el.style.setProperty("--c", isl.color);
+    el.innerHTML = `<small>${isl.branch}</small>${isl.name}<span class="ita">助教 ${isl.ta}</span>`;
+    document.getElementById("labels").appendChild(el);
+    anchors.push({el, obj:g, y:7.2, big:true});
+    return g;
+  }
+
+  /* islands */
+  ISLANDS.forEach(isl=>{
+    const [cx,,cz] = isl.pos, R = isl.R;
+    const shallow = mesh(new THREE.CylinderGeometry(R*1.32,R*1.32,.06,6), mat("#8fdcd4"), false, true); shallow.position.set(cx,-.12,cz); shallow.rotation.y=Math.PI/6;
+    const sand = mesh(new THREE.CylinderGeometry(R*1.02,R*1.1,1.2,6), mat("#ead8b2")); sand.position.set(cx,.35,cz); sand.rotation.y=Math.PI/6;
+    const rim = mesh(new THREE.CylinderGeometry(R*.99,R*.99,.28,6), mat(isl.color)); rim.position.set(cx,1.05,cz); rim.rotation.y=Math.PI/6;
+    const top = mesh(new THREE.CylinderGeometry(R*.95,R*.97,.22,6), mat("#b3d886")); top.position.set(cx,1.2,cz); top.rotation.y=Math.PI/6;
+    scene.add(shallow,sand,rim,top);
+    landmark(isl, cx, cz);
+    const ids = IDS.filter(id=>id[0]===isl.k), n = ids.length, rr = R*.6;
+    const angs = ids.map((_,i)=> Math.PI + (i/n)*Math.PI*2 + (n===3?Math.PI/3:Math.PI/5));
+    ids.forEach((id,i)=> station(id, isl, cx+Math.sin(angs[i])*rr, cz+Math.cos(angs[i])*rr));
+    // trees near the shore, avoiding houses
+    for (let t=0;t<(isl.k==="B"?26:14);t++){
+      const a = rnd()*Math.PI*2, r = R*(.78+rnd()*.12);
+      const sx = cx+Math.sin(a)*r, sz = cz+Math.cos(a)*r;
+      if (angs.some(b=>{ const px=cx+Math.sin(b)*rr, pz=cz+Math.cos(b)*rr; return Math.hypot(px-sx,pz-sz)<2.6; })) continue;
+      scene.add((isl.k==="B"||rnd()>.5)?tree(sx,sz,.7+rnd()*.4):roundTree(sx,sz,.7+rnd()*.35));
+    }
+  });
+
+  /* data chests */
+  const chests = {};
+  ISLANDS.forEach(isl=>{
+    const a = isl.n===3 ? Math.PI/3 : Math.PI/5, r = isl.n===3 ? 2.9 : 3.2;
+    const g = new THREE.Group(); g.position.set(isl.pos[0]+Math.sin(a)*r, 1.3, isl.pos[2]+Math.cos(a)*r); g.rotation.y = a;
+    const wood = mat("#a8703f"), gold = mat("#f2c14e",{emissive:"#c98a00",emissiveIntensity:.25});
+    const base = mesh(new THREE.BoxGeometry(1.15,.6,.78), wood); base.position.y=.3;
+    [-.42,.42].forEach(x=>{ const band=mesh(new THREE.BoxGeometry(.1,.62,.8), gold); band.position.set(x,.31,0); g.add(band); });
+    const lidPivot = new THREE.Group(); lidPivot.position.set(0,.6,-.39);
+    const lid = mesh(new THREE.BoxGeometry(1.17,.26,.8), mat("#c98a4b")); lid.position.set(0,.13,.39);
+    const lidBand = mesh(new THREE.BoxGeometry(1.19,.07,.82), gold); lidBand.position.set(0,.03,.39);
+    lidPivot.add(lid, lidBand);
+    const lock = mesh(new THREE.BoxGeometry(.2,.24,.06), gold); lock.position.set(0,.5,.41);
+    const glow = new THREE.Mesh(new THREE.SphereGeometry(.5,12,8), new THREE.MeshBasicMaterial({color:"#ffe27a",transparent:true,opacity:0,depthWrite:false})); glow.position.y=.75;
+    g.add(base, lidPivot, lock, glow);
+    g.traverse(o=>{ if (o.isMesh) { o.userData.vault = isl.k; pickables.push(o); } });
+    scene.add(g);
+    chests[isl.k] = {g, lidPivot, lock, glow};
+    const el = document.createElement("div"); el.className="chlbl"; el.dataset.vault=isl.k; el.style.setProperty("--c", isl.color);
+    document.getElementById("labels").appendChild(el); anchors.push({el, obj:g, y:1.6, chest:true});
+  });
+  window.updateChests = ()=>{
+    ISLANDS.forEach(i=>{
+      const c = chests[i.k], open = !!unlocked[i.k];
+      c.lidPivot.rotation.x = open ? -1.9 : 0; c.lock.visible = !open; c.glow.material.opacity = open ? .28 : 0;
+      const el = document.querySelector(`.chlbl[data-vault="${i.k}"]`);
+      if (el) el.innerHTML = (open?OPEN_SVG:LOCK_SVG) + `<span>${open?"資料已打開":"資料寶箱"}</span>`;
+    });
+  };
+  updateChests();
+
+  /* bridges */
+  function bridge(a,b){
+    const A = new THREE.Vector3(...ISL[a].pos), B = new THREE.Vector3(...ISL[b].pos);
+    const dir = B.clone().sub(A).normalize();
+    const p1 = A.clone().add(dir.clone().multiplyScalar(ISL[a].R*.86)), p2 = B.clone().sub(dir.clone().multiplyScalar(ISL[b].R*.86));
+    const len = p1.distanceTo(p2), mid = p1.clone().add(p2).multiplyScalar(.5);
+    const g = new THREE.Group(); g.position.set(mid.x, .95, mid.z); g.rotation.y = Math.atan2(dir.x, dir.z);
+    const deck = mesh(new THREE.BoxGeometry(1.5,.16,len), mat("#c99a6b")); g.add(deck);
+    for (let s=-len/2+.8; s<len/2; s+=2.2){ [-.7,.7].forEach(x=>{ const p=mesh(new THREE.CylinderGeometry(.08,.08,1.6,4), mat("#9a6b47")); p.position.set(x,-.4,s); g.add(p); }); }
+    [-.72,.72].forEach(x=>{ const r=mesh(new THREE.BoxGeometry(.07,.07,len), mat("#e8d2b0")); r.position.set(x,.45,0); g.add(r); });
+    scene.add(g);
+  }
+  bridge("A","C"); bridge("B","C"); bridge("A","B");
+
+  /* mentor lighthouse */
+  const LH = [0,0,15];
+  const lhIs = islet(LH[0], LH[2], 3.6, false);
+  const lh = new THREE.Group(); lh.position.set(LH[0],.82,LH[2]);
+  for (let i=0;i<4;i++){ const seg=mesh(new THREE.CylinderGeometry(.9-i*.13,1-i*.13,1,10), mat(i%2?"#e8513f":"#fbf7ef")); seg.position.y=.5+i; lh.add(seg); }
+  const cab = mesh(new THREE.CylinderGeometry(.55,.55,.7,10), mat("#fff3c4",{emissive:"#ffc93c",emissiveIntensity:.6})); cab.position.y=4.35; lh.add(cab);
+  const cap = mesh(new THREE.ConeGeometry(.75,.7,10), mat("#1f3238")); cap.position.y=5.05; lh.add(cap);
+  const beam = new THREE.Mesh(new THREE.ConeGeometry(.8,7,16,1,true), new THREE.MeshBasicMaterial({color:"#fff1b0",transparent:true,opacity:.09,side:THREE.DoubleSide,depthWrite:false}));
+  beam.rotation.z = Math.PI/2; beam.position.set(3.5,4.35,0); const beamPivot = new THREE.Group(); beamPivot.position.y=0; beamPivot.add(beam); lh.add(beamPivot);
+  scene.add(lh);
+  [lh, lhIs].forEach(o=>o.traverse(x=>{ if(x.isMesh){ x.userData.mentor=true; pickables.push(x); } }));
+  // 5 mentor figures standing around the lighthouse
+  function figure(m){
+    const g = new THREE.Group(), skin = mat("#f6d2b4"), dark = mat("#3d3f45"), shirt = mat(m.c);
+    [-.11,.11].forEach(x=>{ const l=mesh(new THREE.BoxGeometry(.13,.42,.15), dark); l.position.set(x,.21,0); g.add(l); });
+    const body = mesh(new THREE.CylinderGeometry(.22,.3,.62,8), shirt); body.position.y=.72; g.add(body);
+    [-.31,.31].forEach(x=>{ const a=mesh(new THREE.CylinderGeometry(.06,.07,.5,6), shirt); a.position.set(x,.72,0); a.rotation.z = x>0?-.25:.25; g.add(a); });
+    const head = mesh(new THREE.IcosahedronGeometry(.25,1), skin); head.position.y=1.28; g.add(head);
+    if (m.style==="bangs"){
+      const hm = mat(m.hair);
+      const cap = mesh(new THREE.SphereGeometry(.275,10,6,0,Math.PI*2,0,Math.PI/1.9), hm); cap.position.y=1.3; cap.rotation.x=.38; g.add(cap);
+      const backHair = mesh(new THREE.BoxGeometry(.5,.58,.2), hm); backHair.position.set(0,1.1,-.16); g.add(backHair);
+      [-.24,.24].forEach(x=>{ const side=mesh(new THREE.BoxGeometry(.09,.42,.24), hm); side.position.set(x,1.14,-.02); g.add(side); });
+    } else if (m.acc!=="hat"){ const hair = mesh(new THREE.SphereGeometry(.265,10,6,0,Math.PI*2,0,Math.PI/2.1), mat(m.hair)); hair.position.y=1.31; hair.rotation.x=-.25; g.add(hair); }
+    if (m.glasses){
+      const gm = mat("#2b2b2b");
+      [-.1,.1].forEach(x=>{ const r=mesh(new THREE.TorusGeometry(.075,.018,5,12), gm); r.position.set(x,1.29,.235); g.add(r); });
+      const br=mesh(new THREE.BoxGeometry(.06,.02,.02), gm); br.position.set(0,1.29,.24); g.add(br);
+    }
+    if (m.acc==="laptop"){
+      const lb=mesh(new THREE.BoxGeometry(.46,.035,.32), mat("#5d6b6f")); lb.position.set(0,.86,.36);
+      const ls=mesh(new THREE.BoxGeometry(.46,.3,.025), mat("#3c4a52")); ls.position.set(0,1.0,.52); ls.rotation.x=-.25;
+      const sc=mesh(new THREE.PlaneGeometry(.38,.22), mat("#a9dbff",{emissive:"#6fc0ff",emissiveIntensity:.35,side:THREE.DoubleSide})); sc.position.set(0,1.0,.505); sc.rotation.x=-.25; sc.rotation.y=Math.PI;
+      g.add(lb,ls,sc);
+    }
+    if (m.acc==="hat"){ const h=mesh(new THREE.SphereGeometry(.28,10,6,0,Math.PI*2,0,Math.PI/2), mat("#ffc93c")); h.position.y=1.33; const br=mesh(new THREE.CylinderGeometry(.36,.36,.04,12), mat("#e5a800")); br.position.y=1.34; g.add(h,br); }
+    if (m.acc==="glass"){ const r=mesh(new THREE.TorusGeometry(.15,.035,6,14), mat("#3c4a52")); r.position.set(.42,1.02,.18); const hd=mesh(new THREE.CylinderGeometry(.03,.03,.25,5), mat("#3c4a52")); hd.position.set(.4,.82,.18); g.add(r,hd); }
+    if (m.acc==="frame"){ const fr=new THREE.Group(); [[0,.2,.5,.05],[0,-.2,.5,.05],[-.23,0,.05,.42],[.23,0,.05,.42]].forEach(([x,y,w,h])=>{ const b=mesh(new THREE.BoxGeometry(w,h,.04), mat("#7a5a40")); b.position.set(x,y,0); fr.add(b); }); fr.position.set(0,.85,.33); g.add(fr); }
+    if (m.acc==="flag"){ const pl=mesh(new THREE.CylinderGeometry(.025,.025,1.3,5), mat("#5b4636")); pl.position.set(.38,1.05,0); const fg=mesh(new THREE.PlaneGeometry(.45,.28), mat(m.c,{side:THREE.DoubleSide})); fg.position.set(.61,1.55,0); g.add(pl,fg); }
+    if (m.acc==="bubble"){ const b=mesh(new THREE.SphereGeometry(.26,10,8), mat("#ffffff")); b.scale.set(1.3,.85,.5); b.position.set(.38,1.8,0); const t=mesh(new THREE.ConeGeometry(.08,.18,4), mat("#ffffff")); t.position.set(.24,1.6,0); t.rotation.z=.6; g.add(b,t); }
+    g.scale.setScalar(1.15);
+    g.traverse(x=>{ if (x.isMesh){ x.userData.mentorKey = m.key; pickables.push(x); } });
+    return g;
+  }
+  const figs = MENTORS.map((m,i)=>{
+    const a = Math.PI + (i-2)*.62;  // fan out on the side facing the camera
+    const f = figure(m); f.position.set(LH[0]+Math.sin(a)*-2.45, .82, LH[2]+Math.cos(a)*-2.45); f.rotation.y = Math.atan2(Math.sin(a)*-1, Math.cos(a)*-1);
+    scene.add(f);
+    const el = document.createElement("div"); el.className="flbl"; el.dataset.mentor=m.key; el.style.setProperty("--mc", m.c); el.textContent = m.name;
+    document.getElementById("labels").appendChild(el); anchors.push({el, obj:f, y:2.5, fig:true});
+    return {f, base:f.position.y, ph:i};
+  });
+  window.focusMentor = ()=>{ const c=new THREE.Vector3(LH[0]+2,1.5,LH[2]+1.5); flyCam(c.clone().add(new THREE.Vector3(-1,12,17)), c); };
+  { const el=document.createElement("div"); el.className="ilbl mlbl"; el.dataset.mentor=""; el.style.setProperty("--c","#1f3238"); el.innerHTML="<small>知識共享</small>Mentor 燈塔";
+    document.getElementById("labels").appendChild(el); anchors.push({el, obj:lh, y:6.3, big:true}); }
+
+  /* decorative islets and boats */
+  [[-34,-14,3],[34,-12,2.6],[-30,20,2.2],[31,21,2.8],[-12,-32,2.4],[16,-31,2],[46,4,2],[-46,6,2.3]].forEach(([x,z,r])=>islet(x,z,r));
+  const boats = [["#ffc93c",24,0],["#e0668f",30,2.1],["#25a68f",27,4.2],["#fbf7ef",36,1]].map(([c,r,p])=>({b:boat(c),r,p,sp:.025+rnd()*.02}));
+
+  /* camera + controls */
+  const target = new THREE.Vector3(0,1,-1);
+  const HOME = {pos:new THREE.Vector3(0,40,52), tgt:new THREE.Vector3(0,0,-4)};
+  camera.position.copy(HOME.pos);
+  let controls = null;
+  if (THREE.OrbitControls){
+    controls = new THREE.OrbitControls(camera, canvas);
+    controls.enableDamping = true; controls.dampingFactor=.08;
+    controls.maxPolarAngle = 1.22; controls.minDistance = 12; controls.maxDistance = 110;
+    controls.target.copy(HOME.tgt); controls.screenSpacePanning = false;
+    controls.autoRotateSpeed = .35;
+    window.setAutoRotate = on => { controls.autoRotate = on; };
+  }
+  camera.lookAt(HOME.tgt);
+  let fly = null;
+  function flyCam(pos, tgt){ fly = {t0:performance.now(), from:camera.position.clone(), to:pos, ft:(controls?controls.target:target).clone(), tt:tgt}; }
+  flyHome = ()=>{ const k = homeScale(); flyCam(HOME.pos.clone().multiplyScalar(k), HOME.tgt.clone()); };
+  flyTo = k=>{ const i=ISL[k]; const c=new THREE.Vector3(i.pos[0],1,i.pos[2]); flyCam(c.clone().add(new THREE.Vector3(0,20,24)), c); };
+  function homeScale(){ const a = canvas.clientWidth/canvas.clientHeight; return a<1 ? Math.min(3.4, 1.6/a) : a<1.4 ? 1.2 : 1; }
+
+  /* sky by event time */
+  window.setSkyByTime = now => {
+    const k = Math.min(1, Math.max(0, (now - T("15:30")) / (T("18:00") - T("15:30"))));
+    scene.background.copy(SKY_NOON).lerp(SKY_DUSK, k); scene.fog.color.copy(scene.background);
+    sun.color.copy(SUN_NOON).lerp(SUN_DUSK, k);
+    sun.position.set(-30 - k*25, 50 - k*25, 25);
+    document.body.style.background = "#" + scene.background.getHexString();
+  };
+
+  /* data → scene */
+  /* ---- little walkers: appear when a group has a name ---- */
+  const HAIRS = ["#2a221c","#3b2a20","#1c1714","#5a3a24","#7a5a3a","#151515"];
+  const hashN = str => { let h=2166136261; for (let i=0;i<str.length;i++){ h^=str.charCodeAt(i); h=Math.imul(h,16777619)>>>0; } return h; };
+  function makeWalker(id, n){
+    const isl = ISL[id[0]], h = hashN(id+":"+n);
+    const shirt = new THREE.Color(isl.color).lerp(new THREE.Color(n%2?"#ffffff":"#1f3238"), [0,.25,.18,.4][n%4]);
+    const g = new THREE.Group();
+    const legs = [-.08,.08].map(x=>{ const pv=new THREE.Group(); pv.position.set(x,.36,0); const l=mesh(new THREE.BoxGeometry(.1,.36,.11), mat("#3d3f45")); l.position.y=-.18; pv.add(l); g.add(pv); return pv; });
+    const body = mesh(new THREE.CylinderGeometry(.15,.21,.44,7), mat(shirt)); body.position.y=.58; g.add(body);
+    const head = mesh(new THREE.IcosahedronGeometry(.18,1), mat("#f6d2b4")); head.position.y=.95; g.add(head);
+    const hair = mesh(new THREE.SphereGeometry(.19,8,5,0,Math.PI*2,0,Math.PI/2.1), mat(HAIRS[h%HAIRS.length])); hair.position.y=.98; hair.rotation.x=-.2; g.add(hair);
+    if (h%5===0){ const pt=mesh(new THREE.SphereGeometry(.08,6,5), mat(HAIRS[h%HAIRS.length])); pt.position.set(0,1.05,-.17); g.add(pt); }
+    g.traverse(o=>{ if (o.isMesh){ o.userData.id = id; pickables.push(o); } });
+    g.scale.setScalar(1.25); scene.add(g);
+    return {g, legs, th: (h%628)/100, r: 2.15+((h>>8)%60)/100, tth:0, tr:2.4, wait: (h%20)/10, sp: .7+((h>>4)%30)/100, ph:(h%100)/10, n};
+  }
+  const crowd = {};
+  function syncCrowd(id, d){
+    const want = d.name ? Math.max(1, Math.min(4, d.members.length || 2)) : 0;
+    const list = crowd[id] || (crowd[id] = []);
+    while (list.length > want){ const w = list.pop(); scene.remove(w.g); w.g.traverse(o=>{ const i=pickables.indexOf(o); if(i>=0) pickables.splice(i,1); }); }
+    while (list.length < want){ const w = makeWalker(id, list.length); w.tth = w.th; w.tr = w.r; list.push(w); }
+  }
+  function onIsland(id, x, z){ const isl=ISL[id[0]]; return Math.hypot(x-isl.pos[0], z-isl.pos[2]) < isl.R*.84; }
+  /* ---- island TAs ---- */
+  const tas = ISLANDS.map(isl=>{
+    const g = new THREE.Group(), hairM = mat("#2a221c");
+    const legs = [-.09,.09].map(x=>{ const pv=new THREE.Group(); pv.position.set(x,.4,0); const l=mesh(new THREE.BoxGeometry(.12,.4,.13), mat("#3d3f45")); l.position.y=-.2; pv.add(l); g.add(pv); return pv; });
+    const shirt = mesh(new THREE.CylinderGeometry(.17,.23,.5,8), mat(isl.color)); shirt.position.y=.65; g.add(shirt);
+    const vest = mesh(new THREE.CylinderGeometry(.185,.245,.42,8,1,true), mat("#ffcf3a",{side:THREE.DoubleSide})); vest.position.y=.67; g.add(vest);
+    const stripe = mesh(new THREE.CylinderGeometry(.19,.235,.05,8,1,true), mat("#ffffff",{side:THREE.DoubleSide})); stripe.position.y=.6; g.add(stripe);
+    const head = mesh(new THREE.IcosahedronGeometry(.2,1), mat("#f6d2b4")); head.position.y=1.08; g.add(head);
+    const cap = mesh(new THREE.SphereGeometry(.215,10,6,0,Math.PI*2,0,Math.PI/1.9), hairM); cap.position.y=1.1; cap.rotation.x=.3; g.add(cap);
+    const back = mesh(new THREE.BoxGeometry(.38,.42,.14), hairM); back.position.set(0,.93,-.13); g.add(back);
+    const board = mesh(new THREE.BoxGeometry(.24,.3,.03), mat("#a8703f")); board.position.set(.2,.68,.24); board.rotation.x=-.4; g.add(board);
+    const paper = mesh(new THREE.BoxGeometry(.2,.24,.01), mat("#ffffff")); paper.position.set(.2,.69,.258); paper.rotation.x=-.4; g.add(paper);
+    g.scale.setScalar(1.45);
+    const ha = -Math.PI/5, hr = isl.n===3 ? 2.9 : 3.2;
+    const home = new THREE.Vector3(isl.pos[0]+Math.sin(ha)*hr, 1.3, isl.pos[2]+Math.cos(ha)*hr);
+    g.position.copy(home); scene.add(g);
+    g.traverse(o=>{ if (o.isMesh){ o.userData.island = isl.k; pickables.push(o); } });
+    const el = document.createElement("div"); el.className="talbl"; el.style.setProperty("--c", isl.color); el.dataset.island = isl.k;
+    el.innerHTML = `<b>助教</b> ${isl.ta}`; document.getElementById("labels").appendChild(el);
+    anchors.push({el, obj:g, y:2.25, ta:true});
+    return {isl, g, legs, home, el, ph: isl.pos[0]*.1};
+  });
+  function stepTAs(dt, time){
+    tas.forEach(t=>{
+      const need = IDS.filter(id=>id[0]===t.isl.k && stations[id] && stations[id].status==="help")
+        .sort((a,b)=>get(a).updatedAt-get(b).updatedAt)[0];
+      let target = t.home, face = null;
+      if (need){
+        const c = stations[need].g.position, ic = new THREE.Vector3(t.isl.pos[0],1.3,t.isl.pos[2]);
+        const dir = ic.clone().sub(c).setY(0).normalize();
+        target = c.clone().add(dir.multiplyScalar(2.4)).setY(1.3); face = c;
+      }
+      const d = target.clone().sub(t.g.position); d.y = 0; const dist = d.length();
+      let walking = false;
+      if (dist > .05){
+        const step = Math.min(dist, 2.6*dt); t.g.position.add(d.normalize().multiplyScalar(step)); walking = true;
+        t.g.rotation.y = Math.atan2(d.x, d.z);
+      } else if (face){ t.g.rotation.y = Math.atan2(face.x-t.g.position.x, face.z-t.g.position.z); }
+      else { t.g.rotation.y = Math.atan2(camera.position.x-t.g.position.x, camera.position.z-t.g.position.z); }
+      t.g.position.y = 1.3 + (walking ? Math.abs(Math.sin(time*10+t.ph))*.05 : 0);
+      const sw = walking ? Math.sin(time*10+t.ph)*.7 : 0; t.legs[0].rotation.x = sw; t.legs[1].rotation.x = -sw;
+      t.el.classList.toggle("busy", !!need);
+      t.el.innerHTML = need ? `<b>助教</b> ${t.isl.ta} <span>→ ${need}</span>` : `<b>助教</b> ${t.isl.ta}`;
+    });
+  }
+
+  function stepCrowd(dt, time){
+    IDS.forEach(id=>{
+      const list = crowd[id]; if (!list || !list.length) return;
+      const st = stations[id], c = st.g.position, status = st.status;
+      list.forEach(w=>{
+        let walking = false;
+        if (status==="going" || status==="idle"){
+          if (w.wait > 0) w.wait -= dt;
+          else {
+            const dth = w.tth - w.th;
+            if (Math.abs(dth) < .03){
+              for (let k=0;k<8;k++){ const nt = w.th + (Math.random()*2-1)*1.4, nr = 2.1+Math.random()*.9;
+                if (onIsland(id, c.x+Math.sin(nt)*nr, c.z+Math.cos(nt)*nr)){ w.tth = nt; w.tr = nr; break; } }
+              w.wait = .4 + Math.random()*1.8;
+            } else {
+              const step = Math.sign(dth) * Math.min(Math.abs(dth), w.sp*dt/w.r);
+              w.th += step; w.r += (w.tr-w.r)*Math.min(1,dt*1.5); walking = true;
+              w.g.rotation.y = w.th + (step>0 ? Math.PI/2 : -Math.PI/2);
+            }
+          }
+        }
+        const x = c.x+Math.sin(w.th)*w.r, z = c.z+Math.cos(w.th)*w.r;
+        let y = 1.3;
+        if (status==="done"){ y += Math.abs(Math.sin(time*5+w.ph))*.35; w.g.rotation.y = Math.atan2(camera.position.x-x, camera.position.z-z); }
+        else if (status==="stuck" || status==="help"){ w.g.rotation.y = Math.atan2(c.x-x, c.z-z) + Math.sin(time*1.2+w.ph)*.25; }
+        w.g.position.set(x, y + (walking ? Math.abs(Math.sin(time*9+w.ph))*.04 : 0), z);
+        const sw = walking ? Math.sin(time*9+w.ph)*.6 : 0;
+        w.legs[0].rotation.x = sw; w.legs[1].rotation.x = -sw;
+      });
+    });
+  }
+
+  updateStations = ()=>{
+    IDS.forEach(id=>{
+      const s = stations[id], g = get(id), st = ST[g.status];
+      s.status = g.status; syncCrowd(id, g);
+      s.flagMat.color.set(st.c);
+      s.alert = g.status==="stuck"||g.status==="help";
+      s.ring.material.color.set(st.c);
+      g.stars.forEach((x,i)=>{
+        const m = s.stars[i]; m.userData.state = x.s;
+        if (x.s==="talk"){ m.material = mat("#ff9f1c",{emissive:"#ff7a00",emissiveIntensity:1}); m.userData.halo.material.opacity=.45; m.scale.setScalar(1.3); }
+        else if (x.s==="lit"){ m.material = mat("#ffd23f",{emissive:"#ffb000",emissiveIntensity:.9}); m.userData.halo.material.opacity=.35; m.scale.setScalar(1.15); }
+        else if (x.s==="used"){ m.material = mat("#e6d39d",{transparent:true,opacity:.9}); m.userData.halo.material.opacity=0; m.scale.setScalar(.8); }
+        else { m.material = mat("#c9d2d4",{transparent:true,opacity:.45}); m.userData.halo.material.opacity=0; m.scale.setScalar(.85); }
+      });
+    });
+  };
+
+  /* picking */
+  const ray = new THREE.Raycaster(), mouse = new THREE.Vector2(); let down = null;
+  function pick(ev){
+    const r = canvas.getBoundingClientRect();
+    mouse.set(((ev.clientX-r.left)/r.width)*2-1, -((ev.clientY-r.top)/r.height)*2+1);
+    ray.setFromCamera(mouse, camera); const hit = ray.intersectObjects(pickables, false)[0];
+    return hit ? hit.object.userData : null;
+  }
+  canvas.addEventListener("pointerdown", e=>{ down = [e.clientX, e.clientY]; });
+  canvas.addEventListener("pointerup", e=>{
+    if (!down || Math.hypot(e.clientX-down[0], e.clientY-down[1]) > 6) return;
+    const u = pick(e); if (!u) return;
+    if (u.vault) openVault(u.vault); else if (u.id) openEditor(u.id); else if (u.island) flyTo(u.island); else if (u.mentorKey){ openMentor(u.mentorKey); focusMentor(); } else if (u.mentor){ openMentor(); focusMentor(); }
+  });
+  canvas.addEventListener("pointermove", e=>{ if (e.buttons) return; const u = pick(e); canvas.style.cursor = u && (u.id||u.island||u.mentor||u.mentorKey||u.vault) ? "pointer" : "grab"; });
+
+  function resize(){
+    const w = canvas.clientWidth, h = canvas.clientHeight;
+    renderer.setSize(w, h, false); camera.aspect = w/h; camera.updateProjectionMatrix();
+  }
+  window.addEventListener("resize", resize); resize();
+  camera.position.copy(HOME.pos.clone().multiplyScalar(homeScale()));
+
+  /* loop */
+  const tmp = new THREE.Vector3(); let frame = 0;
+  const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  function loop(t){
+    requestAnimationFrame(loop);
+    if (document.hidden) return;
+    const time = t/1000; frame++;
+    const dt = Math.min(.1, time - (loop.last||time)); loop.last = time;
+    if (!reduce) stepCrowd(dt, time);
+    stepTAs(reduce ? 10 : dt, time);
+    if (fly){
+      const k = Math.min(1,(t-fly.t0)/900), e = k<.5?2*k*k:1-Math.pow(-2*k+2,2)/2;
+      camera.position.lerpVectors(fly.from, fly.to, e);
+      const tg = fly.ft.clone().lerp(fly.tt, e); if (controls) controls.target.copy(tg); else camera.lookAt(tg);
+      if (k>=1) fly=null;
+    }
+    if (controls) controls.update();
+    if (!reduce){
+      if (frame%2===0){
+        const p = seaGeo.attributes.position.array;
+        for (let i=0;i<p.length;i+=3){ const x=seaBase[i], z=seaBase[i+2]; p[i+1] = Math.sin(x*.18+time*.9)*.18 + Math.cos(z*.22+time*.7)*.14; }
+        seaGeo.attributes.position.needsUpdate = true; seaGeo.computeVertexNormals();
+      }
+      boats.forEach(o=>{ const a=o.p+time*o.sp; o.b.position.set(Math.sin(a)*o.r, .05+Math.sin(time*1.5+o.p)*.08, Math.cos(a)*o.r+2); o.b.rotation.y=a+Math.PI; });
+      beamPivot.rotation.y = time*.6;
+      figs.forEach(o=>{ o.f.position.y = o.base + Math.abs(Math.sin(time*2.2+o.ph))*.06; });
+    }
+    Object.values(stations).forEach(s=>{
+      if (!reduce) s.flag.rotation.y = Math.sin(time*2+s.phase)*.25;
+      s.ring.material.opacity = s.alert ? .45+.35*Math.sin(time*3+s.phase) : 0;
+      s.stars.forEach((m,i)=>{
+        if (m.userData.state==="talk" && !reduce){ m.rotation.y = time*4; m.position.y = 3.3; m.userData.halo.material.opacity = .35+.2*Math.sin(time*6); }
+        else if (m.userData.state==="lit" && !reduce){ m.rotation.y = time*1.6; m.position.y = 3.15+Math.sin(time*2.4+i)*.18; m.userData.halo.material.opacity = .25+.15*Math.sin(time*4); }
+        else { m.rotation.y = 0; m.position.y = 3.15; }
+      });
+    });
+    scene.traverse(o=>{ if (o.userData.spin && !reduce) o.rotation.y = time; });
+    renderer.render(scene, camera);
+    // labels
+    const w = canvas.clientWidth, h = canvas.clientHeight;
+    anchors.forEach(a=>{
+      a.obj.getWorldPosition(tmp); tmp.y += a.y;
+      const dist = camera.position.distanceTo(tmp);
+      tmp.project(camera);
+      if (tmp.z>1 || tmp.x<-1.2 || tmp.x>1.2 || tmp.y<-1.2 || tmp.y>1.2 || ((a.fig||a.chest) && dist>48)){ a.el.style.display="none"; return; }
+      a.el.style.display="";
+      const x = (tmp.x*.5+.5)*w, y = (-tmp.y*.5+.5)*h;
+      const sc = a.big ? 1 : Math.max(w<700?.6:.72, Math.min(1.08, 46/dist));
+      a.el.style.transform = `translate(${x.toFixed(1)}px,${y.toFixed(1)}px) translate(-50%,-100%) scale(${sc.toFixed(3)})`;
+      a.el.style.transformOrigin = "50% 100%";
+      a.el.style.zIndex = String((a.big?400:1000) - Math.round(dist));
+    });
+  }
+  requestAnimationFrame(loop);
+}
+
+/* ---------- refresh + boot ---------- */
+function refresh(){
+  IDS.forEach(id=>{ const el=labelEls[id]; if(!el) return; const g=get(id); el.innerHTML=labelHTML(id); el.style.setProperty("--sc", ST[g.status].c); el.dataset.alert = (g.status==="stuck"||g.status==="help")?"1":"0"; });
+  updateStations(); renderCounts(); renderDrawer(); renderDlgStars();
+}
+
+try { buildWorld(); } catch(e){ document.body.classList.add("nogl"); }
+if (STAFF) document.body.classList.add("staff");
+if (SCREEN) setTimeout(()=>setScreen(true), 300);
+refresh(); tick();
+setInterval(tick, 1000);
+setInterval(refresh, 30000);
+(async ()=>{
+  adapter = (await artifactAdapter()) || (await firebaseAdapter()) || localAdapter();
+  if (adapter.local) setSync("local","本機示範模式（只存在這台電腦）"); else setSync("wait","連線中…");
+  adapter.subscribe("groups", m=>{ groups = m || {}; refresh(); });
+  adapter.subscribe("mentors", m=>{ mentorNotes = m || {}; if (panel==="mentor") renderDrawer(); });
+})();
+</script>
+<button class="exitscreen" id="exitScreen" type="button">離開投影模式</button>
+</body>
+</html>
