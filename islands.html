@@ -746,7 +746,8 @@ async function artifactAdapter(){
         const m={}; snap.docs.forEach(d=>{ if(d.exists) m[d.id]=d.data(); }); cb(m);
       }, ()=>{ clearTimeout(timer); setSync("ro","同步中斷，請重新整理"); });
     },
-    write(name,id,data){ return db.collection(name).doc(id).set(JSON.parse(JSON.stringify(data))); }
+    write(name,id,data){ return db.collection(name).doc(id).set(JSON.parse(JSON.stringify(data))); },
+    remove(name,id){ return db.collection(name).doc(id).delete(); }
   };
 }
 function loadScript(src){ return new Promise((ok,no)=>{ const s=document.createElement("script"); s.src=src; s.onload=ok; s.onerror=no; document.head.appendChild(s); }); }
@@ -761,7 +762,8 @@ async function firebaseAdapter(){
   return {
     local:false,
     subscribe(name, cb){ fs.collection("aiday-"+name).onSnapshot(s=>{ setSync("live","即時同步中"); const m={}; s.forEach(d=>m[d.id]=d.data()); cb(m); }, ()=>setSync("ro","同步中斷，請重新整理")); },
-    write(name,id,data){ return fs.collection("aiday-"+name).doc(id).set(data); }
+    write(name,id,data){ return fs.collection("aiday-"+name).doc(id).set(data); },
+    remove(name,id){ return fs.collection("aiday-"+name).doc(id).delete(); }
   };
 }
 function localAdapter(){
@@ -770,7 +772,8 @@ function localAdapter(){
   return {
     local:true,
     subscribe(name, cb){ cb(read(name)); window.addEventListener("storage",e=>{ if(e.key===key(name)) cb(read(name)); }); },
-    write(name,id,data){ const all=read(name); all[id]=data; try{ localStorage.setItem(key(name), JSON.stringify(all)); }catch(e){} return Promise.resolve(); }
+    write(name,id,data){ const all=read(name); all[id]=data; try{ localStorage.setItem(key(name), JSON.stringify(all)); }catch(e){} return Promise.resolve(); },
+    remove(name,id){ const all=read(name); delete all[id]; try{ localStorage.setItem(key(name), JSON.stringify(all)); }catch(e){} return Promise.resolve(); }
   };
 }
 
@@ -1118,6 +1121,7 @@ const f1 = v => v===null || v===undefined ? "—" : v.toFixed(1);
 function renderResults(){
   const box = document.getElementById("resBody"); if (!box) return;
   const keepSel = {}; ISLANDS.forEach(i=>{ const s = document.getElementById("win-"+i.k); if (s) keepSel[i.k] = s.value; });
+  const keepClear = (document.getElementById("resClearConfirm")||{}).value || "", keepMsg = (document.getElementById("resClearMsg")||{}).textContent || "";
   box.innerHTML = `<div class="isec"><h3>評分結果</h3><p>只有工作人員看得到。總分 = NGO 40% ＋ Mentor 40% ＋ 互評 20%，同分先比 NGO，再比「組織能不能用」。</p></div>
     <section class="spanel"><h4>評分開關</h4><p>${scoringOpen?"評分<b>開放中</b>：評審和各組都看得到評分表。":"評分<b>還沒開放</b>。分場分享開始時再打開。"}</p>
       <button type="button" class="btn ${scoringOpen?"":"primary"}" data-toggle-scoring="1">${scoringOpen?"關閉評分":"開放評分"}</button>
@@ -1134,7 +1138,11 @@ function renderResults(){
         <div class="rwin"><label for="win-${i.k}">${AWARD}</label><select id="win-${i.k}">${rows.map(r=>`<option value="${r.id}" ${sel===r.id?"selected":""}>${r.id} ${esc(get(r.id).name||"")}${r.total!==null?`（${f1(r.total)}）`:""}</option>`).join("")}</select>
           ${reveals[i.k]?`<span class="sm">已公布 ${reveals[i.k]}</span><button type="button" class="btn ghost" data-unreveal="${i.k}">收回</button>`:`<button type="button" class="btn primary" data-reveal="${i.k}">公布給大家</button>`}</div>
       </section>`; }).join("")}
-    <section class="spanel"><h4>匯出</h4><button type="button" class="btn" id="resCsv">下載評分與評語 CSV</button></section>`;
+    <section class="spanel"><h4>匯出</h4><button type="button" class="btn" id="resCsv">下載評分與評語 CSV</button></section>
+    <section class="spanel danger"><h4>清空評分</h4><p>刪掉所有評審和互評的分數與評語，並關閉評分、收回已公布的獎項。用在活動前清掉測試資料。<b>清掉就救不回來。</b></p>
+      <label for="resClearConfirm">輸入「清空評分」四個字確認<input id="resClearConfirm" autocomplete="off" placeholder="清空評分"></label>
+      <button type="button" class="btn danger" id="resClear">清空所有評分</button><p class="sm" id="resClearMsg"></p></section>`;
+  document.getElementById("resClearConfirm").value = keepClear; document.getElementById("resClearMsg").textContent = keepMsg;
 }
 function exportScores(){
   const lines = [["島","組別","組名","NGO 平均","Mentor 平均","互評平均","總分","評語"]];
@@ -1145,13 +1153,32 @@ function exportScores(){
     try{ const a=document.createElement("a"); a.href=URL.createObjectURL(new Blob([csv],{type:"text/csv"})); a.download="AI-Impact-Day-評分.csv"; document.body.appendChild(a); a.click(); a.remove(); }catch(x){} })();
 }
 
+/* 清空評分：刪掉所有評分、關閉評分、收回公布 */
+function clearScoring(){
+  const ids = Object.keys(scoreDocs);
+  scoreDocs = {}; scoreCtx = null; scoreDraft = null;
+  ids.forEach(id=>adapter.remove("scores", id).catch(()=>{}));
+  try{ ISLANDS.forEach(i=>sessionStorage.removeItem("aiday-seen-"+i.k)); }catch(e){}
+  saveConfig({scoringOpen:false, reveal:{}});
+  return ids.length;
+}
+document.addEventListener("click", e=>{
+  if (e.target.id!=="resClear") return;
+  const ok = (document.getElementById("resClearConfirm").value||"").trim()==="清空評分";
+  const msg = document.getElementById("resClearMsg");
+  if (!ok){ msg.textContent = "請先在上面輸入「清空評分」。"; return; }
+  const n = clearScoring(); renderResults();
+  document.getElementById("resClearConfirm").value = "";
+  document.getElementById("resClearMsg").textContent = `已清空 ${n} 份評分，評分已關閉、公布已收回。`;
+});
+
 /* 公布動畫 */
 function showReveal(k, id){
   const isl = ISL[k], g = get(id), el = document.getElementById("reveal");
   el.style.setProperty("--c", isl.color);
   document.getElementById("rKicker").textContent = awardName(k);
-  document.getElementById("rTitle").textContent = `${id}${g.name?" · "+g.name:""}`;
-  document.getElementById("rSub").textContent = g.members.length ? g.members.join("、") : "恭喜！";
+  document.getElementById("rTitle").textContent = g.name || id;
+  document.getElementById("rSub").textContent = [g.name ? id : "", g.members.join("、")].filter(Boolean).join(" · ") || "恭喜！";
   el.hidden = false; if (window.flyTo) flyTo(k); confetti();
 }
 function confetti(){
@@ -1170,7 +1197,7 @@ function staffHTML(){
   <section class="spanel"><h4>匯出成果</h4><p id="sStats"></p>
     <div class="srow"><button type="button" class="btn primary" id="sCsv">下載 CSV</button><button type="button" class="btn" id="sCopy">複製表格（可貼到 Google 試算表）</button></div>
     <p class="sm" id="sMsg"></p></section>
-  <section class="spanel danger"><h4>全部重設</h4><p>清空 13 組的組名、組員、狀態、星星、成果連結，以及所有簽到紀錄。用在活動前清掉測試資料。<b>清掉就救不回來。</b></p>
+  <section class="spanel danger"><h4>全部重設</h4><p>清空 13 組的組名、組員、狀態、星星、成果連結，以及所有簽到紀錄和評分（並關閉評分、收回公布）。用在活動前清掉測試資料。<b>清掉就救不回來。</b></p>
     <label for="sConfirm">輸入「全部重設」四個字確認
       <input id="sConfirm" autocomplete="off" placeholder="全部重設"></label>
     <button type="button" class="btn danger" id="sReset">清空所有小組資料</button><p class="sm" id="sResetMsg"></p></section>`;
@@ -1214,7 +1241,8 @@ document.addEventListener("click", e=>{
     IDS.forEach(id=>save(id,{name:"",members:[],status:"idle",note:"",links:["",""],stars:[{s:"off",t:0},{s:"off",t:0}]}));
     Object.keys(checkins).forEach(k=>{ adapter.write("checkin", k, k.includes("-w") ? {in:false, gone:true, t:Date.now()} : {in:false, t:Date.now()}).catch(()=>{}); });
     checkins = {};
-    document.getElementById("sConfirm").value = ""; msg.textContent = "已清空 13 組的資料和簽到紀錄。";
+    clearScoring();
+    document.getElementById("sConfirm").value = ""; msg.textContent = "已清空 13 組的資料、簽到紀錄和評分。";
   }
 });
 function setScreen(on){
