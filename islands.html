@@ -1468,6 +1468,12 @@ function refresh(){
 try { buildWorld(); } catch(e){ document.body.classList.add("nogl"); }
 if (STAFF) document.body.classList.add("staff");
 if (SCREEN) setTimeout(()=>setScreen(true), 300);
+window.addEventListener("hashchange", ()=>{
+  const h = location.hash;
+  if (h==="#staff") document.body.classList.add("staff");
+  if (h==="#screen") setScreen(true);
+  if (h==="#rehearsal"){ offset = T("14:20") - Date.now(); document.getElementById("rehearsal").hidden = false; tick(); }
+});
 refresh(); tick();
 setInterval(tick, 1000);
 setInterval(refresh, 30000);
