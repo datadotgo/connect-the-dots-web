@@ -314,6 +314,49 @@ body.screen .brand{transform:scale(1.1);transform-origin:top left}
 .gn{font-size:12px;color:var(--muted);white-space:nowrap}
 .wgn{font-size:12.5px;color:var(--muted);white-space:nowrap}
 .cireg{font-family:var(--font-body);font-size:12px;color:var(--muted);background:#eef3f2;border-radius:99px;padding:1px 8px}
+.judgeonly,.peeronly{display:none !important}
+body.judge .judgeonly{display:inline-flex !important}
+body.scoring-open .peeronly{display:inline-flex !important}
+.mepeer{cursor:pointer;border:0;border-radius:99px;padding:4px 10px;font-size:12px;background:var(--ink);color:#fff}
+.jopts{display:flex;flex-wrap:wrap;gap:6px;align-items:center;font-size:12.5px;color:var(--muted)}
+.jopts>span{width:100%}
+.jopt input{position:absolute;opacity:0}
+.jopt span{display:inline-block;cursor:pointer;padding:6px 12px;border-radius:99px;border:1px solid var(--line);background:#fff;color:var(--ink);font-size:13px}
+.jopt input:checked+span{background:var(--c,var(--ink));border-color:var(--c,var(--ink));color:#fff}
+.jopt input:focus-visible+span{outline:2.5px solid var(--ink);outline-offset:2px}
+.crit{display:grid;gap:6px;padding:10px 12px;border-radius:12px;background:#f5f8f7;font-size:12.5px}
+.crit span{color:var(--muted);font-family:var(--font-mono)}
+.crit small{color:var(--muted)}
+.scard{display:grid;gap:8px;padding:12px;border-radius:14px;background:#fff;border:1px solid var(--line);border-top:3px solid var(--c)}
+.scard h4{margin:0;display:flex;gap:8px;align-items:center;font-family:var(--font-display);font-weight:400;font-size:16px}
+.srow2{display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:13px;flex-wrap:wrap}
+.pips{display:flex;gap:4px}
+.pip{cursor:pointer;width:36px;height:36px;border-radius:10px;border:1px solid var(--line);background:#f5f8f7;font-family:var(--font-mono);font-size:14px}
+.pip.on{background:var(--c,var(--ink));border-color:var(--c,var(--ink));color:#fff;font-weight:700}
+.scomment{font:inherit;font-size:13px;min-height:52px;resize:vertical;padding:8px 10px;border-radius:10px;border:1px solid var(--line);background:#f5f8f7}
+.ssubmit{position:sticky;bottom:-14px;background:var(--paper);padding:10px 0;display:flex;gap:10px;align-items:center;flex-wrap:wrap;font-size:12.5px;color:var(--muted)}
+.rsec{display:grid;gap:8px;padding:12px;border-radius:14px;background:#fff;border:1px solid var(--line);border-top:3px solid var(--c)}
+.rsec h4{margin:0;display:flex;gap:8px;align-items:center;font-family:var(--font-display);font-weight:400;font-size:17px}
+.rsec .sw{width:12px;height:12px;border-radius:4px}
+.rtable{overflow-x:auto}
+.rtable table{width:100%;border-collapse:collapse;font-size:12.5px;font-variant-numeric:tabular-nums}
+.rtable th{text-align:left;color:var(--muted);font-weight:500;border-bottom:1px solid var(--line);padding:4px}
+.rtable td{padding:5px 4px;border-bottom:1px solid #eef2f1}
+.rtable td small{color:var(--muted)}
+.rtable tr.won td{background:#fff6d6}
+.rcm{font-size:12.5px;margin:6px 0}
+.rcm small{color:var(--muted)}
+.rwin{display:flex;gap:6px;align-items:center;flex-wrap:wrap;font-size:13px}
+.rwin select{font:inherit;padding:6px 8px;border-radius:10px;border:1px solid var(--line);background:#fff;max-width:100%}
+.win-badge{font-size:11px;font-weight:700;color:#fff;background:#d99e00;border-radius:99px;padding:0 7px;justify-self:start}
+.reveal{position:fixed;inset:0;z-index:60;display:grid;place-items:center;padding:16px;background:rgba(20,45,52,.55);backdrop-filter:blur(4px)}
+.reveal[hidden]{display:none}
+.rcard{position:relative;overflow:hidden;background:var(--paper);border-radius:26px;padding:40px 32px 28px;width:min(640px,100%);text-align:center;display:grid;gap:10px;justify-items:center;box-shadow:0 30px 90px rgba(0,0,0,.35);border-top:8px solid var(--c)}
+.rcard canvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+.rk{font-family:var(--font-display);font-size:22px;color:var(--c)}
+.rcard h2{font-size:clamp(30px,6vw,52px);line-height:1.15}
+.rsub{margin:0;color:var(--muted);font-size:15px}
+body.screen .rcard{transform:scale(1.25)}
 .addpts{justify-self:start;color:var(--muted);font-size:12px}
 .flbl{position:absolute;left:0;top:0;pointer-events:auto;cursor:pointer;will-change:transform;white-space:nowrap;font-size:12px;padding:2px 9px;border-radius:99px;background:var(--paper);border:2px solid var(--mc);box-shadow:var(--shadow)}
 .mentor{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:12px;align-items:center;padding:10px;border-radius:14px;background:#f5f8f7;text-decoration:none;color:inherit}
@@ -383,6 +426,16 @@ body.nogl{overflow:auto;background:linear-gradient(var(--sky),#cfeceb)}
   <div class="me" id="meBar" hidden></div>
 </div>
 
+<div class="reveal" id="reveal" hidden>
+  <div class="rcard" role="dialog" aria-modal="true" aria-labelledby="rTitle">
+    <canvas id="confetti" aria-hidden="true"></canvas>
+    <div class="rk" id="rKicker"></div>
+    <h2 id="rTitle"></h2>
+    <p class="rsub" id="rSub"></p>
+    <button type="button" class="btn primary" id="rClose">太棒了！</button>
+  </div>
+</div>
+
 <div class="welcome" id="welcome" hidden>
   <div class="wcard" role="dialog" aria-modal="true" aria-labelledby="wTitle">
     <div class="eb">AI IMPACT DAY · 11/15</div>
@@ -408,7 +461,10 @@ body.nogl{overflow:auto;background:linear-gradient(var(--sky),#cfeceb)}
     <button class="nb" data-panel="list">清單</button>
     <button class="nb" data-panel="mentor">Mentor 燈塔</button>
     <button class="nb" data-panel="vault">資料寶箱</button>
+    <button class="nb judgeonly" data-panel="score">評分</button>
+    <button class="nb peeronly" data-panel="peer">互評</button>
     <button class="nb staffonly" data-panel="checkin">簽到</button>
+    <button class="nb staffonly" data-panel="results">評分結果</button>
     <button class="nb staffonly" data-panel="staff">工作人員</button>
   </div>
   <div class="card navrow islands" id="islandNav"></div>
@@ -430,7 +486,10 @@ body.nogl{overflow:auto;background:linear-gradient(var(--sky),#cfeceb)}
   <button class="nb" data-panel="queue" id="mQueue">星星排隊</button>
   <button class="nb" data-panel="mentor">Mentor</button>
   <button class="nb" data-panel="vault">資料</button>
+  <button class="nb judgeonly" data-panel="score">評分</button>
+  <button class="nb peeronly" data-panel="peer">互評</button>
   <button class="nb staffonly" data-panel="checkin">簽到</button>
+  <button class="nb staffonly" data-panel="results">結果</button>
   <button class="nb staffonly" data-panel="staff">工作</button>
 </div>
 
@@ -442,7 +501,10 @@ body.nogl{overflow:auto;background:linear-gradient(var(--sky),#cfeceb)}
     <button class="nb" data-panel="queue">星星排隊</button>
     <button class="nb" data-panel="mentor">Mentor 分享</button>
     <button class="nb" data-panel="vault">資料寶箱</button>
+    <button class="nb judgeonly" data-panel="score">評分</button>
+    <button class="nb peeronly" data-panel="peer">互評</button>
     <button class="nb staffonly" data-panel="checkin">簽到</button>
+    <button class="nb staffonly" data-panel="results">評分結果</button>
     <button class="nb x" id="dClose" aria-label="關閉面板">✕</button>
   </div>
   <div class="dbody" id="dbody"></div>
@@ -630,7 +692,7 @@ const unlocked = {};  // island -> url
 
 /* ---------- time ---------- */
 let offset = 0;
-const STAFF = location.hash === "#staff", SCREEN = location.hash === "#screen";
+const STAFF = location.hash === "#staff", SCREEN = location.hash === "#screen", JUDGE = location.hash === "#judge";
 if (location.hash === "#rehearsal"){ offset = T("14:20") - Date.now(); document.getElementById("rehearsal").hidden = false; }
 const eventNow = () => Date.now() + offset;
 const pad = n => String(n).padStart(2,"0");
@@ -757,7 +819,7 @@ function dlgStarsHTML(id){
 function renderDlgStars(){ if (editing && dlg.open) document.getElementById("fStars").innerHTML = dlgStarsHTML(editing); }
 function labelHTML(id){
   const g = get(id), st = ST[g.status];
-  return `<div class="r1"><span class="id">${id}</span><span class="nm ${g.name?"":"ph"}">${g.name?esc(g.name):"點我取組名"}</span></div>
+  return `${winnerOf(id[0])===id?`<span class="win-badge">★ ${awardName(id[0])}</span>`:""}<div class="r1"><span class="id">${id}</span><span class="nm ${g.name?"":"ph"}">${g.name?esc(g.name):"點我取組名"}</span></div>
     <div class="r2"><span class="pill"><span class="dot"></span>${st.t}</span><span class="sts">${starsHTML(id,g)}</span></div>${queueBits(id,g)}${linksHTML(g,true)}`;
 }
 
@@ -922,6 +984,184 @@ document.addEventListener("click", e=>{
   if (e.target.closest("[data-ciaddcancel]")){ ciAdding = null; renderCheckin(); }
 });
 
+/* ---------- 評分：NGO 40%、Mentor 40%、小組互評 20%；面向 組織能不能用 40%、問題 30%、方法 30%，每項 1–5 分 ---------- */
+const CRIT = [{k:"u", t:"組織能不能用", w:.4, hint:"成果能幫上什麼忙？要讓組織試用還要補什麼？"},
+              {k:"p", t:"問題有沒有抓對", w:.3, hint:"想幫誰、改善什麼困難？有找到線索支持嗎？"},
+              {k:"m", t:"方法有沒有巧思", w:.3, hint:"資料與 AI 用得巧嗎？怎麼確認結果是對的？"}];
+const AWARD = "好事影響力獎";  // 公布時的獎項名稱：好事影響力獎 - <島名>
+const awardName = k => `${AWARD} - ${ISL[k].name}`;
+const RTYPES = {ngo:{t:"NGO 夥伴", w:.4}, mentor:{t:"Mentor", w:.4}, peer:{t:"小組互評", w:.2}};
+const JUDGE_HASH = 2820251183;  // 評審密碼的雜湊
+let scoreDocs = {}, scoringOpen = false, reveals = {}, scoreCtx = null, scoreDraft = null;
+const winnerOf = k => reveals[k] || null;
+function applyConfig(c){
+  const wasOpen = scoringOpen;
+  scoringOpen = !!c.scoringOpen; reveals = (c.reveal && typeof c.reveal==="object") ? c.reveal : {};
+  document.body.classList.toggle("scoring-open", scoringOpen);
+  ISLANDS.forEach(i=>{ const w = reveals[i.k]; const key = "aiday-seen-"+i.k;
+    let seen = null; try{ seen = sessionStorage.getItem(key); }catch(e){}
+    if (w && seen !== w){ try{ sessionStorage.setItem(key, w); }catch(e){} if (seen !== null || !STAFF) showReveal(i.k, w); }
+    if (!w){ try{ sessionStorage.removeItem(key); }catch(e){} } });
+  if (window.setWinners) setWinners(reveals);
+  if (wasOpen !== scoringOpen && (panel==="score"||panel==="peer")){ const b = document.getElementById("dbody"); if (b) b.dataset.p = ""; }
+  refresh(); if (panel==="results") renderResults();
+}
+function saveConfig(patch){
+  const cur = {scoringOpen, reveal:{...reveals}, ...patch};
+  applyConfig(cur);
+  adapter.write("config", "main", cur).catch(()=>flash("設定沒有存到，請再試一次。"));
+}
+const fnvStr = str => { let h=0x811c9dc5; for (const b of new TextEncoder().encode(str)){ h^=b; h=Math.imul(h,0x01000193)>>>0; } return h>>>0; };
+function loadJudge(){ try{ return JSON.parse(localStorage.getItem("aiday-judge")||"null"); }catch(e){ return null; } }
+function saveJudge(j){ try{ localStorage.setItem("aiday-judge", JSON.stringify(j)); }catch(e){} }
+function judgeUnlocked(){ try{ return sessionStorage.getItem("aiday-judgeok")==="1"; }catch(e){ return false; } }
+
+function renderScorePanel(p){
+  const box = document.getElementById("scBody"); if (!box) return;
+  if (!scoringOpen && !STAFF){ box.innerHTML = `<div class="isec"><h3>${p==="peer"?"小組互評":"評分"}</h3><p>評分還沒開放。分場分享開始時，工作人員會打開評分。</p></div>`; scoreCtx=null; return; }
+  if (p==="score"){
+    const j = loadJudge();
+    if (!judgeUnlocked() || !j || !j.name || !j.type || !j.island || (scoreCtx && scoreCtx.setup)){
+      box.innerHTML = judgeSetupHTML(j); scoreCtx = {setup:true}; return; }
+    openScoreForm({type:j.type, id:`${j.type}-${j.id}-${j.island}`, rater:j.name, island:j.island});
+  } else {
+    if (!myGroup){ box.innerHTML = `<div class="isec"><h3>小組互評</h3><p>先選你們是哪一組。</p></div><div class="wgroups">${IDS.map(id=>`<button type="button" class="wg" data-pick="${id}" style="--c:${ISL[id[0]].color}"><span class="wid">${id}</span><span class="wnm">${get(id).name?esc(get(id).name):ISL[id[0]].name}</span></button>`).join("")}</div>`; return; }
+    openScoreForm({type:"peer", id:`peer-${myGroup}`, rater:myGroup, island:myGroup[0]});
+  }
+}
+function judgeSetupHTML(j){
+  j = j || {};
+  return `<form class="spanel" id="jSetup"><h4>評審評分</h4><p>謝謝您擔任評審！填好後就會出現該島各組的評分表。</p>
+    ${judgeUnlocked()?"":`<label for="jPw">評審密碼<input id="jPw" autocomplete="off" autocapitalize="none"></label>`}
+    <label for="jName">您的名字<input id="jName" maxlength="30" value="${esc(j.name||"")}" placeholder="例如：王小明"></label>
+    <div class="jopts"><span>您的身分</span>${["ngo","mentor"].map(t=>`<label class="jopt"><input type="radio" name="jType" value="${t}" ${j.type===t?"checked":""}><span>${RTYPES[t].t}</span></label>`).join("")}</div>
+    <div class="jopts"><span>評哪一座島</span>${ISLANDS.map(i=>`<label class="jopt" style="--c:${i.color}"><input type="radio" name="jIsl" value="${i.k}" ${j.island===i.k?"checked":""}><span>${i.name}</span></label>`).join("")}</div>
+    <button type="submit" class="btn primary">開始評分</button><p class="verr" id="jErr"></p></form>`;
+}
+function openScoreForm(ctx){
+  const box = document.getElementById("scBody");
+  if (!scoreCtx || scoreCtx.id !== ctx.id){
+    const doc = scoreDocs[ctx.id];
+    scoreCtx = ctx; scoreDraft = JSON.parse(JSON.stringify((doc && doc.scores) || {}));
+  }
+  const targets = IDS.filter(id=>id[0]===ctx.island && !(ctx.type==="peer" && id===ctx.rater));
+  const isl = ISL[ctx.island];
+  box.innerHTML = `<div class="isec"><h3>${ctx.type==="peer"?`${groupName(ctx.rater)} 的互評`:`${RTYPES[ctx.type].t}評分 · ${esc(ctx.rater)}`}</h3>
+      <p>${isl.name}，共 ${targets.length} 組。每個面向 1–5 分，5 分最好。送出後還可以修改。${ctx.type==="peer"?"不評自己組，全組討論後交一份。":""}</p>
+      ${ctx.type!=="peer"?`<button type="button" class="melink" id="jChange">換名字、身分或島</button>`:""}</div>
+    <div class="crit">${CRIT.map(c=>`<div><b>${c.t}</b> <span>${Math.round(c.w*100)}%</span><br><small>${c.hint}</small></div>`).join("")}</div>
+    ${targets.map(id=>{ const g=get(id), d=scoreDraft[id]||{}, links=g.links.map(safeURL).filter(Boolean);
+      return `<section class="scard" style="--c:${isl.color}"><h4><span class="tag" style="--c:${isl.color}">${id}</span>${g.name?esc(g.name):"（還沒取名）"}</h4>
+        ${links.length?`<div class="glinks">${links.map((u,i)=>`<a href="${esc(u)}" target="_blank" rel="noopener">成果 ${i+1} ↗</a>`).join("")}</div>`:""}
+        ${CRIT.map(c=>`<div class="srow2"><span>${c.t}</span><div class="pips">${[1,2,3,4,5].map(v=>`<button type="button" class="pip${d[c.k]===v?" on":""}" data-sc="${id}|${c.k}|${v}" aria-pressed="${d[c.k]===v}" aria-label="${c.t} ${v} 分">${v}</button>`).join("")}</div></div>`).join("")}
+        <textarea class="scomment" data-cm="${id}" maxlength="300" placeholder="一句話回饋（選填）">${esc(d.c||"")}</textarea></section>`; }).join("")}
+    <div class="ssubmit"><button type="button" class="btn primary" id="scSend">送出評分</button><span id="scStatus"></span></div>`;
+  renderScoreStatus();
+}
+function renderScoreStatus(){
+  const el = document.getElementById("scStatus"); if (!el || !scoreCtx || !scoreCtx.id) return;
+  const targets = IDS.filter(id=>id[0]===scoreCtx.island && !(scoreCtx.type==="peer" && id===scoreCtx.rater));
+  const left = targets.filter(id=>!CRIT.every(c=>(scoreDraft[id]||{})[c.k])).length;
+  const doc = scoreDocs[scoreCtx.id];
+  el.textContent = (doc ? `已送出 ${new Date(doc.t).toLocaleTimeString("zh-TW",{hour:"2-digit",minute:"2-digit",hour12:false})}，可再修改。` : "還沒送出。") + (left ? ` 還有 ${left} 組沒評完。` : "");
+}
+document.addEventListener("click", e=>{
+  const b = e.target.closest("[data-sc]");
+  if (b && scoreCtx){ const [id,k,v] = b.dataset.sc.split("|"); scoreDraft[id] = {...(scoreDraft[id]||{}), [k]:Number(v)};
+    b.parentElement.querySelectorAll(".pip").forEach(x=>{ const on = x===b; x.classList.toggle("on", on); x.setAttribute("aria-pressed", on); }); renderScoreStatus(); return; }
+  if (e.target.id==="scSend" && scoreCtx){
+    const clean = {}; Object.keys(scoreDraft).forEach(id=>{ if (!IDS.includes(id)) return; const d = scoreDraft[id], o = {};
+      CRIT.forEach(c=>{ const v = Number(d[c.k]); if (v>=1 && v<=5) o[c.k]=v; }); if (d.c) o.c = String(d.c).slice(0,300); clean[id]=o; });
+    const doc = {type:scoreCtx.type, rater:String(scoreCtx.rater).slice(0,30), island:scoreCtx.island, scores:clean, t:Date.now()};
+    scoreDocs = {...scoreDocs, [scoreCtx.id]:doc}; renderScoreStatus();
+    adapter.write("scores", scoreCtx.id, doc).then(()=>flash("評分已送出，謝謝！", true)).catch(()=>flash("評分沒有送出成功，請再按一次。"));
+    return; }
+  if (e.target.id==="jChange"){ scoreCtx = {setup:true}; document.getElementById("scBody").innerHTML = judgeSetupHTML(loadJudge()); return; }
+  const tg = e.target.closest("[data-toggle-scoring]"); if (tg){ saveConfig({scoringOpen: !scoringOpen}); return; }
+  const rv = e.target.closest("[data-reveal]");
+  if (rv){ const k = rv.dataset.reveal, sel = document.getElementById("win-"+k); const w = sel && sel.value;
+    if (!w) return flash("這座島還沒有分數。"); saveConfig({reveal:{...reveals, [k]:w}}); return; }
+  const un = e.target.closest("[data-unreveal]"); if (un){ const r = {...reveals}; delete r[un.dataset.unreveal]; saveConfig({reveal:r}); return; }
+  if (e.target.id==="rClose"){ document.getElementById("reveal").hidden = true; return; }
+  if (e.target.id==="resCsv"){ exportScores(); return; }
+});
+document.addEventListener("input", e=>{ const t = e.target.closest && e.target.closest("[data-cm]"); if (t && scoreDraft){ const id=t.dataset.cm; scoreDraft[id] = {...(scoreDraft[id]||{}), c:t.value}; } });
+document.addEventListener("submit", e=>{
+  if (e.target.id!=="jSetup") return; e.preventDefault();
+  const err = document.getElementById("jErr"), pw = document.getElementById("jPw");
+  if (pw && fnvStr("judge:"+pw.value.trim()) !== JUDGE_HASH){ err.textContent = "評審密碼不對，請向工作人員確認。"; return; }
+  try{ sessionStorage.setItem("aiday-judgeok","1"); }catch(x){}
+  const name = document.getElementById("jName").value.trim(), type = (document.querySelector('input[name="jType"]:checked')||{}).value, island = (document.querySelector('input[name="jIsl"]:checked')||{}).value;
+  if (!name || !type || !island){ err.textContent = "請填名字，並選身分和島。"; return; }
+  const old = loadJudge(); const j = {id: (old && old.name===name && old.id) || Math.random().toString(36).slice(2,8), name:name.slice(0,30), type, island};
+  saveJudge(j); scoreCtx = null; renderScorePanel("score");
+}, true);
+
+/* 計算結果 */
+function normScore(d){ if (!d || !CRIT.every(c=>d[c.k]>=1 && d[c.k]<=5)) return null; return CRIT.reduce((a,c)=>a+d[c.k]*c.w,0)/5*100; }
+const avg = xs => xs.length ? xs.reduce((a,b)=>a+b,0)/xs.length : null;
+function islandResults(k){
+  const docs = Object.entries(scoreDocs).filter(([,d])=>d && d.island===k && RTYPES[d.type]);
+  const rows = IDS.filter(id=>id[0]===k).map(id=>{
+    const by = {}, comments = [], uCrit = [];
+    Object.keys(RTYPES).forEach(t=>{ by[t] = avg(docs.filter(([,d])=>d.type===t && !(t==="peer" && d.rater===id)).map(([,d])=>normScore(d.scores && d.scores[id])).filter(v=>v!==null)); });
+    docs.forEach(([,d])=>{ const s = d.scores && d.scores[id]; if (!s) return; if (s.u) uCrit.push(s.u); if (s.c) comments.push({who: d.type==="peer" ? `${d.rater} 互評` : `${RTYPES[d.type].t} ${d.rater}`, c:s.c}); });
+    const have = Object.keys(RTYPES).filter(t=>by[t]!==null), wsum = have.reduce((a,t)=>a+RTYPES[t].w,0);
+    const total = wsum ? have.reduce((a,t)=>a+by[t]*RTYPES[t].w,0)/wsum : null;
+    return {id, by, total, partial: have.length<3, missing: Object.keys(RTYPES).filter(t=>by[t]===null), comments, u: avg(uCrit)};
+  });
+  rows.sort((a,b)=>(b.total??-1)-(a.total??-1) || (b.by.ngo??-1)-(a.by.ngo??-1) || (b.u??-1)-(a.u??-1));
+  const raters = t => docs.filter(([,d])=>d.type===t).map(([,d])=>d.rater);
+  return {rows, raters};
+}
+const f1 = v => v===null || v===undefined ? "—" : v.toFixed(1);
+function renderResults(){
+  const box = document.getElementById("resBody"); if (!box) return;
+  const keepSel = {}; ISLANDS.forEach(i=>{ const s = document.getElementById("win-"+i.k); if (s) keepSel[i.k] = s.value; });
+  box.innerHTML = `<div class="isec"><h3>評分結果</h3><p>只有工作人員看得到。總分 = NGO 40% ＋ Mentor 40% ＋ 互評 20%，同分先比 NGO，再比「組織能不能用」。</p></div>
+    <section class="spanel"><h4>評分開關</h4><p>${scoringOpen?"評分<b>開放中</b>：評審和各組都看得到評分表。":"評分<b>還沒開放</b>。分場分享開始時再打開。"}</p>
+      <button type="button" class="btn ${scoringOpen?"":"primary"}" data-toggle-scoring="1">${scoringOpen?"關閉評分":"開放評分"}</button>
+      <p class="sm">評審網址：網址最後加 <b>#judge</b>。評審密碼請看主持人說明文件。</p></section>
+    ${ISLANDS.map(i=>{ const {rows, raters} = islandResults(i.k), top = rows.find(r=>r.total!==null);
+      const peersIn = raters("peer"), peersMissing = IDS.filter(id=>id[0]===i.k && !peersIn.includes(id));
+      const sel = keepSel[i.k] || reveals[i.k] || (top && top.id) || "";
+      return `<section class="rsec" style="--c:${i.color}"><h4><span class="sw" style="background:${i.color}"></span>${i.name}</h4>
+        <p class="sm">NGO：${raters("ngo").map(esc).join("、")||"還沒有"} · Mentor：${raters("mentor").map(esc).join("、")||"還沒有"} · 互評已交：${peersIn.join("、")||"還沒有"}${peersMissing.length?`（未交：${peersMissing.join("、")}）`:""}</p>
+        <div class="rtable"><table><thead><tr><th>名次</th><th>組</th><th>NGO</th><th>Mentor</th><th>互評</th><th>總分</th></tr></thead><tbody>
+        ${rows.map((r,n)=>`<tr${reveals[i.k]===r.id?' class="won"':""}><td>${r.total===null?"—":n+1}</td><td><b>${r.id}</b> ${esc(get(r.id).name||"")}</td><td>${f1(r.by.ngo)}</td><td>${f1(r.by.mentor)}</td><td>${f1(r.by.peer)}</td><td><b>${f1(r.total)}</b>${r.total!==null&&r.partial?`<small> 暫估，缺${r.missing.map(t=>RTYPES[t].t).join("、")}</small>`:""}</td></tr>`).join("")}
+        </tbody></table></div>
+        <details><summary>看評語</summary>${rows.map(r=>r.comments.length?`<div class="rcm"><b>${r.id}</b>${r.comments.map(c=>`<div>· ${esc(c.c)} <small>— ${esc(c.who)}</small></div>`).join("")}</div>`:"").join("")||'<p class="sm">還沒有評語。</p>'}</details>
+        <div class="rwin"><label for="win-${i.k}">${AWARD}</label><select id="win-${i.k}">${rows.map(r=>`<option value="${r.id}" ${sel===r.id?"selected":""}>${r.id} ${esc(get(r.id).name||"")}${r.total!==null?`（${f1(r.total)}）`:""}</option>`).join("")}</select>
+          ${reveals[i.k]?`<span class="sm">已公布 ${reveals[i.k]}</span><button type="button" class="btn ghost" data-unreveal="${i.k}">收回</button>`:`<button type="button" class="btn primary" data-reveal="${i.k}">公布給大家</button>`}</div>
+      </section>`; }).join("")}
+    <section class="spanel"><h4>匯出</h4><button type="button" class="btn" id="resCsv">下載評分與評語 CSV</button></section>`;
+}
+function exportScores(){
+  const lines = [["島","組別","組名","NGO 平均","Mentor 平均","互評平均","總分","評語"]];
+  ISLANDS.forEach(i=>islandResults(i.k).rows.forEach(r=>lines.push([i.name, r.id, get(r.id).name, f1(r.by.ngo), f1(r.by.mentor), f1(r.by.peer), f1(r.total), r.comments.map(c=>`${c.who}：${c.c}`).join(" / ")])));
+  const csv = "\ufeff" + lines.map(r=>r.map(v=>`"${String(v??"").replace(/"/g,'""')}"`).join(",")).join("\r\n");
+  (async ()=>{ let dl=null; if (window.claude && typeof window.claude.use==="function"){ try{ dl = await window.claude.use("downloads"); }catch(x){} }
+    if (dl){ try{ await dl.save({filename:"AI-Impact-Day-評分.csv", data:csv}); }catch(x){} return; }
+    try{ const a=document.createElement("a"); a.href=URL.createObjectURL(new Blob([csv],{type:"text/csv"})); a.download="AI-Impact-Day-評分.csv"; document.body.appendChild(a); a.click(); a.remove(); }catch(x){} })();
+}
+
+/* 公布動畫 */
+function showReveal(k, id){
+  const isl = ISL[k], g = get(id), el = document.getElementById("reveal");
+  el.style.setProperty("--c", isl.color);
+  document.getElementById("rKicker").textContent = awardName(k);
+  document.getElementById("rTitle").textContent = `${id}${g.name?" · "+g.name:""}`;
+  document.getElementById("rSub").textContent = g.members.length ? g.members.join("、") : "恭喜！";
+  el.hidden = false; if (window.flyTo) flyTo(k); confetti();
+}
+function confetti(){
+  const c = document.getElementById("confetti"); if (!c || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  const r = c.getBoundingClientRect(); c.width = r.width; c.height = r.height; const x = c.getContext("2d");
+  const cols = ["#ffc93c","#25a68f","#e3962f","#e0668f","#3a87d8"];
+  const ps = Array.from({length:120},()=>({x:Math.random()*c.width, y:-20-Math.random()*c.height*.6, vx:(Math.random()-.5)*2, vy:2+Math.random()*3, s:4+Math.random()*5, a:Math.random()*6, col:cols[Math.floor(Math.random()*cols.length)]}));
+  let n = 0; (function step(){ x.clearRect(0,0,c.width,c.height); ps.forEach(p=>{ p.x+=p.vx; p.y+=p.vy; p.a+=.1; x.save(); x.translate(p.x,p.y); x.rotate(p.a); x.fillStyle=p.col; x.fillRect(-p.s/2,-p.s/4,p.s,p.s/2); x.restore(); }); if (++n<220) requestAnimationFrame(step); else x.clearRect(0,0,c.width,c.height); })();
+}
+
 /* ---------- 工作人員：投影模式、匯出成果、全部重設（網址加 #staff 才看得到） ---------- */
 function staffHTML(){
   return `<div class="isec"><h3>工作人員</h3><p>這個面板只有網址加上 <b>#staff</b> 才看得到。</p></div>
@@ -990,6 +1230,8 @@ function renderDrawer(){
   document.querySelectorAll("#drawer .dhead [data-panel]").forEach(b=>b.classList.toggle("on", b.dataset.panel===p));
   if (!d.classList.contains("open")) return;
   const body = document.getElementById("dbody");
+  if (p==="score" || p==="peer"){ if (body.dataset.p!==p){ body.dataset.p=p; body.innerHTML = `<div id="scBody"></div>`; scoreCtx = null; renderScorePanel(p); } else renderScoreStatus(); return; }
+  if (p==="results"){ if (body.dataset.p!=="results"){ body.dataset.p="results"; body.innerHTML = `<div id="resBody"></div>`; } renderResults(); return; }
   if (p==="checkin"){ if (body.dataset.p!=="checkin"){ body.innerHTML = checkinShellHTML(); body.dataset.p="checkin"; } renderCheckin(); return; }
   if (p==="staff"){ if (body.dataset.p!=="staff"){ body.innerHTML = staffHTML(); body.dataset.p="staff"; } updateStaffStats(); return; }
   body.dataset.p = p;
@@ -1330,6 +1572,18 @@ function buildWorld(){
   const ringM = new THREE.Mesh(new THREE.RingGeometry(2.0,2.25,32), new THREE.MeshBasicMaterial({color:"#ffc93c",transparent:true,opacity:.75,side:THREE.DoubleSide,depthWrite:false}));
   ringM.rotation.x = -Math.PI/2; ringM.position.y = .27; mine.add(ringM);
   mine.visible = false; scene.add(mine);
+  const trophies = {};
+  function makeTrophy(){
+    const g = new THREE.Group(), gold = mat("#ffcc33",{emissive:"#e0a000",emissiveIntensity:.6,roughness:.35,metalness:.3});
+    const cup = mesh(new THREE.CylinderGeometry(.42,.22,.55,12,1,true), gold); cup.material.side = THREE.DoubleSide; cup.position.y=.75;
+    const stem = mesh(new THREE.CylinderGeometry(.07,.07,.3,8), gold); stem.position.y=.35;
+    const base = mesh(new THREE.CylinderGeometry(.28,.32,.14,12), gold); base.position.y=.15;
+    [-1,1].forEach(sd=>{ const h = mesh(new THREE.TorusGeometry(.16,.035,6,12,Math.PI), gold); h.position.set(sd*.44,.78,0); h.rotation.z = sd>0 ? -Math.PI/2 : Math.PI/2; g.add(h); });
+    const star = new THREE.Mesh(STAR_G, mat("#ffffff",{emissive:"#ffe27a",emissiveIntensity:.8})); star.scale.setScalar(.45); star.position.set(0,.75,.43); g.add(star);
+    g.add(cup, stem, base); g.scale.setScalar(1.6); g.visible = false; scene.add(g); return g;
+  }
+  window.setWinners = map => { IDS.forEach(id=>{ const w = map[id[0]] === id; if (w && !trophies[id]) trophies[id] = makeTrophy(); if (trophies[id]){ trophies[id].visible = w; if (w) trophies[id].position.copy(stations[id].g.position).add(new THREE.Vector3(0,5.2,0)); } }); };
+  window.animTrophies = time => { Object.values(trophies).forEach(t=>{ if (t.visible){ t.rotation.y = time*1.2; t.position.y = 6.5 + Math.sin(time*2)*.2; } }); };
   window.setMineMarker = id => { const st = id && stations[id]; mine.visible = !!st; if (st) mine.position.copy(st.g.position); };
   window.animMine = time => { if (!mine.visible) return; gem.rotation.y = time*1.5; gem.position.y = 4.55 + Math.sin(time*2)*.15; mBeam.material.opacity = .14 + .06*Math.sin(time*2.5); };
 
@@ -1599,6 +1853,7 @@ function buildWorld(){
     const dt = Math.min(.1, time - (loop.last||time)); loop.last = time;
     if (!reduce) stepCrowd(dt, time);
     if (!reduce && window.animMine) animMine(time);
+    if (window.animTrophies) animTrophies(reduce ? 0 : time);
     stepTAs(reduce ? 10 : dt, time);
     if (fly){
       const k = Math.min(1,(t-fly.t0)/900), e = k<.5?2*k*k:1-Math.pow(-2*k+2,2)/2;
@@ -1655,6 +1910,7 @@ function refresh(){
 
 try { buildWorld(); } catch(e){ document.body.classList.add("nogl"); }
 if (STAFF) document.body.classList.add("staff");
+if (JUDGE) document.body.classList.add("judge");
 if (SCREEN) setTimeout(()=>setScreen(true), 300);
 var myGroup = null;
 try{ const v = localStorage.getItem("aiday-mygroup"); if (IDS.includes(v)) myGroup = v; }catch(e){}
@@ -1673,11 +1929,11 @@ function renderMe(){
   const g = get(myGroup), isl = ISL[myGroup[0]];
   bar.hidden = false; bar.style.setProperty("--c", isl.color);
   bar.innerHTML = `<button type="button" class="mebtn" data-act="edit" data-id="${myGroup}"><span class="crown">♛</span><span>我們是 <b>${groupName(myGroup)}</b>${g.name?` · ${esc(g.name)}`:""}</span></button>
-    <button type="button" class="melink" id="meSwitch">換組別</button>`;
+    <button type="button" class="melink" id="meSwitch">換組別</button>${scoringOpen?`<button type="button" class="mepeer" data-panel="peer">互評其他組</button>`:""}`;
 }
 function pickGroup(id){
   myGroup = id; try{ localStorage.setItem("aiday-mygroup", id); }catch(e){}
-  hideWelcome(); refresh(); flyTo(id[0]);
+  hideWelcome(); if (panel==="peer"){ const b = document.getElementById("dbody"); if (b) b.dataset.p = ""; } refresh(); flyTo(id[0]);
   const g = get(id);
   setTimeout(()=>{ if (!g.name){ openEditor(id); document.getElementById("dlgTitle").textContent = `歡迎 ${groupName(id)}！先幫你們取個組名吧`; }
     else flash(`♛ 歡迎回來，${groupName(id)} ${g.name}！`, true); }, 1000);
@@ -1688,10 +1944,12 @@ document.addEventListener("click", e=>{
   if (e.target.closest("#meSwitch")){ showWelcome(); return; }
 });
 renderMe();
-if (!myGroup && !STAFF && !SCREEN) showWelcome();
+if (!myGroup && !STAFF && !SCREEN && !JUDGE) showWelcome();
+if (JUDGE) setTimeout(()=>openPanel("score"), 200);
 window.addEventListener("hashchange", ()=>{
   const h = location.hash;
   if (h==="#staff") document.body.classList.add("staff");
+  if (h==="#judge"){ document.body.classList.add("judge"); hideWelcome(); panel = null; openPanel("score"); }
   if (h==="#screen") setScreen(true);
   if (h==="#rehearsal"){ offset = T("14:20") - Date.now(); document.getElementById("rehearsal").hidden = false; tick(); }
 });
@@ -1704,6 +1962,8 @@ setInterval(refresh, 30000);
   adapter.subscribe("groups", m=>{ groups = m || {}; refresh(); });
   adapter.subscribe("mentors", m=>{ mentorNotes = m || {}; if (panel==="mentor") renderDrawer(); });
   adapter.subscribe("checkin", m=>{ checkins = m || {}; if (panel==="checkin") renderCheckin(); });
+  adapter.subscribe("scores", m=>{ scoreDocs = m || {}; if (panel==="results") renderResults(); if (panel==="score"||panel==="peer") renderScoreStatus(); });
+  adapter.subscribe("config", m=>{ applyConfig((m && m.main) || {}); });
 })();
 </script>
 <button class="exitscreen" id="exitScreen" type="button">離開投影模式</button>
