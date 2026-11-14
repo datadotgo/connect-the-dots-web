@@ -357,6 +357,17 @@ body.scoring-open .peeronly{display:inline-flex !important}
 .rcard h2{font-size:clamp(30px,6vw,52px);line-height:1.15}
 .rsub{margin:0;color:var(--muted);font-size:15px}
 body.screen .rcard{transform:scale(1.25)}
+.wroles{display:grid;gap:8px;padding-top:12px;border-top:1px solid var(--line)}
+.wroles h3{font-size:15px;font-family:var(--font-body);font-weight:700;color:var(--muted)}
+.wrolebtns{display:flex;flex-wrap:wrap;gap:6px}
+.wrole{cursor:pointer;border:1px solid var(--line);background:#fff;border-radius:99px;padding:7px 14px;font-size:13.5px;display:inline-flex;gap:6px;align-items:baseline}
+.wrole:hover{border-color:var(--c)}
+.rdot{width:9px;height:9px;border-radius:50%;background:var(--c);align-self:center}
+.wrole.ta{border-color:color-mix(in srgb,var(--c) 50%,#fff);background:color-mix(in srgb,var(--c) 8%,#fff)}
+.wrole.ta:hover{border-color:var(--c)}
+.wrole small{font-size:11.5px;color:var(--muted)}
+.rolebadge{cursor:default;background:var(--c) !important;color:#fff;box-shadow:none !important;font-weight:500}
+.rolebadge b{color:#fff}
 .addpts{justify-self:start;color:var(--muted);font-size:12px}
 .flbl{position:absolute;left:0;top:0;pointer-events:auto;cursor:pointer;will-change:transform;white-space:nowrap;font-size:12px;padding:2px 9px;border-radius:99px;background:var(--paper);border:2px solid var(--mc);box-shadow:var(--shadow)}
 .mentor{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:12px;align-items:center;padding:10px;border-radius:14px;background:#f5f8f7;text-decoration:none;color:inherit}
@@ -440,9 +451,13 @@ body.nogl{overflow:auto;background:linear-gradient(var(--sky),#cfeceb)}
   <div class="wcard" role="dialog" aria-modal="true" aria-labelledby="wTitle">
     <div class="eb">AI IMPACT DAY · 11/15</div>
     <h2 id="wTitle">歡迎登島！你是哪一組？</h2>
-    <p class="wsub">選好之後，我們會帶你飛到你們的小屋。之後也可以從左上角換組別。</p>
+    <p class="wsub">參賽者請選你們的組，選好之後會帶你飛到你們的小屋。之後也可以從左上角更換。</p>
     <div class="wislands" id="wIslands"></div>
-    <button type="button" class="btn ghost wskip" id="wSkip">我是工作人員／先逛逛就好</button>
+    <section class="wroles" aria-labelledby="wRolesTitle">
+      <h3 id="wRolesTitle">不是參賽者？選你的身分</h3>
+      <div class="wrolebtns" id="wRoles"></div>
+    </section>
+    <button type="button" class="btn ghost wskip" id="wSkip">先逛逛就好</button>
   </div>
 </div>
 
@@ -546,6 +561,16 @@ body.nogl{overflow:auto;background:linear-gradient(var(--sky),#cfeceb)}
       <button type="button" class="btn" id="fCancel">取消</button>
       <button type="submit" class="btn primary">儲存</button>
     </div>
+  </form>
+</dialog>
+
+<dialog id="sdlg">
+  <form class="dlg" id="sform" method="dialog">
+    <h3>工作人員登入</h3>
+    <p class="sm" style="margin:0;color:var(--muted)">輸入工作人員密碼，進入簽到、評分結果和工作人員功能。這台裝置會記住，之後不用再輸入。</p>
+    <label for="sPw">工作人員密碼<input id="sPw" autocomplete="off" autocapitalize="none" spellcheck="false"></label>
+    <p class="verr" id="sErr" role="alert"></p>
+    <div class="acts"><button type="button" class="btn" id="sCancel">取消</button><button type="submit" class="btn primary">進入</button></div>
   </form>
 </dialog>
 
@@ -894,7 +919,7 @@ function listHTML(){
       </div>`;}).join("")}</div></section>`).join("");
 }
 /* ---------- 簽到（只有 #staff 看得到）：名單以工作人員密碼加密（PBKDF2 + AES-GCM），簽到狀態只存代號 ---------- */
-const ROSTER_ENC = "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";
+const ROSTER_ENC = "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";
 const REG = {A1:4,A2:3,A3:3,A4:4,A5:4,B1:3,B2:3,B3:2,B4:3,B5:3,C1:3,C2:3,C3:3};  // 報名人數
 let roster = null, checkins = {}, ciQuery = "", ciAdding = null;
 async function unlockRoster(pw){
@@ -1937,10 +1962,48 @@ function refresh(){
 }
 
 try { buildWorld(); } catch(e){ document.body.classList.add("nogl"); }
-if (STAFF) document.body.classList.add("staff");
+/* 工作人員模式要密碼（與簽到名單同一組，用解密名單來驗證） */
+const staffOK = () => { try{ return localStorage.getItem("aiday-staffok")==="1"; }catch(e){ return false; } };
+let staffThen = null;
+function enterStaff(then){
+  if (staffOK()){ document.body.classList.add("staff"); if (then) then(); return; }
+  staffThen = then || null;
+  const d = document.getElementById("sdlg"); document.getElementById("sErr").textContent = ""; document.getElementById("sPw").value = "";
+  d.showModal(); document.getElementById("sPw").focus();
+}
+document.getElementById("sCancel").onclick = ()=>document.getElementById("sdlg").close();
+document.getElementById("sform").addEventListener("submit", async e=>{
+  e.preventDefault();
+  const pw = document.getElementById("sPw").value.trim(), err = document.getElementById("sErr");
+  if (!(window.crypto && crypto.subtle)){ err.textContent = "這個瀏覽器不支援，請換 Chrome 或 Safari。"; return; }
+  err.textContent = "確認中…";
+  try{ roster = await unlockRoster(pw); }catch(x){ err.textContent = "密碼不對，請再試一次。"; return; }
+  try{ localStorage.setItem("aiday-staffok","1"); sessionStorage.setItem("aiday-staffpw", pw); }catch(x){}
+  document.getElementById("sdlg").close(); document.body.classList.add("staff");
+  const t = staffThen; staffThen = null; if (t) t();
+  flash("已進入工作人員模式。右上角有「簽到」「評分結果」「工作人員」。", true);
+});
+if (STAFF) enterStaff();
 if (JUDGE) document.body.classList.add("judge");
 if (SCREEN) setTimeout(()=>setScreen(true), 300);
-var myGroup = null;
+var myGroup = null, myRole = null;
+try{ const r = JSON.parse(localStorage.getItem("aiday-role")||"null"); if (r && r.t) myRole = r; }catch(e){}
+const ROLES = [{t:"staff", n:"工作人員", c:"#1f3238"}, {t:"ta", n:"助教", c:"#8a63dc"}, {t:"ngo", n:"NGO 夥伴", c:"#2fae66"}, {t:"mentor", n:"Mentor", c:"#3a87d8"}];
+function roleLabel(r){ if (!r) return ""; return (ROLES.find(x=>x.t===r.t)||{}).n || ""; }
+function renderRoles(){
+  document.getElementById("wRoles").innerHTML = ROLES.map(r=>`<button type="button" class="wrole" data-role="${r.t}" style="--c:${r.c}"><span class="rdot"></span>${r.n}</button>`).join("");
+}
+function pickRole(t, k){
+  if (t==="staff" && !staffOK()){ hideWelcome(); enterStaff(()=>pickRole("staff")); return; }
+  if (t==="staff") document.body.classList.add("staff");
+  myRole = {t}; try{ localStorage.setItem("aiday-role", JSON.stringify(myRole)); }catch(e){}
+  myGroup = null; try{ localStorage.removeItem("aiday-mygroup"); }catch(e){}
+  if (window.setMineMarker) setMineMarker(null);
+  hideWelcome();
+  document.body.classList.toggle("judge", JUDGE || t==="ngo" || t==="mentor");
+  refresh();
+  flash(`歡迎，${roleLabel(myRole)}！${t==="ngo"||t==="mentor" ? "評分開放後，右上角按「評分」就能開始。" : t==="staff" ? "右上角有「簽到」「評分結果」「工作人員」。" : ""}`, true);
+}
 try{ const v = localStorage.getItem("aiday-mygroup"); if (IDS.includes(v)) myGroup = v; }catch(e){}
 function renderWelcome(){
   document.getElementById("wIslands").innerHTML = ISLANDS.map(isl=>`<section class="wis" style="--c:${isl.color}">
@@ -1953,13 +2016,19 @@ function showWelcome(){ renderWelcome(); document.getElementById("welcome").hidd
 function hideWelcome(){ document.getElementById("welcome").hidden = true; }
 function renderMe(){
   const bar = document.getElementById("meBar");
-  if (!myGroup){ bar.hidden = true; return; }
+  if (!myGroup){
+    if (myRole){ bar.hidden = false; bar.style.setProperty("--c", (ROLES.find(x=>x.t===myRole.t)||{}).c || "#1f3238");
+      bar.innerHTML = `<span class="mebtn rolebadge"><span>你是 <b>${roleLabel(myRole)}</b></span></span><button type="button" class="melink" id="meSwitch">換身分</button>`; }
+    else bar.hidden = true;
+    return; }
   const g = get(myGroup), isl = ISL[myGroup[0]];
   bar.hidden = false; bar.style.setProperty("--c", isl.color);
   bar.innerHTML = `<button type="button" class="mebtn" data-act="edit" data-id="${myGroup}"><span class="crown">♛</span><span>我們是 <b>${groupName(myGroup)}</b>${g.name?` · ${esc(g.name)}`:""}</span></button>
     <button type="button" class="melink" id="meSwitch">換組別</button>${scoringOpen?`<button type="button" class="mepeer" data-panel="peer">互評其他組</button>`:""}`;
 }
 function pickGroup(id){
+  myRole = null; try{ localStorage.removeItem("aiday-role"); }catch(e){}
+  if (!JUDGE) document.body.classList.remove("judge");
   myGroup = id; try{ localStorage.setItem("aiday-mygroup", id); }catch(e){}
   hideWelcome(); if (panel==="peer"){ const b = document.getElementById("dbody"); if (b) b.dataset.p = ""; } refresh(); flyTo(id[0]);
   const g = get(id);
@@ -1968,15 +2037,19 @@ function pickGroup(id){
 }
 document.addEventListener("click", e=>{
   const pk = e.target.closest("[data-pick]"); if (pk){ pickGroup(pk.dataset.pick); return; }
-  if (e.target.id==="wSkip"){ hideWelcome(); return; }
+  const rb = e.target.closest("[data-role]"); if (rb){ pickRole(rb.dataset.role, rb.dataset.k); return; }
+  if (e.target.id==="wSkip"){ hideWelcome(); if (myRole){ myRole = null; try{ localStorage.removeItem("aiday-role"); }catch(x){} refresh(); } if (myGroup){ myGroup = null; try{ localStorage.removeItem("aiday-mygroup"); }catch(x){} if (window.setMineMarker) setMineMarker(null); refresh(); } return; }
   if (e.target.closest("#meSwitch")){ showWelcome(); return; }
 });
 renderMe();
-if (!myGroup && !STAFF && !SCREEN && !JUDGE) showWelcome();
+renderRoles();
+if (myRole && (myRole.t==="ngo" || myRole.t==="mentor")) document.body.classList.add("judge");
+if (myRole && myRole.t==="staff" && staffOK()) document.body.classList.add("staff");
+if (!myGroup && !myRole && !STAFF && !SCREEN && !JUDGE) showWelcome();
 if (JUDGE) setTimeout(()=>openPanel("score"), 200);
 window.addEventListener("hashchange", ()=>{
   const h = location.hash;
-  if (h==="#staff") document.body.classList.add("staff");
+  if (h==="#staff") enterStaff();
   if (h==="#judge"){ document.body.classList.add("judge"); hideWelcome(); panel = null; openPanel("score"); }
   if (h==="#screen") setScreen(true);
   if (h==="#rehearsal"){ offset = T("14:20") - Date.now(); document.getElementById("rehearsal").hidden = false; tick(); }
