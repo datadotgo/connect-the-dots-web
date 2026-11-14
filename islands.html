@@ -148,7 +148,9 @@ h1,h2,h3{font-family:var(--font-display);font-weight:400;margin:0;text-wrap:bala
 .drawer{position:fixed;z-index:30;top:0;right:0;bottom:0;width:min(420px,100%);background:var(--paper);box-shadow:-10px 0 30px rgba(20,60,70,.18);
   display:grid;grid-template-rows:auto minmax(0,1fr);transform:translateX(105%);transition:transform .28s ease}
 .drawer.open{transform:none}
-.dhead{display:flex;gap:6px;align-items:center;padding:12px 12px 10px;border-bottom:1px solid var(--line)}
+.dhead{display:flex;gap:4px;align-items:center;padding:12px 12px 10px;border-bottom:1px solid var(--line);overflow-x:auto;min-width:0}
+.dhead .nb{padding:7px 9px}
+.drawer{grid-template-columns:minmax(0,1fr)}
 .dhead .x{margin-left:auto}
 .dbody{overflow:auto;padding:14px;display:grid;gap:16px;align-content:start}
 .isec h3{font-size:18px;display:flex;gap:8px;align-items:center}
@@ -280,6 +282,38 @@ body.screen .brand{transform:scale(1.1);transform-origin:top left}
 .mine-badge{font-size:11px;font-weight:700;color:#a57a00;background:#fff1bf;border-radius:99px;padding:0 7px;justify-self:start}
 @media (max-width:760px){ .wislands{grid-template-columns:1fr} .wcard h2{font-size:24px} }
 .banner.ok{background:#fff6d6;border-color:#f2c14e;color:#7a5600}
+.cistat{position:sticky;top:-14px;z-index:1;background:var(--paper);padding:8px 0;font-size:13px}
+.cistat b{font-family:var(--font-mono);font-size:22px}
+.cistat span{color:var(--muted);font-size:12px}
+.cisearch input{width:100%;font:inherit;padding:9px 12px;border-radius:10px;border:1px solid var(--line);background:#fff;margin:4px 0 8px}
+.cigroup{display:grid;gap:6px;margin-bottom:14px}
+.cigroup h4{margin:0;display:flex;gap:8px;align-items:center;font-family:var(--font-display);font-weight:400;font-size:16px;border-bottom:2px solid var(--c);padding-bottom:4px}
+.cigroup h4 small{margin-left:auto;font-family:var(--font-body);font-size:12px;color:var(--muted)}
+.cirow{display:flex;gap:10px;align-items:flex-start;padding:8px;border-radius:12px;background:#f5f8f7}
+.cirow.on{background:#e6f6ec}
+.cibox{flex:none;cursor:pointer;width:38px;height:38px;border-radius:10px;border:2px solid #b9c6c9;background:#fff;font-size:20px;font-weight:700;color:#fff;display:grid;place-items:center}
+.cirow.on .cibox{background:var(--ok);border-color:var(--ok)}
+.cimain{display:grid;gap:2px;min-width:0}
+.cin{display:flex;gap:6px;align-items:baseline;flex-wrap:wrap}
+.cin b{font-size:15px}
+.cin span{font-size:12.5px;color:var(--muted)}
+.cin em{font-style:normal;font-size:11px;color:#a57a00;background:#fff1bf;border-radius:99px;padding:0 6px}
+.cid{font-size:12.5px}
+.cid.none{color:var(--muted)}
+.cinote{font-size:12.5px;color:var(--stuck);font-weight:500}
+.cix{padding:8px 10px;border-radius:12px;border:1px dashed #c9d3d6;display:grid;gap:3px}
+.cixh{font-size:11.5px;color:var(--muted)}
+.cixr{font-size:12.5px}
+.cirow.walk{background:#fff8e6}
+.cirow.walk.on{background:#e6f6ec}
+.ciwdel{margin-left:auto;font-size:11.5px;color:var(--muted)}
+.ciaddbtn{justify-self:start;font-size:12px;color:var(--muted)}
+.ciadd{display:flex;gap:6px;flex-wrap:wrap}
+.ciadd input{flex:1;min-width:140px;font:inherit;padding:7px 10px;border-radius:10px;border:1px solid var(--line);background:#fff}
+.lbl .id i{font-style:normal;margin-left:3px;color:var(--muted)}
+.gn{font-size:12px;color:var(--muted);white-space:nowrap}
+.wgn{font-size:12.5px;color:var(--muted);white-space:nowrap}
+.cireg{font-family:var(--font-body);font-size:12px;color:var(--muted);background:#eef3f2;border-radius:99px;padding:1px 8px}
 .addpts{justify-self:start;color:var(--muted);font-size:12px}
 .flbl{position:absolute;left:0;top:0;pointer-events:auto;cursor:pointer;will-change:transform;white-space:nowrap;font-size:12px;padding:2px 9px;border-radius:99px;background:var(--paper);border:2px solid var(--mc);box-shadow:var(--shadow)}
 .mentor{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:12px;align-items:center;padding:10px;border-radius:14px;background:#f5f8f7;text-decoration:none;color:inherit}
@@ -374,6 +408,7 @@ body.nogl{overflow:auto;background:linear-gradient(var(--sky),#cfeceb)}
     <button class="nb" data-panel="list">清單</button>
     <button class="nb" data-panel="mentor">Mentor 燈塔</button>
     <button class="nb" data-panel="vault">資料寶箱</button>
+    <button class="nb staffonly" data-panel="checkin">簽到</button>
     <button class="nb staffonly" data-panel="staff">工作人員</button>
   </div>
   <div class="card navrow islands" id="islandNav"></div>
@@ -395,6 +430,7 @@ body.nogl{overflow:auto;background:linear-gradient(var(--sky),#cfeceb)}
   <button class="nb" data-panel="queue" id="mQueue">星星排隊</button>
   <button class="nb" data-panel="mentor">Mentor</button>
   <button class="nb" data-panel="vault">資料</button>
+  <button class="nb staffonly" data-panel="checkin">簽到</button>
   <button class="nb staffonly" data-panel="staff">工作</button>
 </div>
 
@@ -406,6 +442,7 @@ body.nogl{overflow:auto;background:linear-gradient(var(--sky),#cfeceb)}
     <button class="nb" data-panel="queue">星星排隊</button>
     <button class="nb" data-panel="mentor">Mentor 分享</button>
     <button class="nb" data-panel="vault">資料寶箱</button>
+    <button class="nb staffonly" data-panel="checkin">簽到</button>
     <button class="nb x" id="dClose" aria-label="關閉面板">✕</button>
   </div>
   <div class="dbody" id="dbody"></div>
@@ -599,7 +636,10 @@ const eventNow = () => Date.now() + offset;
 const pad = n => String(n).padStart(2,"0");
 
 /* ---------- state ---------- */
-const IDS = ISLANDS.flatMap(i => Array.from({length:i.n},(_,j)=>i.k+(j+1)));
+const IDS = ISLANDS.flatMap(i => (i.nums || Array.from({length:i.n},(_,j)=>j+1)).map(x=>i.k+x));
+const groupName = id => `${ISL[id[0]].name} ${id}`;
+// 報名表上的組別：微客報名第 2、3、4 組 = 平台 C1、C2、C3
+const regLabel = id => `${ISL[id[0]].name} 第${Number(id.slice(1)) + (id[0]==="C" ? 1 : 0)}組`;
 let groups = {}, readOnly = false, adapter = null;
 function get(id){
   const g = groups[id] || {};
@@ -740,7 +780,7 @@ function queueHTML(q){
   let n = 0;
   return q.length ? q.map(x=>`<div class="qrow${x.talk?" talk":""}">
       <span class="n">${x.talk?"諮詢中":"#"+(++n)}</span><span class="tag" style="--c:${ISL[x.id[0]].color}">${x.id}</span>
-      <span class="g">${x.g.name?esc(x.g.name):"（未取名）"} · ${ISL[x.id[0]].name}</span>
+      <span class="g">${x.g.name?esc(x.g.name):"（未取名）"} · ${groupName(x.id)}</span>
       <span class="w">${x.talk?tmr(x.t):waitMin(x.t)}</span>
       ${x.talk?`<button type="button" class="btn" data-act="finish" data-id="${x.id}" data-i="${x.i}">諮詢完成</button>`
               :`<button type="button" class="btn primary" data-act="start" data-id="${x.id}" data-i="${x.i}">開始諮詢</button>`}</div>`).join("")
@@ -788,6 +828,100 @@ function listHTML(){
         <div style="display:flex;align-items:center;gap:6px"><span class="sts" style="margin-left:0">${starsHTML(id,g)}</span>${queueBits(id,g)}</div>
       </div>`;}).join("")}</div></section>`).join("");
 }
+/* ---------- 簽到（只有 #staff 看得到）：名單以工作人員密碼加密（PBKDF2 + AES-GCM），簽到狀態只存代號 ---------- */
+const ROSTER_ENC = "u/aLTcB0ZwBtSbChVqgl1DVXnsnis+wxegGPs6WlDqJ2o3zXCn8ct17gbKCd/OCb6uPg7rsUW4h+iBWLbtCEHCEcnq8Y8iMh7XBsJ7QJli9ZI8ERb4Nq+Qbejs8IM9dfHhoKJiSJ+gsfSuWvWIRH5Hyp1ctlf4XdE9wcHFQoJP94/qAC7O+Q3IGOQwh1QN2Hwp3N8xI0yatXgTCs+JidYx9wG3rnmJmqu7kPqdz9Ub7xrCXdPr3akC6ekMA2zrotD1GmNLskr/20CGerJFY/HW9/CAU0TxSN1UCJ99UBIl/eIqnbs5LDvBKq2Clkksg4jSpEk4zIce3OgY81oboKINxOAAP+czuGEUCDC4Uw6PePFqr6ITAjiIH3W+/l4746lgbJoQTrUm/ivH2jhk3x/xXlA2VX3U3WDxukMHjeLlhmByGHIW8t5kR5TNjCZXi3hsxYpP0Z02Jgvv236c0dVmrSKGpkVCZ7IzGj97+NyKGFqX088AkpuMuJxqHDH5rv3SjMC88deYGfVDZn5uHCTn/Fo3aiwlSXnHsXWj3T99KNLiAk3uaBNmp4S9bJ1yiR/g8sfs6nM1PmzxBYbG3MJQ7V2/Dc/DwVqjy/eDFsOxphXcf8NwRClD4TcH6GNlZCQcQk2W4YhJcsdgOhDwfN8B69UPYZa1YijY7hD4Alw0mLvaJI5aNRPc935Nf5DA+MTA84i2hLmov+CM0HRAypslVqCs3oxPZzh2ciJxNXEAPmBzYUnici4uQczkEZe78oHH3ui/learDKjnNNEEUbgM6u096WdTJkRIWvQsfUSXIDXxgEo2VBlPTcDeys3Kn5NyusMWrdpVFqJuu8lzUXg19z+Yvt8G+F6D73IZw+cBwBbTsMsogxysINeFvfXkgcd+oIbSCI3L3vT9t6sru1gc5/2Rb2+r+fUTQhccl36kwRbUHW6cRNgk8DJu8r01IsLFOsTGXmfC9Zy0FOn1XOlX+DmWB9PA5sFABpqMjDeBaoicshcHzMD0AmqXxcpygFx3Y+2bjkIrgLeEY7YxpbcVTQ8CTip+L3I7rTIaGx8MmTv7zneWSKmRtGUdxIC373rYDorUBqkE4zI7Pv9aApBTSZ/QcnH+FxdcQrTFMumdLuVYbf5k88nTqA2aEAZ/BCUdPfVO7UbHtxy/Dh0gw1lDYJv280AKp9c82aT1L9oar3kunpBdfYFpThXjhGmQM5W5afQEGy6m0Mctzzk/O+EhN9cPnPmicv8r4LH0zV293D75trTwmt1tcseSoCYP72np2laHGu594a2FoROF9O1bzN0YdP/hYstCYOud7MYI0MJRbuhCs1c3NOj9b5gpVx/yl58w0naVaKAeAuc+OA6sOpvoHGQ2NWpHijJ3tamMXN7BtKghEqZ9qe4RbCS2gCqUTt/n/ecZz+6JepPD/lHqMDm2uQhjnYa66QjIcf0xzIcw1mF6LAShJ4caVVOVroS0YX27kvrvEC7Es1mI1beR73h3dndsKUlM+ufO2wAIStC0keh8+DyEqS5QujsRTKHsUveYb7qvRlfzS6t1D46UiF0jsU3NWExcDZ9YB1F5EOGgilFC324gBqWHe2s8mNBEAuf3/MIpyf+wsbud6c1buzPv4plstMjgRwutqmens8213YPt0HgQHNe8BGdcNzUW4R4C4g4tAIjpWVp/RKFUQY+b+/oY+ULMKC+Z0mRree91ChwX/27AsRTDkp5TopUTVRHV+OWwIyUQcveee6jOSEni29FVWX5vYpHqqkMGAOSZdmSjfkmVYGG182ztez3nZ0vTeoISS0yXVqe9pFaOLMH/awun4nNLfiJV0560K9BjdYGuqDUqbEUHThQOKeKU/rJIiLQF4l9ehpRaDS/OYRwPPjOqBZhA1yinROr101tHwiuX3ovZRDH28y87hzEsRBInSQ98oSMeOnoyYkkxFcpVlzUguGvoasGCtTKbgmBTtOJV6UejMxKVLcUvTzSgXXoG2HE/Y5vLAOOIfX4uBm97YP4PyMAigG/lD66qtfhoFMKxx/ZmiGCCcOfEK8qDxYWban8syejTTMRuoj679KgSK4ab2XvH53mDg8kqszw1CH2pW0S2qdY8lr7Y3PPJc6oMS5E0d+mYRsv9yLrgUQh+tbs9a/TjKmubP1FrQpbX3hGwU2UvrWtr7dlgl1V9leCxqn80SToRBsOqzGzoj/syD0cbUKoL9O0IZqQwHADoy39DlOjz31lWG4HP5m8ZB7OeF65Vi6Yk+h4mHaLfrbsy+nNsgeEpXcw4G/T0ONLLKI5758MdhRsZwp8FUJYFmhcpmsNwJzBmnCrrjCzFWeTQlhRzPtw5LFhKGhYJH+Ckuvvxmo+K5dIY+MJ5JXl0wENY5zWXG0QMQhgB9U4sZDi7i0gWe147T0fepc51VAYNbnC+r3iiF5gHXSE4gg6hwRBIGKABxmtw206+Ue35aTcQzvySTekS1KV4PF5oVc7qvSzMvd50/EfD263r1XJ+1eEPApTqnA0c30uBCMeczWATNr0PIBDvwGJrbS9gHpnb/zOXelkj72W8WU4dDcaGtKif3Ktl5guiD172y9tjMIHibLM7PKrawlHamWtQ155Au9opa1tV6p//WK0gTuDiF45chYNRC/V9x0YGNH0B/tAr7fIPkBuRyjK9LCdJ4Vlf2s26xXYmwj0xK3la0g7CQZ9RLYVSNcpr6+L/TkU6Rm6YLbjTKCg1N28uUaMGP9zrWd9F/CWqWpFPouge+waIph1mJZ3Xj5xMQN1lgCH7UqIjuQB+Sn9uHw7xNbc2FWSL3yg0ifyZBmC/AI+NAMVkrTsuu7YHfOLfWIc+Mags6VnNIHUztCBoq/42jt+xVj2hboXjGpONXhWACXy7mLaikT81FVaRdtiv0d8/MFUO96ZyIIbvi6lsUaZlydBinJNqkWDoDqN88I8uesPOzxrQW/5lf7m2+KODnhvl7JmcxbFTB0s48/U9W4wNDqerOoH/KRkN/W0v0GGMzmhIAS4+pL4K5ad8VXUTbJGNRzYH2ty8c38YZnkOAeJ0w5N6NetOyutb1lPFfThZiriEhk26LLK+2mKXExHizjTt3pTnjQl9GOxO70aBylVyggqsZq94wc3kDHaQJz1U1CqQDlLK2CLBppzM9xFB6Ea3l2F0eTBuIf8pRgsVMcL2ST0xRcloKaV1LVOSRcktdCDQM3LN2+FltjE+E5dByc02VzKLUq8IQLQAZpCgYBjW4T8fPhtD+9U1yqsbhBmxBiYyKX6Qf9hwbWPDaSPAHgaDGPSf3bY4/Y/um8QQanoO8ndKHPRbOvoaN46ZehWZLFERDQTduqtY/TkQ7SsK26Ufg8BmrjTeLHsN0vZCwducUH7M8bt2aES1NRmEEMrr2Kiu7S4rR+UWzz1Gyn3XZjlq+elDN2zG/6cRX2bA1xwm5T0uyPVrA6l2uHFlMYkzWcmuRhRYNPzRk6vOwexS0FmRrzJJzvCkh0vF8UKEWmXq0tQsFGNbeFlHlU63uYPs0D4RNg9l3jGyRicNfcS7SBoOfFKR1aTOH96lggl35D+WorOEKUbzVFZZmmduA0c2l20K1E2QhlrFVHmCewc+HOj+MqFbIIAINSfY0UhkMLcLfqVFOeniCA9lHyRxX2stvSNNJ7QakEaVSxxvEomG/30coBxbzH2EXLt8+YYyxGZyqZ5kRxMYXivTMqg1Oex2eBkJtMqe0rtEukVzHXUz8kQKJHLMGFQMvm5+p4K7e4bE9r+FUXRTh+yZrVy4IgRZ73XEU7lJXIisTqqLIhXIW/3hYDDy3i7uNO0S+SWJSdUsCSOuAiAg6Z1aJrZi8yb30zGWVrdkj2+RIOKS5h4jc4vsBK0flOXxYrFdMucpQc/lByTG1b6SS0C1h2ZCgSHrHd92rfxJYVvUU2Z455mj25ukWf3gUd2vLZYHrSBEyinHqDqGDTEvSb8SzjU3iovypNUSCtFKnBFqYb2nfZwwDzU0+4mEQhFwSrlOmC2zc9Ej7gFSi6BLmhEqlED5lvQfbH4FbTa7mzqSUEesYGv5TtIZF+QS0c17y+e4FHMGLVsMqgQ+wVAmfbZLJ6MTCGdDSkfraoBEeYmrwU1pcWShTIwLkFPnTMItbRjvHbMAV6+K4wsE/ISs2NWyQNvsd3cSS9hJ/Vl5x4j0y7skU60Qk2IN8/GEzg8YCDeBVyxqyP0vz3aqsGlJmbtfh6ns5pR3CIQJP1I29a7fY23CEx6eKYEgOgS1Ft/OaqZ4kT/at6mkO6hjT8lL8aia+KESjN3+GgJ9tL1fMIiED5dEx2psTxR0xfjB2sf9wsS0NjY5a5adznSjQS1O/5PIsYAY/FlNIDDb+406WaRHv6dESC7pfUFBQZ7TIk9SyeqhS4eNHOJ8l/0bBiyxtCthR3oYAMpWtAg2iE4fiBWqQz5Yq4vMUW+xH1bKE/V0ypYFc3gO0KkX7GfM7CotFdTH0foW0557h7zvQqVAOefvYwUPsLi1BXeYjqcM9StzgTJ40CDCBkPRqohz7KEQ==";
+const REG = {A1:4,A2:3,A3:3,A4:4,A5:4,B1:3,B2:3,B3:2,B4:3,B5:3,C1:3,C2:3,C3:3};  // 報名人數
+let roster = null, checkins = {}, ciQuery = "", ciAdding = null;
+async function unlockRoster(pw){
+  const raw = Uint8Array.from(atob(ROSTER_ENC), c=>c.charCodeAt(0));
+  const salt = raw.slice(0,16), iv = raw.slice(16,28), ct = raw.slice(28);
+  const base = await crypto.subtle.importKey("raw", new TextEncoder().encode(pw), "PBKDF2", false, ["deriveKey"]);
+  const key = await crypto.subtle.deriveKey({name:"PBKDF2", salt, iterations:250000, hash:"SHA-256"}, base, {name:"AES-GCM", length:256}, false, ["decrypt"]);
+  return JSON.parse(new TextDecoder().decode(await crypto.subtle.decrypt({name:"AES-GCM", iv}, key, ct)));
+}
+(async ()=>{ try{ const pw = sessionStorage.getItem("aiday-staffpw"); if (pw && window.crypto && crypto.subtle){ roster = await unlockRoster(pw); if (panel==="checkin") renderCheckin(); } }catch(e){} })();
+const isIn = k => !!(checkins[k] && checkins[k].in);
+const walkins = g => Object.keys(checkins).filter(k=>k.startsWith(g+"-w") && checkins[k] && !checkins[k].gone).sort().map(k=>({k, ...checkins[k]}));
+const arrivedIn = g => roster.people.filter(p=>p.g===g && isIn(p.k)).length + walkins(g).filter(w=>w.in).length;
+function checkinShellHTML(){
+  return `<div class="isec"><h3>簽到</h3><p>問參加者「證書上填的名字是？」，搜尋後打勾。沒填問卷的人用該組的「現場補登」。</p></div><div id="ciBody"></div>`;
+}
+function renderCheckin(){
+  const box = document.getElementById("ciBody"); if (!box) return;
+  if (!roster){
+    if (!box.querySelector("#ciPw")) box.innerHTML = `<form class="spanel" id="ciLock"><h4>輸入工作人員密碼</h4><p>名單有參加者的姓名和過敏資訊，所以加密保存，輸入密碼才看得到。</p>
+      <label for="ciPw">工作人員密碼<input id="ciPw" autocomplete="off" autocapitalize="none" spellcheck="false"></label>
+      <button type="submit" class="btn primary">打開名單</button><p class="sm" id="ciErr"></p></form>`;
+    return;
+  }
+  if (!box.querySelector("#ciSearch")){
+    box.innerHTML = `<div class="cistat" id="ciStat"></div>
+      <label class="cisearch" for="ciSearch"><input id="ciSearch" type="search" placeholder="搜尋證書姓名或報名姓名" autocomplete="off"></label>
+      <div id="ciList"></div>`;
+    document.getElementById("ciSearch").value = ciQuery;
+  }
+  const total = Object.values(REG).reduce((a,b)=>a+b,0), arrived = IDS.reduce((a,g)=>a+arrivedIn(g),0);
+  document.getElementById("ciStat").innerHTML = `<b>${arrived}</b> / ${total} 位已到 <span>· ${ISLANDS.map(i=>{ const gs=IDS.filter(g=>g[0]===i.k); return `${i.name} ${gs.reduce((a,g)=>a+arrivedIn(g),0)}/${gs.reduce((a,g)=>a+REG[g],0)}`; }).join(" · ")}</span>`;
+  const q = ciQuery.trim().toLowerCase();
+  const hit = o => !q || [o.rn,o.cert,o.name].some(v=>v && String(v).toLowerCase().includes(q));
+  const row = p => { const on = isIn(p.k);
+    return `<div class="cirow${on?" on":""}">
+      <button type="button" class="cibox" data-ci="${p.k}" aria-pressed="${on}" aria-label="${esc(p.cert)} ${on?"已到，按一下取消":"按一下簽到"}">${on?"✓":""}</button>
+      <div class="cimain"><div class="cin"><b>${esc(p.cert)}</b>${p.rn&&p.rn!==p.cert?`<span>報名：${esc(p.rn)}</span>`:""}</div>
+        <div class="cid">餐點：${esc(p.meal||"")}</div>${p.note?`<div class="cinote">⚠ ${esc(p.note)}</div>`:""}</div></div>`; };
+  const wrow = w => `<div class="cirow walk${w.in?" on":""}">
+      <button type="button" class="cibox" data-ciw="${w.k}" aria-pressed="${!!w.in}" aria-label="${esc(w.name)} ${w.in?"已到，按一下取消":"按一下簽到"}">${w.in?"✓":""}</button>
+      <div class="cimain"><div class="cin"><b>${esc(w.name)}</b><em>現場補登</em></div><div class="cid none">沒填問卷：請確認證書姓名與餐點需求</div></div>
+      <button type="button" class="btn ghost ciwdel" data-ciwdel="${w.k}">移除</button></div>`;
+  document.getElementById("ciList").innerHTML = IDS.map(g=>{
+    const ps = roster.people.filter(p=>p.g===g && hit(p)), ws = walkins(g).filter(hit), isl = ISL[g[0]];
+    if (q && !ps.length && !ws.length) return "";
+    const missing = Math.max(0, REG[g] - roster.people.filter(p=>p.g===g).length - walkins(g).length);
+    return `<section class="cigroup" style="--c:${isl.color}"><h4><span class="tag" style="--c:${isl.color}">${g}</span>${isl.name}<span class="cireg">報名表：${regLabel(g)}</span><small>助教 ${isl.ta} · ${arrivedIn(g)}/${REG[g]}</small></h4>
+      ${ps.map(row).join("")}${ws.map(wrow).join("")}
+      ${ciAdding===g ? `<form class="ciadd" data-ciaddform="${g}"><input id="ciAddName" maxlength="30" placeholder="姓名或暱稱" autocomplete="off"><button type="submit" class="btn primary">補登並簽到</button><button type="button" class="btn ghost" data-ciaddcancel="1">取消</button></form>`
+        : `<button type="button" class="btn ghost ciaddbtn" data-ciadd="${g}">＋ 現場補登${missing?`（這組有 ${missing} 位沒填問卷）`:""}</button>`}
+    </section>`;
+  }).join("") || `<p class="empty">找不到「${esc(ciQuery)}」。可以到該組按「現場補登」。</p>`;
+  if (ciAdding){ const i = document.getElementById("ciAddName"); if (i && document.activeElement!==i) i.focus(); }
+}
+function writeCheckin(k, val){
+  checkins = {...checkins, [k]:val}; renderCheckin();
+  (chains["ci-"+k] = (chains["ci-"+k]||Promise.resolve()).then(()=>adapter.write("checkin", k, val))).catch(()=>flash("簽到沒有存到，請再按一次。"));
+}
+const greet = (name, g) => flash(`✓ ${name} 報到！請跟他說：你是 ${g}（${ISL[g[0]].name}），助教是 ${ISL[g[0]].ta}`, true);
+document.addEventListener("submit", async e=>{
+  if (e.target.id==="ciLock"){
+    e.preventDefault();
+    const pw = document.getElementById("ciPw").value.trim(), err = document.getElementById("ciErr");
+    if (!(window.crypto && crypto.subtle)){ err.textContent = "這個瀏覽器不支援解密，請換 Chrome 或 Safari。"; return; }
+    err.textContent = "解密中…";
+    try{ roster = await unlockRoster(pw); try{ sessionStorage.setItem("aiday-staffpw", pw); }catch(x){} renderCheckin(); }
+    catch(x){ err.textContent = "密碼不對，請再試一次。"; }
+  }
+  if (e.target.dataset && e.target.dataset.ciaddform){
+    e.preventDefault();
+    const g = e.target.dataset.ciaddform, name = document.getElementById("ciAddName").value.trim();
+    if (!name) return;
+    ciAdding = null; const k = `${g}-w${Date.now()}`;
+    writeCheckin(k, {in:true, t:Date.now(), walk:true, name:name.slice(0,30)}); greet(name, g);
+  }
+}, true);
+document.addEventListener("input", e=>{ if (e.target.id==="ciSearch"){ ciQuery = e.target.value; renderCheckin(); } });
+document.addEventListener("click", e=>{
+  if (!roster) return;
+  const b = e.target.closest("[data-ci]");
+  if (b){ const p = roster.people.find(x=>x.k===b.dataset.ci); if (!p) return; const on = !isIn(p.k);
+    writeCheckin(p.k, {in:on, t:Date.now()}); if (on) greet(p.cert, p.g); return; }
+  const w = e.target.closest("[data-ciw]");
+  if (w){ const k = w.dataset.ciw, cur = checkins[k]; if (!cur) return; const on = !cur.in;
+    writeCheckin(k, {...cur, in:on, t:Date.now()}); if (on) greet(cur.name, k.split("-")[0]); return; }
+  const d = e.target.closest("[data-ciwdel]");
+  if (d){ const k = d.dataset.ciwdel; writeCheckin(k, {in:false, gone:true, t:Date.now()}); return; }
+  const a = e.target.closest("[data-ciadd]"); if (a){ ciAdding = a.dataset.ciadd; renderCheckin(); return; }
+  if (e.target.closest("[data-ciaddcancel]")){ ciAdding = null; renderCheckin(); }
+});
+
 /* ---------- 工作人員：投影模式、匯出成果、全部重設（網址加 #staff 才看得到） ---------- */
 function staffHTML(){
   return `<div class="isec"><h3>工作人員</h3><p>這個面板只有網址加上 <b>#staff</b> 才看得到。</p></div>
@@ -796,7 +930,7 @@ function staffHTML(){
   <section class="spanel"><h4>匯出成果</h4><p id="sStats"></p>
     <div class="srow"><button type="button" class="btn primary" id="sCsv">下載 CSV</button><button type="button" class="btn" id="sCopy">複製表格（可貼到 Google 試算表）</button></div>
     <p class="sm" id="sMsg"></p></section>
-  <section class="spanel danger"><h4>全部重設</h4><p>清空 13 組的組名、組員、狀態、星星和成果連結。用在活動前清掉測試資料。<b>清掉就救不回來。</b></p>
+  <section class="spanel danger"><h4>全部重設</h4><p>清空 13 組的組名、組員、狀態、星星、成果連結，以及所有簽到紀錄。用在活動前清掉測試資料。<b>清掉就救不回來。</b></p>
     <label for="sConfirm">輸入「全部重設」四個字確認
       <input id="sConfirm" autocomplete="off" placeholder="全部重設"></label>
     <button type="button" class="btn danger" id="sReset">清空所有小組資料</button><p class="sm" id="sResetMsg"></p></section>`;
@@ -807,9 +941,9 @@ function updateStaffStats(){
   el.textContent = `目前 ${named} 組已取名，${linked} 組已貼成果連結。`;
 }
 function exportRows(){
-  const head = ["分場","島","組別","組名","組員","狀態","一句話近況","成果連結1","成果連結2","星星已用","最後更新"];
+  const head = ["分場","島","代號","報名表組別","組名","組員","狀態","一句話近況","成果連結1","成果連結2","星星已用","最後更新"];
   const rows = IDS.map(id=>{ const g=get(id), isl=ISL[id[0]];
-    return [isl.branch, isl.name, id, g.name, g.members.join("、"), ST[g.status].t, g.note, g.links[0], g.links[1],
+    return [isl.branch, isl.name, id, regLabel(id), g.name, g.members.join("、"), ST[g.status].t, g.note, g.links[0], g.links[1],
       String(g.stars.filter(x=>x.s==="used").length), g.updatedAt ? new Date(g.updatedAt).toLocaleString("zh-TW",{hour12:false}) : ""]; });
   return [head, ...rows];
 }
@@ -838,7 +972,9 @@ document.addEventListener("click", e=>{
     const msg = document.getElementById("sResetMsg");
     if (!ok){ msg.textContent = "請先在上面輸入「全部重設」。"; return; }
     IDS.forEach(id=>save(id,{name:"",members:[],status:"idle",note:"",links:["",""],stars:[{s:"off",t:0},{s:"off",t:0}]}));
-    document.getElementById("sConfirm").value = ""; msg.textContent = "已清空 13 組的資料。";
+    Object.keys(checkins).forEach(k=>{ adapter.write("checkin", k, k.includes("-w") ? {in:false, gone:true, t:Date.now()} : {in:false, t:Date.now()}).catch(()=>{}); });
+    checkins = {};
+    document.getElementById("sConfirm").value = ""; msg.textContent = "已清空 13 組的資料和簽到紀錄。";
   }
 });
 function setScreen(on){
@@ -854,6 +990,7 @@ function renderDrawer(){
   document.querySelectorAll("#drawer .dhead [data-panel]").forEach(b=>b.classList.toggle("on", b.dataset.panel===p));
   if (!d.classList.contains("open")) return;
   const body = document.getElementById("dbody");
+  if (p==="checkin"){ if (body.dataset.p!=="checkin"){ body.innerHTML = checkinShellHTML(); body.dataset.p="checkin"; } renderCheckin(); return; }
   if (p==="staff"){ if (body.dataset.p!=="staff"){ body.innerHTML = staffHTML(); body.dataset.p="staff"; } updateStaffStats(); return; }
   body.dataset.p = p;
   body.innerHTML = p==="vault" ? vaultHTML() : p==="mentor" ? mentorHTML() : p==="queue" ? `<div class="isec"><h3>星星排隊中</h3><p>每組 2 顆，每顆換 1 次 NGO 或 mentor 諮詢，每次 5 分鐘。依舉起時間排序；按「開始諮詢」會倒數 5 分鐘。</p></div><div class="queue" style="max-height:none">${queueHTML(queueList())}</div>` : listHTML();
@@ -929,7 +1066,7 @@ document.getElementById("fStatus").innerHTML = STATUSES.map(s=>`<input type="rad
 function openEditor(id){
   if (readOnly){ showRO(); return; }
   editing=id; const g=get(id);
-  document.getElementById("dlgTitle").textContent = `${ISL[id[0]].name} · ${id} 組`;
+  document.getElementById("dlgTitle").textContent = groupName(id);
   document.getElementById("fName").value=g.name;
   document.getElementById("fMembers").value=g.members.join("、");
   document.getElementById("fNote").value=g.note;
@@ -1535,15 +1672,15 @@ function renderMe(){
   if (!myGroup){ bar.hidden = true; return; }
   const g = get(myGroup), isl = ISL[myGroup[0]];
   bar.hidden = false; bar.style.setProperty("--c", isl.color);
-  bar.innerHTML = `<button type="button" class="mebtn" data-act="edit" data-id="${myGroup}"><span class="crown">♛</span><span>我們是 <b>${myGroup}</b>${g.name?` · ${esc(g.name)}`:""}</span></button>
+  bar.innerHTML = `<button type="button" class="mebtn" data-act="edit" data-id="${myGroup}"><span class="crown">♛</span><span>我們是 <b>${groupName(myGroup)}</b>${g.name?` · ${esc(g.name)}`:""}</span></button>
     <button type="button" class="melink" id="meSwitch">換組別</button>`;
 }
 function pickGroup(id){
   myGroup = id; try{ localStorage.setItem("aiday-mygroup", id); }catch(e){}
   hideWelcome(); refresh(); flyTo(id[0]);
   const g = get(id);
-  setTimeout(()=>{ if (!g.name){ openEditor(id); document.getElementById("dlgTitle").textContent = `歡迎 ${id}！先幫你們的小組取個名字吧`; }
-    else flash(`♛ 歡迎回來，${id} ${g.name}！`, true); }, 1000);
+  setTimeout(()=>{ if (!g.name){ openEditor(id); document.getElementById("dlgTitle").textContent = `歡迎 ${groupName(id)}！先幫你們取個組名吧`; }
+    else flash(`♛ 歡迎回來，${groupName(id)} ${g.name}！`, true); }, 1000);
 }
 document.addEventListener("click", e=>{
   const pk = e.target.closest("[data-pick]"); if (pk){ pickGroup(pk.dataset.pick); return; }
@@ -1566,6 +1703,7 @@ setInterval(refresh, 30000);
   if (adapter.local) setSync("local","本機示範模式（只存在這台電腦）"); else setSync("wait","連線中…");
   adapter.subscribe("groups", m=>{ groups = m || {}; refresh(); });
   adapter.subscribe("mentors", m=>{ mentorNotes = m || {}; if (panel==="mentor") renderDrawer(); });
+  adapter.subscribe("checkin", m=>{ checkins = m || {}; if (panel==="checkin") renderCheckin(); });
 })();
 </script>
 <button class="exitscreen" id="exitScreen" type="button">離開投影模式</button>
